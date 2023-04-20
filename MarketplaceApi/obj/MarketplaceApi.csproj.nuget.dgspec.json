@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/MarketplaceApi.csproj": {}
+    "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj": {}
   },
   "projects": {
-    "/home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/MarketplaceApi.csproj": {
+    "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/MarketplaceApi.csproj",
+        "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
         "projectName": "MarketplaceApi",
-        "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/MarketplaceApi.csproj",
+        "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
         "packagesPath": "/home/mikuzyuk/.nuget/packages/",
-        "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/obj/",
+        "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/mikuzyuk/.nuget/NuGet/NuGet.Config"
@@ -75,6 +75,18 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[5.0.10, )"
+            },
+            "Swashbuckle.AspNetCore.Swagger": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerGen": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerUI": {
+              "target": "Package",
+              "version": "[6.5.0, )"
             }
           },
           "imports": [

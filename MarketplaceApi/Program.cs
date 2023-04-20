@@ -15,22 +15,10 @@ namespace MarketplaceApi
     {
         public static void Main(string[] args)
         {
-            Data data = new Data();
-            
+
             var host = CreateHostBuilder(args).Build();
             
             CreateHostBuilder(args).Build().Run();
-/*
-            using (var db = new MarketplaceContext())
-            {
-                int[] userId = data.Id;
-                
-                for (int i = 0; i < userId.Length; i++)
-                {
-                    //db.User.Add(new User(userId));
-                }
-                db.SaveChanges();
-            }*/
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

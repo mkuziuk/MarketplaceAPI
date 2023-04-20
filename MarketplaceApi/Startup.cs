@@ -37,9 +37,9 @@ namespace MarketplaceApi
 
             services.AddSwaggerGen();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
-            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=pass";
+            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword";
 
 
             services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));

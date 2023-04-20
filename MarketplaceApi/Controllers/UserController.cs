@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +7,11 @@ namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestController : Controller
+    public class UserController : Controller
     {
         private readonly MarketplaceContext _context;
         
-        public TestController(MarketplaceContext context)
+        public UserController(MarketplaceContext context)
         {
             _context = context;
         }
@@ -33,6 +34,32 @@ namespace MarketplaceApi.Controllers
             _context.Add(user);
             _context.SaveChanges();
             return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult Delete([FromBody] int id)
+        {
+            IQueryable<User> user = _context.User.Where(o => o.Id == id);
+
+            if (user.Count() != 0)
+            {
+                int userId = user.First().Id;
+                
+                if (id == userId)
+                {
+                    _context.Remove(user.First());
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                else
+                {
+                    return Ok();
+                }
+            }
+            else
+            {
+                return Ok();
+            }
         }
     }
 }

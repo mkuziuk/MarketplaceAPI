@@ -9588,19 +9588,19 @@
     ]
   },
   "packageFolders": {
-    "/home/idavidenko/.nuget/packages/": {}
+    "/home/mikuzyuk/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/idavidenko/RiderProjects/mikuzyuk_marketplace_project11111111111/MarketplaceApi/MarketplaceApi.csproj",
+      "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
       "projectName": "MarketplaceApi",
-      "projectPath": "/home/idavidenko/RiderProjects/mikuzyuk_marketplace_project11111111111/MarketplaceApi/MarketplaceApi.csproj",
-      "packagesPath": "/home/idavidenko/.nuget/packages/",
-      "outputPath": "/home/idavidenko/RiderProjects/mikuzyuk_marketplace_project11111111111/MarketplaceApi/obj/",
+      "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
+      "packagesPath": "/home/mikuzyuk/.nuget/packages/",
+      "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/idavidenko/.nuget/NuGet/NuGet.Config"
+        "/home/mikuzyuk/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -9610,7 +9610,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "projectReferences": {}
         }
       },
@@ -9622,7 +9621,6 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
@@ -9683,17 +9681,10 @@
           "net47",
           "net471",
           "net472",
-          "net48",
-          "net481"
+          "net48"
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.NETCore.App.Host.linux-x64",
-            "version": "[3.1.31, 3.1.31]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -9702,7 +9693,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/home/idavidenko/.dotnet/sdk/6.0.403/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/current/sdk/3.1.426/RuntimeIdentifierGraph.json"
       }
     }
   }
