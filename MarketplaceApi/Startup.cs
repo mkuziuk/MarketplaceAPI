@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MarketplaceApi
 {
@@ -28,22 +30,25 @@ namespace MarketplaceApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<MvcOptions>(c =>
+                c.Conventions.Add(new SwaggerApplicationConvention()));
+
+            // Register generator and it's dependencies
+
+            services.AddSwaggerGen();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
-            var connectionString = Configuration["PostgreSql:Host=localhost;Port=5432;Database=Marketplace;Username=postgres;" +
-                                                 "Password=mypassword"];
-            var dbPassword = Configuration["PostgreSql:mypassword"];
-            
-            var builder = new NpgsqlConnectionStringBuilder(connectionString)
-            {
-                Password = dbPassword
-            };
-            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(builder.ConnectionString));
+            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=pass";
+
+
+            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -53,8 +58,33 @@ namespace MarketplaceApi
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
             });
+            
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c=> 
+            { 
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "�� �� V1");
+            });
+            
+            using (var serviceScope = app.ApplicationServices
+                       .GetRequiredService<IServiceScopeFactory>()
+                       .CreateScope())
+            {
+                try
+                {
+                    using (var context = serviceScope.ServiceProvider.GetService<MarketplaceContext>())
+                    {
+                        context.Database.Migrate();
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }

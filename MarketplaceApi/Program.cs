@@ -20,7 +20,7 @@ namespace MarketplaceApi
             var host = CreateHostBuilder(args).Build();
             
             CreateHostBuilder(args).Build().Run();
-
+/*
             using (var db = new MarketplaceContext())
             {
                 int[] userId = data.Id;
@@ -30,7 +30,7 @@ namespace MarketplaceApi
                     //db.User.Add(new User(userId));
                 }
                 db.SaveChanges();
-            }
+            }*/
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

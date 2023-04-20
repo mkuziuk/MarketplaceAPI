@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
-    //[ApiController]
-    public class TestController : ControllerBase
+    [ApiController]
+    public class TestController : Controller
     {
         private readonly MarketplaceContext _context;
         
