@@ -24,41 +24,42 @@ namespace MarketplaceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
-            var student = _context.Find<User>(Guid.Parse(id));
-            return Ok(student);
+            var user = _context.Find<User>(Guid.Parse(id));
+            return Ok(user);
         }
         
         [HttpPost]
         public IActionResult Post([FromBody] User user)
         {
-            _context.Add(user);
-            _context.SaveChanges();
-            return Ok();
+            var existingUsers = _context.User.FirstOrDefault(o => o.Id == user.Id);
+            
+            if (existingUsers == null)
+            {
+                _context.Add(user);
+                _context.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return BadRequest($"Пользователь {user.Id} уже существует"); 
+            }
         }
 
         [HttpDelete]
         public IActionResult Delete([FromBody] int id)
         {
-            IQueryable<User> user = _context.User.Where(o => o.Id == id);
+            var user = _context.User.FirstOrDefault(o => o.Id == id);
 
-            if (user.Count() != 0)
-            {
-                int userId = user.First().Id;
-                
-                if (id == userId)
-                {
-                    _context.Remove(user.First());
-                    _context.SaveChanges();
-                    return Ok();
-                }
-                else
-                {
-                    return Ok();
-                }
+            if (user != null) 
+            { 
+                _context.Remove(user); 
+                _context.SaveChanges(); 
+                return Ok();
             }
             else
             {
-                return Ok();
+                //return BadRequest(String.Format("Пользователь {0} не существует", id));
+                return BadRequest($"Пользователь {user.Id} не найден");
             }
         }
     }
