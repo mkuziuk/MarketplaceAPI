@@ -50,7 +50,8 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest($"Продукт {product.Id} не найден");            }
+                return BadRequest($"Продукт {product.Id} не найден");            
+            }
         }
     }
 }

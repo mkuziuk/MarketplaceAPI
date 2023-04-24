@@ -17,15 +17,31 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromBody] int orderId)
         {
-            return Ok();
+            var orderedProduct = _context.OrderedProduct.Where(o => o.OrderId == orderId);
+
+            if (orderedProduct != null)
+            {
+                return Ok(orderedProduct);
+            }
+            
+            return NotFound();
         }
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
             var user = _context.Find<User>(Guid.Parse(id));
             return Ok(user);
+        }
+
+        [HttpPatch]
+        public IActionResult Patch([FromBody] OrderedProduct orderedProduct)
+        {
+            _context.OrderedProduct.Update(orderedProduct);
+            _context.SaveChanges();
+            
+            return Ok();
         }
         
         [HttpPost]
@@ -38,20 +54,19 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpDelete]
-        public IActionResult Delete([FromBody] int orderId, int productId)
+        public IActionResult Delete([FromBody] int id)
         {
-            var orderedProduct = _context.OrderedProduct
-                .FirstOrDefault(o => o.OrderId == orderId && o.ProductId == productId);
-
-            if (orderedProduct != null) 
+            var product = _context.Product.FirstOrDefault(o => o.Id == id);
+            
+            if (product != null) 
             { 
-                _context.Remove(orderedProduct); 
+                _context.Remove(product); 
                 _context.SaveChanges(); 
                 return Ok();
             }
             else
             {
-                return BadRequest($"Продукт {productId} в заказе {orderId} не найден");
+                return BadRequest($"Продукт {product.Id} не найден");            
             }
         }
     }
