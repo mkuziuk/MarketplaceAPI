@@ -31,9 +31,18 @@ namespace MarketplaceApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Bill bill)
         {
-            _context.Add(bill);
-            _context.SaveChanges();
-            return Ok();
+            var existingBill = _context.User.FirstOrDefault(o => o.Id == bill.Id);
+            
+            if (existingBill == null)
+            {
+                _context.Add(bill);
+                _context.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return BadRequest($"Чек {bill.Id} уже существует"); 
+            }
         }
 
         [HttpDelete]
@@ -49,8 +58,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest("Чек с таким Id не существует");
-            }
+                return BadRequest($"Чек {bill.Id} не найден");            }
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using System.Data;
 using System.Linq;
+using System.Security.Policy;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,11 +31,28 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post([FromBody] Order order)
+        public IActionResult Post([FromBody]int userId)
         {
-            _context.Add(order);
-            _context.SaveChanges();
-            return Ok();
+            var user = _context.User.FirstOrDefault(u => u.Id == userId);
+
+            if (user != null) 
+            {
+                var order = new Order()
+                {
+                    OrderDate = OrderService.DefaultOrderDate,
+                    ReceiveDate = OrderService.DefaultReceiveDate,
+                    OrderStatus = OrderService.DefaultOrderStatus,
+                    UserId = userId
+                };
+                
+                _context.Order.Add(order); 
+                _context.SaveChanges(); 
+                return Ok();
+            }
+            else 
+            { 
+                return BadRequest($"Пользователь {userId} не существует");
+            }
         }
 
         [HttpDelete]
@@ -49,7 +68,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest("Заказ с таким Id не существует");
+                return BadRequest($"Заказ {order.Id} не найден");            
             }
         }
     }

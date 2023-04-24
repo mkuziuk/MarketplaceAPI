@@ -31,8 +31,9 @@ namespace MarketplaceApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Product product)
         {
+            product.PublicationDate = DateTime.Now;
             _context.Add(product);
-            _context.SaveChanges();
+            _context.SaveChanges(); 
             return Ok();
         }
 
@@ -49,8 +50,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest("Товар с таким Id не существует");
-            }
+                return BadRequest($"Продукт {product.Id} не найден");            }
         }
     }
 }

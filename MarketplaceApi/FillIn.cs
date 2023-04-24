@@ -4,6 +4,7 @@ namespace MarketplaceApi
 {
     public class FillIn
     {
+        /*
         private Data _data = new Data();
         private readonly MarketplaceContext _context;
 
@@ -38,5 +39,6 @@ namespace MarketplaceApi
                 _context.Add(user);
             }
         }
+        */
     }
 }

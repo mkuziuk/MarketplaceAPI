@@ -7,11 +7,11 @@ namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class OrderedProductController : Controller
     {
         private readonly MarketplaceContext _context;
         
-        public UserController(MarketplaceContext context)
+        public OrderedProductController(MarketplaceContext context)
         {
             _context = context;
         }
@@ -29,28 +29,29 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post([FromBody] User user)
+        public IActionResult Post([FromBody] OrderedProduct orderedProduct)
         {
-            _context.Add(user);
-            _context.SaveChanges(); 
+            _context.Add(orderedProduct); 
+            _context.SaveChanges();
+            
             return Ok();
         }
-
+        
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete([FromBody] int orderId, int productId)
         {
-            var user = _context.User.FirstOrDefault(o => o.Id == id);
+            var orderedProduct = _context.OrderedProduct
+                .FirstOrDefault(o => o.OrderId == orderId && o.ProductId == productId);
 
-            if (user != null) 
+            if (orderedProduct != null) 
             { 
-                _context.Remove(user); 
+                _context.Remove(orderedProduct); 
                 _context.SaveChanges(); 
                 return Ok();
             }
             else
             {
-                //return BadRequest(String.Format("Пользователь {0} не существует", id));
-                return BadRequest($"Пользователь {user.Id} не найден");
+                return BadRequest($"Продукт {productId} в заказе {orderId} не найден");
             }
         }
     }
