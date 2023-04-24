@@ -25,8 +25,10 @@ namespace MarketplaceApi.Controllers
             {
                 return Ok(orderedProduct);
             }
-            
-            return NotFound();
+            else
+            {
+                return NotFound();   
+            }
         }
         [HttpGet("{id}")]
         public IActionResult Get(string id)
