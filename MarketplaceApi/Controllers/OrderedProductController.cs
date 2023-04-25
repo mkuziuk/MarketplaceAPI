@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/")]
     [ApiController]
     public class OrderedProductController : Controller
     {
@@ -19,11 +19,12 @@ namespace MarketplaceApi.Controllers
         [HttpGet]
         public IActionResult Get([FromBody] int orderId)
         {
-            var orderedProduct = _context.OrderedProduct.Where(o => o.OrderId == orderId);
+            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId);
+            var product = _context.Product.FirstOrDefault(o => o.Id == orderedProduct.ProductId);
 
             if (orderedProduct != null)
             {
-                return Ok(orderedProduct);
+                return Ok(product);
             }
             else
             {
@@ -31,38 +32,78 @@ namespace MarketplaceApi.Controllers
             }
         }
 
-        [HttpPatch]
-        public IActionResult Patch([FromBody] OrderedProduct orderedProduct)
+        [HttpPatch("{orderId}/{productId}/{newQuantity}")]
+        public IActionResult Patch([FromRoute]int orderId, int productId, int newQuantity)
         {
-            _context.OrderedProduct.Update(orderedProduct);
-            _context.SaveChanges();
+            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
+                                                                             && o.ProductId == productId);
             
-            return Ok();
+            if (newQuantity > 0)
+            {
+                if (orderedProduct != null)
+                {
+                    orderedProduct.Quantity = newQuantity;
+                
+                    _context.OrderedProduct.Update(orderedProduct);
+                    _context.SaveChanges();
+                
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest($"Продукта {productId} из заказа {orderId} не существует");
+                }
+            }
+            else
+            {
+                _context.OrderedProduct.Remove(orderedProduct);
+                _context.SaveChanges();
+                
+                return Ok($"Продукт {productId} был удалён из заказа {orderId}");
+            }
         }
         
         [HttpPost]
         public IActionResult Post([FromBody] OrderedProduct orderedProduct)
         {
-            _context.Add(orderedProduct); 
-            _context.SaveChanges();
+            var existingOrderedProduct = _context.OrderedProduct.FirstOrDefault(o =>
+                o.OrderId == orderedProduct.OrderId && o.ProductId == orderedProduct.ProductId);
+
+            if (existingOrderedProduct == null)
+            {
+                _context.Add(orderedProduct); 
+                _context.SaveChanges();
             
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                existingOrderedProduct.Quantity += orderedProduct.Quantity;
+
+                _context.Update(existingOrderedProduct);
+                _context.SaveChanges();
+
+                return Ok();
+            }
         }
-        
-        [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
-        {
-            var product = _context.Product.FirstOrDefault(o => o.Id == id);
             
-            if (product != null) 
+
+        
+        [HttpDelete("{orderId}/{productId}")]
+        public IActionResult Delete([FromRoute] int orderId, int productId)
+        {
+            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
+                                                                             && o.ProductId == productId);
+            
+            if (orderedProduct != null) 
             { 
-                _context.Remove(product); 
+                _context.Remove(orderedProduct); 
                 _context.SaveChanges(); 
                 return Ok();
             }
             else
             {
-                return BadRequest($"Продукт {product.Id} не найден");            
+                return BadRequest($"Продукт {productId} в заказе {orderId} не найден");            
             }
         }
     }
