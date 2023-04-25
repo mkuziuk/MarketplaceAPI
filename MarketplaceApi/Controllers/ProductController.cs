@@ -27,7 +27,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest($"Товар {id} не существует ");
+                return BadRequest($"Товар {id} не существует");
             }
         }
 

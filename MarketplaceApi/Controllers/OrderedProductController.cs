@@ -38,29 +38,25 @@ namespace MarketplaceApi.Controllers
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
             
-            if (newQuantity > 0)
+            if (orderedProduct == null)
             {
-                if (orderedProduct != null)
-                {
-                    orderedProduct.Quantity = newQuantity;
-                
-                    _context.OrderedProduct.Update(orderedProduct);
-                    _context.SaveChanges();
-                
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest($"Продукта {productId} из заказа {orderId} не существует");
-                }
+                return BadRequest($"Продукта {productId} из заказа {orderId} не существует");
             }
-            else
+
+            if (newQuantity <= 0)
             {
                 _context.OrderedProduct.Remove(orderedProduct);
                 _context.SaveChanges();
                 
                 return Ok($"Продукт {productId} был удалён из заказа {orderId}");
             }
+            
+            orderedProduct.Quantity = newQuantity;
+                
+            _context.OrderedProduct.Update(orderedProduct); 
+            _context.SaveChanges();
+            
+            return Ok();
         }
         
         [HttpPost]

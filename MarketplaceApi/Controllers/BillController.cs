@@ -35,8 +35,8 @@ namespace MarketplaceApi.Controllers
         public IActionResult Post([FromBody] Bill bill)
         {
             _context.Add(bill);
-                _context.SaveChanges();
-                return Ok();
+            _context.SaveChanges(); 
+            return Ok();
         }
 
         [HttpDelete]
@@ -52,7 +52,8 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest($"Чек {bill.Id} не найден");            }
+                return BadRequest($"Чек {bill.Id} не найден");
+            }
         }
     }
 }

@@ -52,7 +52,6 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                //return BadRequest(String.Format("Пользователь {0} не существует", id));
                 return BadRequest($"Пользователь {user.Id} не найден");
             }
         }

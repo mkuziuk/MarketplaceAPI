@@ -38,12 +38,12 @@ namespace MarketplaceApi.Controllers
         {
             var user = _context.User.FirstOrDefault(u => u.Id == userId);
 
-            if (user != null) 
+            if (user != null)
             {
                 var order = new Order()
                 {
-                    OrderDate = OrderService.DefaultOrderDate,
-                    ReceiveDate = OrderService.DefaultReceiveDate,
+                    OrderDate = OrderService.DefaultOrderDate(),
+                    ReceiveDate = OrderService.DefaultreceiveDate(),
                     OrderStatus = OrderService.DefaultOrderStatus,
                     UserId = userId
                 };
