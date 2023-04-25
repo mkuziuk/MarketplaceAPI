@@ -7,7 +7,7 @@ namespace MarketplaceApi
     {
         public static DateTime DefaultOrderDate = DateTime.Now;
         public static DateTime DefaultReceiveDate = DefaultOrderDate.AddDays(3);
-        public static string DefaultOrderStatus = "Order created";
+        public static string DefaultOrderStatus = "Basket";
         
     }
 }

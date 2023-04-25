@@ -17,17 +17,20 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromBody] int id)
         {
-            return Ok();
+            var user = _context.User.FirstOrDefault(o => o.Id == id);
+
+            if (user != null)
+            {
+                return Ok(user);
+            }
+            else
+            {
+                return BadRequest($"Пользователь {id} не существует ");
+            }
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            var user = _context.Find<User>(Guid.Parse(id));
-            return Ok(user);
-        }
-        
+
         [HttpPost]
         public IActionResult Post([FromBody] User user)
         {

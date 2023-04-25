@@ -30,12 +30,6 @@ namespace MarketplaceApi.Controllers
                 return NotFound();   
             }
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            var user = _context.Find<User>(Guid.Parse(id));
-            return Ok(user);
-        }
 
         [HttpPatch]
         public IActionResult Patch([FromBody] OrderedProduct orderedProduct)

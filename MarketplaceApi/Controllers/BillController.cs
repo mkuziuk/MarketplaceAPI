@@ -17,32 +17,26 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromBody] int id)
         {
-            return Ok();
-        }
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            var bill = _context.Find<Order>(Guid.Parse(id));
-            return Ok(bill);
-        }
-        
-        [HttpPost]
-        public IActionResult Post([FromBody] Bill bill)
-        {
-            var existingBill = _context.User.FirstOrDefault(o => o.Id == bill.Id);
-            
-            if (existingBill == null)
+            var bill = _context.Bill.FirstOrDefault(o => o.Id == id);
+
+            if (bill != null)
             {
-                _context.Add(bill);
-                _context.SaveChanges();
-                return Ok();
+                return Ok(bill);
             }
             else
             {
-                return BadRequest($"Чек {bill.Id} уже существует"); 
+                return BadRequest($"Чек {id} не существует ");
             }
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Bill bill)
+        {
+            _context.Add(bill);
+                _context.SaveChanges();
+                return Ok();
         }
 
         [HttpDelete]

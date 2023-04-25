@@ -17,24 +17,36 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromBody] int id)
         {
-            return Ok();
+            var product = _context.Product.FirstOrDefault(o => o.Id == id);
+
+            if (product != null)
+            {
+                return Ok(product);
+            }
+            else
+            {
+                return BadRequest($"Товар {id} не существует ");
+            }
         }
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            var product = _context.Find<Product>(Guid.Parse(id));
-            return Ok(product);
-        }
-        
+
         [HttpPost]
         public IActionResult Post([FromBody] Product product)
         {
-            product.PublicationDate = DateTime.Now;
-            _context.Add(product);
-            _context.SaveChanges(); 
-            return Ok();
+            var user = _context.User.FirstOrDefault(o => o.Id == product.UserId);
+            
+            if (user != null)
+            {
+                product.PublicationDate = DateTime.Now;
+                _context.Add(product);
+                _context.SaveChanges(); 
+                return Ok();
+            }
+            else
+            {
+                return BadRequest($"Пользователь {product.UserId} не существует");
+            }
         }
 
         [HttpDelete]
