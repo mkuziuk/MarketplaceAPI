@@ -37,7 +37,13 @@ namespace MarketplaceApi.Controllers
         public IActionResult GetOrderPerUser([FromBody] int userId)
         {
             var order = _context.Order.Where(o => o.UserId == userId);
-
+            var user = _context.User.FirstOrDefault(o => o.Id == userId);
+            
+            if (user == null)
+            {
+                return BadRequest($"Пользователь {userId} не существует");
+            }
+            
             return Ok(order);
         }
 
