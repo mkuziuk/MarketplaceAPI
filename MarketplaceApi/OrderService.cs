@@ -9,6 +9,7 @@ namespace MarketplaceApi
     public static class OrderService
     {
         public static string DefaultOrderStatus = "Basket";
+        
         public static DateTime DefaultOrderDate()
         {
             DateTime defaultOrderDate = DateTime.Now;

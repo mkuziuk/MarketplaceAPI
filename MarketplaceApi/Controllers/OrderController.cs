@@ -33,6 +33,14 @@ namespace MarketplaceApi.Controllers
             }
         }
 
+        [HttpGet("orderperuser")]
+        public IActionResult GetOrderPerUser([FromBody] int userId)
+        {
+            var order = _context.Order.Where(o => o.UserId == userId);
+
+            return Ok(order);
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody]int userId)
         {
