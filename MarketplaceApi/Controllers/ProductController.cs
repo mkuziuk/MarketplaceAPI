@@ -31,6 +31,28 @@ namespace MarketplaceApi.Controllers
             }
         }
 
+        [HttpGet("search/{name}/{material}/{minLength}/{maxLength}/{minWidth}/{maxWidth}/{minHeight}/{maxHeight}/{minPrice}/{maxPrice}")]
+        public IActionResult GetByAttributes([FromRoute] string name = " ", string material = " ", 
+            int minLength = 0, int maxLength = 0, int minWidth = 0, int maxWidth = 0, int minHeight = 0, int maxHeight = 0, 
+            int minPrice = 0, int maxPrice = 0)
+        {
+            var resultingProducts = _context.Product.Where(p => 
+                (name == null || p.Name.StartsWith(name))
+                && (material == null || p.Material.StartsWith(material))
+                
+                && (minLength == 0 || p.Length >= minLength)
+                && (maxLength == 0 || p.Length <= maxLength)
+                && (minWidth == 0 || p.Width >= minWidth)
+                && (maxWidth == 0 || p.Width <= maxWidth)
+                && (minHeight == 0 || p.Height >= minHeight)
+                && (maxHeight == 0 || p.Height <= maxHeight)
+                && (minPrice == 0 || p.Price >= minPrice)
+                && (maxPrice == 0 || p.Price <= maxPrice)
+            );
+            
+            return Ok(resultingProducts);
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] Product product)
         {
