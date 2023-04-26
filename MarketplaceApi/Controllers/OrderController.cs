@@ -18,8 +18,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet]
-        public IActionResult Get([FromBody] int id)
+        [HttpGet("{id}")]
+        public IActionResult Get([FromRoute] int id)
         {
             var order = _context.Order.FirstOrDefault(o => o.Id == id);
 

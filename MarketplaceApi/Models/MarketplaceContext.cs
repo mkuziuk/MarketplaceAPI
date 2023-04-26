@@ -15,12 +15,29 @@ namespace MarketplaceApi.Models
         public DbSet<Product> Product { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<Bill> Bill { get; set; }
-        public DbSet<OrderedProduct> OrderedProduct { get; set; }
-        
-        //protected override void OnConfiguring()
-        //{
-            //optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Marketplace;Username=postgres;" +
-                                    // "Password=mypassword");
-        //}
+        //public DbSet<OrderedProduct> OrderedProduct { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder mb)
+        {
+            mb
+                .Entity<Order>()
+                .HasMany(o => o.Product)
+                .WithMany(p => p.Order)
+                .UsingEntity<OrderedProduct>(
+                    j => j
+                        .HasOne(pt => pt.Product)
+                        .WithMany(p => p.OrderedProducts)
+                        .HasForeignKey(pt => pt.ProductId),
+                    j => j.HasOne(pt => pt.Order)
+                        .WithMany(p => p.OrderedProducts)
+                        .HasForeignKey(pt => pt.OrderId),
+                    j =>
+                    {
+                        j.Property(pt => pt.Quantity);
+                        j.HasKey(t => new { t.OrderId, t.ProductId });
+                        j.ToTable("OrderedProduct");
+                    });
+
+        }
     }
 }

@@ -16,8 +16,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet]
-        public IActionResult Get([FromBody] int id)
+        [HttpGet("{id}")]
+        public IActionResult Get([FromRoute] int id)
         {
             var bill = _context.Bill.FirstOrDefault(o => o.Id == id);
 

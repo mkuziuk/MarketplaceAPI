@@ -21,7 +21,8 @@ namespace MarketplaceApi.Models
         public int Price { get; set; }
         public int Quantity { get; set; }
         public DateTime PublicationDate { get; set; }
-        
+
+        public ICollection<Order> Order { get; set; } = new List<Order>();
         public ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
     }
 }

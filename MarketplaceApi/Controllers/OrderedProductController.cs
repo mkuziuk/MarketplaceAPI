@@ -15,7 +15,7 @@ namespace MarketplaceApi.Controllers
         {
             _context = context;
         }
-        
+        /*
         [HttpGet]
         public IActionResult Get([FromBody] int orderId)
         {
@@ -102,5 +102,6 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Продукт {productId} в заказе {orderId} не найден");            
             }
         }
+        */
     }
 }
