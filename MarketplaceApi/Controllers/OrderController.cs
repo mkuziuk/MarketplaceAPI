@@ -23,27 +23,23 @@ namespace MarketplaceApi.Controllers
         {
             var order = _context.Order.FirstOrDefault(o => o.Id == id);
 
-            if (order != null)
-            {
-                return Ok(order);
-            }
-            else
+            if (order == null)
             {
                 return BadRequest($"Заказ {id} не существует");
             }
+            
+            return Ok(order);
         }
 
-        [HttpGet("orderperuser")]
-        public IActionResult GetOrderPerUser([FromBody] int userId)
+        [HttpGet("orderperuser/{userId}")]
+        public IActionResult GetOrderPerUser([FromRoute] int userId)
         {
-            var user = _context.User.FirstOrDefault(o => o.Id == userId);
-            /*
-            if (user == null)
+            var order = _context.Order.Where(o => o.UserId == userId);
+            
+            if (order == null)
             {
                 return BadRequest($"Пользователь {userId} не существует");
             }
-            */
-            var order = _context.Order.Where(o => o.UserId == userId);
             
             return Ok(order);
         }

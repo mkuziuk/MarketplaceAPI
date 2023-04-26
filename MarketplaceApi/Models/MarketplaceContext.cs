@@ -15,7 +15,7 @@ namespace MarketplaceApi.Models
         public DbSet<Product> Product { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<Bill> Bill { get; set; }
-        //public DbSet<OrderedProduct> OrderedProduct { get; set; }
+        public DbSet<OrderedProduct> OrderedProduct { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
@@ -37,7 +37,6 @@ namespace MarketplaceApi.Models
                         j.HasKey(t => new { t.OrderId, t.ProductId });
                         j.ToTable("OrderedProduct");
                     });
-
         }
     }
 }

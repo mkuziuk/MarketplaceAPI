@@ -15,23 +15,20 @@ namespace MarketplaceApi.Controllers
         {
             _context = context;
         }
-        /*
-        [HttpGet]
-        public IActionResult Get([FromBody] int orderId)
+        
+        [HttpGet("{orderId}")]
+        public IActionResult Get([FromRoute] int orderId)
         {
-            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId);
-            var product = _context.Product.FirstOrDefault(o => o.Id == orderedProduct.ProductId);
+            var orderedProduct = _context.OrderedProduct.Where(o => o.OrderId == orderId);
 
-            if (orderedProduct != null)
+            if (orderedProduct == null)
             {
-                return Ok(product);
+                return BadRequest($"Заказ {orderId} не существует");
             }
-            else
-            {
-                return NotFound();   
-            }
+
+            return Ok(orderedProduct);
         }
-
+        
         [HttpPatch("{orderId}/{productId}/{newQuantity}")]
         public IActionResult Patch([FromRoute]int orderId, int productId, int newQuantity)
         {
@@ -59,28 +56,33 @@ namespace MarketplaceApi.Controllers
             return Ok();
         }
         
-        [HttpPost]
-        public IActionResult Post([FromBody] OrderedProduct orderedProduct)
+        [HttpPost("{orderId}/{productId}/{quantity}")]
+        public IActionResult Post([FromRoute]int orderId, int productId, int quantity)
         {
             var existingOrderedProduct = _context.OrderedProduct.FirstOrDefault(o =>
-                o.OrderId == orderedProduct.OrderId && o.ProductId == orderedProduct.ProductId);
+                o.OrderId == orderId && o.ProductId == productId);
 
             if (existingOrderedProduct == null)
             {
+                var orderedProduct = new OrderedProduct()
+                {
+                    OrderId = orderId,
+                    ProductId = productId,
+                    Quantity = quantity
+                };
+                
                 _context.Add(orderedProduct); 
                 _context.SaveChanges();
             
                 return Ok();
             }
-            else
-            {
-                existingOrderedProduct.Quantity += orderedProduct.Quantity;
+            
+            existingOrderedProduct.Quantity += quantity;
 
-                _context.Update(existingOrderedProduct);
-                _context.SaveChanges();
+            _context.Update(existingOrderedProduct);
+            _context.SaveChanges();
 
-                return Ok();
-            }
+            return Ok();
         }
             
 
@@ -102,6 +104,6 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Продукт {productId} в заказе {orderId} не найден");            
             }
         }
-        */
+        
     }
 }
