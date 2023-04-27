@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -21,20 +22,14 @@ namespace MarketplaceApi.Controllers
         [HttpGet("{orderId}")]
         public IActionResult Get([FromRoute] int orderId)
         {
-            var orderedProduct = _context.OrderedProduct.Where(o => o.OrderId == orderId);
-
-            if (orderedProduct == null)
-            {
-                return BadRequest($"Заказ {orderId} не существует");
-            }
+            var orderedProduct = _context.OrderedProduct.AsNoTracking().Where(o => o.OrderId == orderId);
 
             return Ok(orderedProduct);
         }
         
-        [HttpPatch("{orderId}/{productId}/{newQuantity}")]
-        public IActionResult Patch([FromRoute]int orderId, int productId, int newQuantity)
+        [HttpPatch("patchquantity/{orderId}/{productId}/{newQuantity}")]
+        public IActionResult PatchQuantity([FromRoute]int orderId, int productId, int newQuantity)
         {
-            /*
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
             
@@ -55,9 +50,6 @@ namespace MarketplaceApi.Controllers
                 
             _context.OrderedProduct.Update(orderedProduct); 
             _context.SaveChanges();
-            */
-            
-            
             
             return Ok();
         }

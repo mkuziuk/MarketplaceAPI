@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -19,7 +20,7 @@ namespace MarketplaceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            var bill = _context.Bill.FirstOrDefault(o => o.Id == id);
+            var bill = _context.Bill.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
             if (bill != null)
             {

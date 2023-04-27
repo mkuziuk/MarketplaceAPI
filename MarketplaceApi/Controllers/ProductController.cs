@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -10,7 +11,7 @@ namespace MarketplaceApi.Controllers
     public class ProductController : Controller
     {
         private readonly MarketplaceContext _context;
-        
+
         public ProductController(MarketplaceContext context)
         {
             _context = context;
@@ -19,7 +20,7 @@ namespace MarketplaceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            var product = _context.Product.FirstOrDefault(o => o.Id == id);
+            var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
             if (product != null)
             {
@@ -31,28 +32,27 @@ namespace MarketplaceApi.Controllers
             }
         }
 
-        [HttpGet("search/{name}/{material}/{minLength}/{maxLength}/{minWidth}/{maxWidth}/{minHeight}/{maxHeight}/{minPrice}/{maxPrice}")]
-        public IActionResult GetByAttributes([FromRoute] string name = " ", string material = " ", 
-            int minLength = 0, int maxLength = 0, int minWidth = 0, int maxWidth = 0, int minHeight = 0, int maxHeight = 0, 
-            int minPrice = 0, int maxPrice = 0)
+        [HttpGet("search")]
+        public IActionResult GetByAttributes(string name, string material, int minLength, int maxLength, 
+            int minWidth, int maxWidth, int minHeight, int maxHeight, int minPrice, int maxPrice)
         {
-            var resultingProducts = _context.Product.Where(p => 
-                (name == null || p.Name.StartsWith(name))
-                && (material == null || p.Material.StartsWith(material))
+            var resultingProducts = _context.Product.AsNoTracking().Where(p => 
+                (ProductService.CheckIfDefault(name) || p.Name.StartsWith(name))
+                && (ProductService.CheckIfDefault(material)|| p.Material.StartsWith(material))
                 
-                && (minLength == 0 || p.Length >= minLength)
-                && (maxLength == 0 || p.Length <= maxLength)
-                && (minWidth == 0 || p.Width >= minWidth)
-                && (maxWidth == 0 || p.Width <= maxWidth)
-                && (minHeight == 0 || p.Height >= minHeight)
-                && (maxHeight == 0 || p.Height <= maxHeight)
-                && (minPrice == 0 || p.Price >= minPrice)
-                && (maxPrice == 0 || p.Price <= maxPrice)
+                && (ProductService.CheckIfDefault(minLength) || p.Length >= minLength)
+                && (ProductService.CheckIfDefault(maxLength) || p.Length <= maxLength)
+                && (ProductService.CheckIfDefault(minWidth) || p.Width >= minWidth)
+                && (ProductService.CheckIfDefault(maxWidth) || p.Width <= maxWidth)
+                && (ProductService.CheckIfDefault(minHeight) || p.Height >= minHeight)
+                && (ProductService.CheckIfDefault(maxHeight) || p.Height <= maxHeight)
+                && (ProductService.CheckIfDefault(minPrice) || p.Price >= minPrice)
+                && (ProductService.CheckIfDefault(maxPrice) || p.Price <= maxPrice)
             );
             
             return Ok(resultingProducts);
         }
-
+        
         [HttpPost]
         public IActionResult Post([FromBody] Product product)
         {

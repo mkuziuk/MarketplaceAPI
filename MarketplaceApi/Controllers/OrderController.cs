@@ -1,6 +1,7 @@
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -18,7 +19,7 @@ namespace MarketplaceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            var order = _context.Order.FirstOrDefault(o => o.Id == id);
+            var order = _context.Order.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
             {
@@ -31,7 +32,7 @@ namespace MarketplaceApi.Controllers
         [HttpGet("ordersperuser/{userId}")]
         public IActionResult GetOrdersPerUser([FromRoute] int userId)
         {
-            var order = _context.Order.Where(o => o.UserId == userId);
+            var order = _context.Order.AsNoTracking().Where(o => o.UserId == userId);
             
             if (order == null)
             {
