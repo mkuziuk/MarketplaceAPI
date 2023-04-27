@@ -17,8 +17,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet("{id}")]
-        public IActionResult Get([FromRoute] int id)
+        [HttpGet]
+        public IActionResult Get(int id)
         {
             var user = _context.User.AsNoTracking().FirstOrDefault(o => o.Id == id);
 

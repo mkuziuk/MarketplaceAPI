@@ -16,6 +16,7 @@ namespace MarketplaceApi.Models
         public DbSet<Order> Order { get; set; }
         public DbSet<Bill> Bill { get; set; }
         public DbSet<OrderedProduct> OrderedProduct { get; set; }
+        public DbSet<Shop> Shop { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
