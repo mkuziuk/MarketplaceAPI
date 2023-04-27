@@ -32,9 +32,55 @@ namespace MarketplaceApi.Controllers
             }
         }
 
+        [HttpPatch]
+        public IActionResult Patch(int currentUserId, int id, string phone, string email, bool seller)
+        {
+            var currentUser = _context.User.FirstOrDefault(u => u.Admin == true);
+
+            if (currentUser == null || currentUserId != id) 
+                return BadRequest("У вас нет прав на данную операцию");
+
+            var user = _context.User.FirstOrDefault(u => u.Id == id);
+
+            if (user == null) 
+                return BadRequest($"Пользователь {id} не существует");
+
+            user.Phone = phone;
+            user.Email = email;
+            user.Seller = seller;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPatch("toadmin")]
+        public IActionResult PatchToAdmin(int currentUserId, int id)
+        {
+            var currentUser = _context.User.FirstOrDefault(u => u.Admin == true);
+            
+            if (currentUser == null) 
+                return BadRequest("У вас нет прав на данную операцию");
+            
+            var user = _context.User.FirstOrDefault(u => u.Id == id);
+
+            if (user == null) 
+                return BadRequest($"Пользователь {id} не существует");
+
+            user.Admin = true;
+
+            _context.User.Update(user);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+        
         [HttpPost]
         public IActionResult Post([FromBody] User user)
         {
+            user.Admin = false;
+            user.Seller = false;
             _context.Add(user);
             _context.SaveChanges(); 
             return Ok();

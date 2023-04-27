@@ -16,9 +16,14 @@ namespace MarketplaceApi.Models
         public string SecondName { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string DeliveryAdress { get; set; }
+        public bool Seller { get; set; }
+        public bool Admin { get; set; }
         
         public ICollection<Order> Orders { get; } = new List<Order>();
         public ICollection<Bill> Bills { get; } = new List<Bill>();
-        public ICollection<Product> Products { get; } = new List<Product>();
+        public ICollection<Product> Product { get; } = new List<Product>();
+        
+        public int ShopId { get; set; }
+        public Shop Shop { get; set; } = null!;
     }
 }

@@ -10,7 +10,6 @@ namespace MarketplaceApi.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key, Column(Order = 0)]
         public int Id { get; set; }
-        //public int ProductCode { get; set; }
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         public string Name { get; set; }
@@ -24,5 +23,8 @@ namespace MarketplaceApi.Models
 
         public ICollection<Order> Order { get; set; } = new List<Order>();
         public ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
+        
+        public int ShopId { get; set; }
+        public Shop Shop { get; set; } = null!;
     }
 }

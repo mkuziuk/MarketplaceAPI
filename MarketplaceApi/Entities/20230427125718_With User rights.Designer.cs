@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230427125718_With User rights")]
+    partial class WithUserrights
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,9 +116,6 @@ namespace MarketplaceApi.Entities
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -125,29 +124,9 @@ namespace MarketplaceApi.Entities
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ShopId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("MarketplaceApi.Models.Shop", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Shop");
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.User", b =>
@@ -178,15 +157,10 @@ namespace MarketplaceApi.Entities
                     b.Property<string>("SecondName")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Seller")
+                    b.Property<bool>("SellerStatus")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ShopId");
 
                     b.ToTable("User");
                 });
@@ -234,32 +208,13 @@ namespace MarketplaceApi.Entities
 
             modelBuilder.Entity("MarketplaceApi.Models.Product", b =>
                 {
-                    b.HasOne("MarketplaceApi.Models.Shop", "Shop")
-                        .WithMany("Products")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketplaceApi.Models.User", "User")
-                        .WithMany("Product")
+                        .WithMany("Products")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Shop");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MarketplaceApi.Models.User", b =>
-                {
-                    b.HasOne("MarketplaceApi.Models.Shop", "Shop")
-                        .WithMany("ShopOwners")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.Order", b =>
@@ -272,20 +227,13 @@ namespace MarketplaceApi.Entities
                     b.Navigation("OrderedProducts");
                 });
 
-            modelBuilder.Entity("MarketplaceApi.Models.Shop", b =>
-                {
-                    b.Navigation("Products");
-
-                    b.Navigation("ShopOwners");
-                });
-
             modelBuilder.Entity("MarketplaceApi.Models.User", b =>
                 {
                     b.Navigation("Bills");
 
                     b.Navigation("Orders");
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
