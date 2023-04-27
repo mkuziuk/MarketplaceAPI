@@ -1,7 +1,4 @@
-using System;
-using System.Data;
 using System.Linq;
-using System.Security.Policy;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,8 +28,8 @@ namespace MarketplaceApi.Controllers
             return Ok(order);
         }
 
-        [HttpGet("orderperuser/{userId}")]
-        public IActionResult GetOrderPerUser([FromRoute] int userId)
+        [HttpGet("ordersperuser/{userId}")]
+        public IActionResult GetOrdersPerUser([FromRoute] int userId)
         {
             var order = _context.Order.Where(o => o.UserId == userId);
             
@@ -54,7 +51,7 @@ namespace MarketplaceApi.Controllers
                 var order = new Order()
                 {
                     OrderDate = OrderService.DefaultOrderDate(),
-                    ReceiveDate = OrderService.DefaultreceiveDate(),
+                    ReceiveDate = OrderService.DefaultReceiveDate(),
                     OrderStatus = OrderService.DefaultOrderStatus,
                     UserId = userId
                 };
@@ -82,7 +79,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest($"Заказ {order.Id} не найден");            
+                return BadRequest($"Заказ {id} не найден");            
             }
         }
     }
