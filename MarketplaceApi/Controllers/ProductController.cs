@@ -33,21 +33,21 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpGet("search")]
-        public IActionResult GetByAttributes(string name, string material, int minLength, int maxLength, 
-            int minWidth, int maxWidth, int minHeight, int maxHeight, int minPrice, int maxPrice)
+        public IActionResult GetByAttributes(string name, string material, int? minLength, int? maxLength, 
+            int? minWidth, int? maxWidth, int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             var resultingProducts = _context.Product.AsNoTracking().Where(p => 
-                (ProductService.CheckIfDefault(name) || p.Name.StartsWith(name))
-                && (ProductService.CheckIfDefault(material)|| p.Material.StartsWith(material))
+                (name == null || p.Name.StartsWith(name))
+                && (material == null || p.Material.StartsWith(material))
                 
-                && (ProductService.CheckIfDefault(minLength) || p.Length >= minLength)
-                && (ProductService.CheckIfDefault(maxLength) || p.Length <= maxLength)
-                && (ProductService.CheckIfDefault(minWidth) || p.Width >= minWidth)
-                && (ProductService.CheckIfDefault(maxWidth) || p.Width <= maxWidth)
-                && (ProductService.CheckIfDefault(minHeight) || p.Height >= minHeight)
-                && (ProductService.CheckIfDefault(maxHeight) || p.Height <= maxHeight)
-                && (ProductService.CheckIfDefault(minPrice) || p.Price >= minPrice)
-                && (ProductService.CheckIfDefault(maxPrice) || p.Price <= maxPrice)
+                && (minLength == null || p.Length >= minLength)
+                && (maxLength == null || p.Length <= maxLength)
+                && (minWidth == null || p.Width >= minWidth)
+                && (maxWidth == null || p.Width <= maxWidth)
+                && (minHeight == null || p.Height >= minHeight)
+                && (maxHeight == null || p.Height <= maxHeight)
+                && (minPrice == null || p.Price >= minPrice)
+                && (maxPrice == null || p.Price <= maxPrice)
             );
             
             return Ok(resultingProducts);
