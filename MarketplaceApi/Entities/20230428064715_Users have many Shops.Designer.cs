@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230428064715_Users have many Shops")]
+    partial class UsershavemanyShops
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,13 +190,13 @@ namespace MarketplaceApi.Entities
 
             modelBuilder.Entity("ShopUser", b =>
                 {
-                    b.Property<int>("OwnersId")
+                    b.Property<int>("ShopOwnersIdId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ShopsId")
                         .HasColumnType("integer");
 
-                    b.HasKey("OwnersId", "ShopsId");
+                    b.HasKey("ShopOwnersIdId", "ShopsId");
 
                     b.HasIndex("ShopsId");
 
@@ -265,7 +267,7 @@ namespace MarketplaceApi.Entities
                 {
                     b.HasOne("MarketplaceApi.Models.User", null)
                         .WithMany()
-                        .HasForeignKey("OwnersId")
+                        .HasForeignKey("ShopOwnersIdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

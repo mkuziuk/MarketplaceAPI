@@ -22,8 +22,8 @@ namespace MarketplaceApi.Models
         {
             mb
                 .Entity<Order>()
-                .HasMany(o => o.Product)
-                .WithMany(p => p.Order)
+                .HasMany(o => o.Products)
+                .WithMany(p => p.Orders)
                 .UsingEntity<OrderedProduct>(
                     j => j
                         .HasOne(pt => pt.Product)
@@ -38,6 +38,10 @@ namespace MarketplaceApi.Models
                         j.HasKey(t => new { t.OrderId, t.ProductId });
                         j.ToTable("OrderedProduct");
                     });
+
+            mb
+                .Entity<User>()
+                .HasMany(u => u.ShopsWhereModerator);
         }
     }
 }

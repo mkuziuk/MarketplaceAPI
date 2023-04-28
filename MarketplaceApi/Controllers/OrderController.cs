@@ -16,8 +16,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet("{id}")]
-        public IActionResult Get([FromRoute] int id)
+        [HttpGet]
+        public IActionResult Get(int id)
         {
             var order = _context.Order.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
@@ -29,8 +29,8 @@ namespace MarketplaceApi.Controllers
             return Ok(order);
         }
 
-        [HttpGet("ordersperuser/{userId}")]
-        public IActionResult GetOrdersPerUser([FromRoute] int userId)
+        [HttpGet("ordersperuser")]
+        public IActionResult GetOrdersPerUser(int userId)
         {
             var order = _context.Order.AsNoTracking().Where(o => o.UserId == userId);
             
@@ -43,7 +43,7 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]int userId)
+        public IActionResult Post(int userId)
         {
             var user = _context.User.FirstOrDefault(u => u.Id == userId);
 
@@ -68,7 +68,7 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete(int id)
         {
             var order = _context.Order.FirstOrDefault(o => o.Id == id);
             

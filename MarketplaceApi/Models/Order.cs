@@ -16,7 +16,7 @@ namespace MarketplaceApi.Models
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 
-        public ICollection<Product> Product { get; set; } = new List<Product>();
+        public ICollection<Product> Products { get; set; } = new List<Product>();
         public ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
     }
 }

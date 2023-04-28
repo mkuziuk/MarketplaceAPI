@@ -77,17 +77,28 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post([FromBody] User user)
+        public IActionResult Post(string phone, string email, string firstName, string secondName, 
+            string deliveryAdress)
         {
-            user.Admin = false;
-            user.Seller = false;
+            User user = new User()
+            {
+                Phone = phone,
+                Email = email,
+                FirstName = firstName,
+                SecondName = secondName,
+                DeliveryAdress = deliveryAdress,
+                RegistrationDate = DateTime.Now,
+                Admin = false,
+                Seller = false
+            };
+            
             _context.Add(user);
             _context.SaveChanges(); 
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete(int id)
         {
             var user = _context.User.FirstOrDefault(o => o.Id == id);
 

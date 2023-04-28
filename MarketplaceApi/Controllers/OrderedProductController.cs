@@ -27,8 +27,8 @@ namespace MarketplaceApi.Controllers
             return Ok(orderedProduct);
         }
         
-        [HttpPatch("patchquantity/{orderId}/{productId}/{newQuantity}")]
-        public IActionResult PatchQuantity([FromRoute]int orderId, int productId, int newQuantity)
+        [HttpPatch("patchquantity")]
+        public IActionResult PatchQuantity(int orderId, int productId, int newQuantity)
         {
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
@@ -54,8 +54,8 @@ namespace MarketplaceApi.Controllers
             return Ok();
         }
         
-        [HttpPost("{orderId}/{productId}/{quantity}")]
-        public IActionResult Post([FromRoute]int orderId, int productId, int quantity)
+        [HttpPost]
+        public IActionResult Post(int orderId, int productId, int quantity)
         {
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId 
                                                                              && o.ProductId == productId);
@@ -64,7 +64,7 @@ namespace MarketplaceApi.Controllers
             
             if (orderedProduct == null && product != null && order != null)
             {
-                order.Product = new List<Product>() { product };
+                order.Products = new List<Product>() { product };
 
                 _context.Order.Update(order);
                 _context.SaveChanges();
@@ -91,11 +91,11 @@ namespace MarketplaceApi.Controllers
             
 
         
-        [HttpDelete("{orderId}/{productId}")]
-        public IActionResult Delete([FromRoute] int orderId, int productId)
+        [HttpDelete]
+        public IActionResult Delete(int orderId, int productId)
         {
-            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
-                                                                             && o.ProductId == productId);
+            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
+                o.OrderId == orderId && o.ProductId == productId);
             
             if (orderedProduct != null) 
             { 

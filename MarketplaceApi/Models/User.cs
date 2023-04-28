@@ -22,8 +22,8 @@ namespace MarketplaceApi.Models
         public ICollection<Order> Orders { get; } = new List<Order>();
         public ICollection<Bill> Bills { get; } = new List<Bill>();
         public ICollection<Product> Product { get; } = new List<Product>();
-        
-        public int ShopId { get; set; }
-        public Shop Shop { get; set; } = null!;
+
+        public ICollection<Shop> ShopsOwned { get; set; } = new List<Shop>();
+        public ICollection<Shop> ShopsWhereModerator { get; } = new List<Shop>();
     }
 }

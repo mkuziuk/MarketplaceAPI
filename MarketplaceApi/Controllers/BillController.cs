@@ -17,8 +17,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet("{id}")]
-        public IActionResult Get([FromRoute] int id)
+        [HttpGet]
+        public IActionResult Get(int id)
         {
             var bill = _context.Bill.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
@@ -41,7 +41,7 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete(int id)
         {
             var bill = _context.Bill.FirstOrDefault(o => o.Id == id);
             

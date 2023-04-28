@@ -17,8 +17,8 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet("{id}")]
-        public IActionResult Get([FromRoute] int id)
+        [HttpGet]
+        public IActionResult Get(int id)
         {
             var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
@@ -54,25 +54,41 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post([FromBody] Product product)
+        public IActionResult Post(int userId, int shopId, string name, string material, int length, int width, 
+            int height, int price, int quantity)
         {
-            var user = _context.User.FirstOrDefault(o => o.Id == product.UserId);
+            var user = _context.User.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+                return BadRequest($"Пользователь {userId} не существует");
+
+            var shop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
+
+            if (shop == null)
+                return BadRequest($"Магазин {shopId} не существует");
             
-            if (user != null)
+            var product = new Product()
             {
-                product.PublicationDate = DateTime.Now;
-                _context.Add(product);
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
-                return BadRequest($"Пользователь {product.UserId} не существует");
-            }
+                UserId = userId,
+                Name = name,
+                Material = material,
+                Length = length,
+                Width = width,
+                Height = height,
+                Price = price,
+                Quantity = quantity,
+                PublicationDate = DateTime.Now,
+                ShopId = shopId
+            };
+            
+            _context.Add(product);
+            _context.SaveChanges(); 
+            return Ok();
+            
         }
 
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete(int id)
         {
             var product = _context.Product.FirstOrDefault(o => o.Id == id);
             
