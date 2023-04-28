@@ -12,9 +12,12 @@ namespace MarketplaceApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }
+
+        public int OwnerId { get; set; }
+        public User Owner { get; set; } = null!;
         
-        public User Owner { get; set; }
         public ICollection<User> ModeratorUsers { get; set; } = new List<User>();
+        public ICollection<int> ModeratorUsersIds { get; set; } = new List<int>();
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

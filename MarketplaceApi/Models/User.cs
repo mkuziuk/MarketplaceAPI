@@ -24,6 +24,6 @@ namespace MarketplaceApi.Models
         public ICollection<Product> Product { get; } = new List<Product>();
 
         public ICollection<Shop> ShopsOwned { get; set; } = new List<Shop>();
-        public ICollection<Shop> ShopsWhereModerator { get; } = new List<Shop>();
+        public ICollection<Shop> ShopsWhereModerator { get; set; } = new List<Shop>();
     }
 }

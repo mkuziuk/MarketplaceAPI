@@ -36,7 +36,7 @@ namespace MarketplaceApi.Controllers
             return Ok(shop.Products);
         }
         
-        [HttpGet("shopowners")]
+        [HttpGet("shopmods")]
         public IActionResult GetShopOwners(int currentUserId, int id)
         {
             var shop = _context.Shop.AsNoTracking().FirstOrDefault(s => s.Id == id);
@@ -60,15 +60,18 @@ namespace MarketplaceApi.Controllers
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
             
-            currentUser.Seller = true;
-            _context.User.Update(currentUser);
-
             var newShop = new Shop()
             {
                 Name = shopname,
                 CreationDate = DateTime.Now,
-                ModeratorUsers = new List<User>() {currentUser}
+                ModeratorUsers = new List<User>() {currentUser},
+                OwnerId = userId
             };
+            
+            currentUser.Seller = true;
+            currentUser.ShopsWhereModerator = new List<Shop>() { newShop };
+            currentUser.ShopsOwned = new List<Shop>() { newShop };
+            _context.User.Update(currentUser);
 
             _context.Shop.Add(newShop);
             _context.SaveChanges();
@@ -76,34 +79,35 @@ namespace MarketplaceApi.Controllers
             return Ok();
         }
 
-        [HttpPatch("addowner")]
-        public IActionResult PatchAddOwner(int userId, int shopId, int newOwnerId)
+        [HttpPatch("addmoderator")]
+        public IActionResult PatchAddOwner(int userId, int shopId, int newModeratorId)
         {
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
             
-            var currentShop = _context.Shop.FirstOrDefault(u => u.Id == shopId);
-
+            var currentShop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
             if (currentShop == null)
                 return BadRequest($"Магазин {shopId} не существует");
-            
-            var newOwner = _context.User.FirstOrDefault(u => u.Id == newOwnerId);
 
-            if (newOwner == null)
-                return BadRequest($"Пользователь {newOwnerId} не существует");
+            var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(s => s.Id == currentShop.Id);
+            if (shopOwningUser == null)
+                return BadRequest("У вас не прав на добавление модераторов");
             
-            var existingOwners = _context.User.Where(u => u == currentShop.ModeratorUsers);
+            var newModerator = _context.User.FirstOrDefault(u => u.Id == newModeratorId);
+            if (newModerator == null)
+                return BadRequest($"Пользователь {newModeratorId} не существует");
             
-            for (int i = 0; i < existingOwners.Count(); i++)
+            var existingModerators = _context.User.Where(u => u
+                                                              == currentShop.ModeratorUsers);
+            for (var i = 0; i < existingModerators.Count(); i++)
             {
-                int existingOwnerId = existingOwners.ElementAt(i).Id;
-                if (newOwner.Id == existingOwnerId)
-                    return BadRequest($"Владелец {existingOwnerId} уже существует");
+                var existingModeratorId = existingModerators.ElementAt(i).Id;
+                if (newModeratorId == existingModeratorId)
+                    return BadRequest($"Модератор {existingModeratorId} уже существует");
             }
 
-            currentShop.ModeratorUsers = new List<User>() { newOwner };
+            currentShop.ModeratorUsers = new List<User>() { newModerator };
 
             _context.Shop.Update(currentShop);
             _context.SaveChanges();

@@ -41,7 +41,13 @@ namespace MarketplaceApi.Models
 
             mb
                 .Entity<User>()
-                .HasMany(u => u.ShopsWhereModerator);
+                .HasMany(u => u.ShopsWhereModerator)
+                .WithMany(p => p.ModeratorUsers);
+
+            mb
+                .Entity<User>()
+                .HasMany(u => u.ShopsOwned)
+                .WithOne(s => s.Owner);
         }
     }
 }

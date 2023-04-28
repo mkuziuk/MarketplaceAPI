@@ -58,14 +58,17 @@ namespace MarketplaceApi.Controllers
             int height, int price, int quantity)
         {
             var user = _context.User.FirstOrDefault(u => u.Id == userId);
-
             if (user == null)
                 return BadRequest($"Пользователь {userId} не существует");
 
             var shop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
-
             if (shop == null)
                 return BadRequest($"Магазин {shopId} не существует");
+
+            var ifModerator = _context.Shop.FirstOrDefault(s => s.ModeratorUsers
+                .FirstOrDefault(m => m.Id == userId) == user);
+            if (ifModerator == null)
+                return BadRequest("У вас нет прав на добавление товаров в это магазин");
             
             var product = new Product()
             {
