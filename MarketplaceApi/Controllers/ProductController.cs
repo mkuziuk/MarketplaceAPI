@@ -91,20 +91,19 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int userId, int id)
         {
             var product = _context.Product.FirstOrDefault(o => o.Id == id);
+            if (product == null) 
+                return BadRequest($"Продукт {id} не найден");
             
-            if (product != null) 
-            { 
-                _context.Remove(product); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
-                return BadRequest($"Продукт {id} не найден");            
-            }
+            var moderator = _context.Shop.FirstOrDefault(s => s.ModeratorUsers.Any(mu => mu.Id == userId));
+            if (moderator == null)
+                return BadRequest("У вас нет прав на данную операцию");
+            
+            _context.Remove(product); 
+            _context.SaveChanges(); 
+            return Ok();
         }
     }
 }
