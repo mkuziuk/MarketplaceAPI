@@ -138,11 +138,7 @@ namespace MarketplaceApi.Controllers
                 u.ShopsOwned.Any(so => so.OwnerId == moderatorId));
             if (ifModeratorAdmin)
                 return BadRequest("Вы не можете удалить сами себя из модераторов");
-            /*
-            var moderator = _context.User.FirstOrDefault(u =>
-                u.ShopsWhereModerator.Any(sm => sm.Id == shopId 
-                                                && sm.ModeratorUsers.Any(mu=> mu.Id != userId)));
-            */
+            
             var toDeleteModerator = _context.ShopModerator.FirstOrDefault(sm =>
                 sm.ModeratorId == moderatorId && sm.ShopId == shopId);
             

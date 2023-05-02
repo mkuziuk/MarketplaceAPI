@@ -98,6 +98,9 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Продукт {id} не найден");
             
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null) 
+                return BadRequest($"Пользователь {userId} не найден");
+            
             var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
             if (!currentUser.Admin && moderator == null)
                 return BadRequest("У вас нет прав на удаление товара");
