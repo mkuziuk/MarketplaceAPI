@@ -33,12 +33,7 @@ namespace MarketplaceApi.Controllers
         public IActionResult GetOrdersPerUser(int userId)
         {
             var order = _context.Order.AsNoTracking().Where(o => o.UserId == userId);
-            
-            if (order == null)
-            {
-                return BadRequest($"Пользователь {userId} не существует");
-            }
-            
+
             return Ok(order);
         }
 
@@ -47,24 +42,20 @@ namespace MarketplaceApi.Controllers
         {
             var user = _context.User.FirstOrDefault(u => u.Id == userId);
 
-            if (user != null)
-            {
-                var order = new Order()
-                {
-                    OrderDate = OrderService.DefaultOrderDate(),
-                    ReceiveDate = OrderService.DefaultReceiveDate(),
-                    OrderStatus = OrderService.DefaultOrderStatus,
-                    UserId = userId
-                };
-                
-                _context.Order.Add(order); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else 
-            { 
+            if (user == null)
                 return BadRequest($"Пользователь {userId} не существует");
-            }
+
+            var order = new Order()
+            {
+                OrderDate = OrderService.DefaultOrderDate(),
+                ReceiveDate = OrderService.DefaultReceiveDate(),
+                OrderStatus = OrderService.DefaultOrderStatus,
+                UserId = userId
+            };
+                
+            _context.Order.Add(order); 
+            _context.SaveChanges(); 
+            return Ok();
         }
 
         [HttpDelete]
@@ -72,16 +63,12 @@ namespace MarketplaceApi.Controllers
         {
             var order = _context.Order.FirstOrDefault(o => o.Id == id);
             
-            if (order != null) 
-            { 
-                _context.Remove(order); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
+            if (order == null) 
                 return BadRequest($"Заказ {id} не найден");            
-            }
+
+            _context.Remove(order); 
+            _context.SaveChanges(); 
+            return Ok();
         }
     }
 }

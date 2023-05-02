@@ -21,23 +21,20 @@ namespace MarketplaceApi.Controllers
         public IActionResult Get(int id)
         {
             var user = _context.User.AsNoTracking().FirstOrDefault(o => o.Id == id);
-
-            if (user != null)
-            {
-                return Ok(user);
-            }
-            else
-            {
+            if (user == null)
                 return BadRequest($"Пользователь {id} не существует");
-            }
+            
+            return Ok(user);
         }
 
         [HttpPatch]
-        public IActionResult Patch(int currentUserId, int id, string phone, string email, bool seller)
+        public IActionResult Patch(int userId, int id, string phone, string email, bool seller)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Admin == true);
-
-            if (currentUser == null || currentUserId != id) 
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
+            
+            if (!currentUser.Admin || currentUser.Id == id) 
                 return BadRequest("У вас нет прав на данную операцию");
 
             var user = _context.User.FirstOrDefault(u => u.Id == id);
@@ -56,15 +53,16 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpPatch("toadmin")]
-        public IActionResult PatchToAdmin(int currentUserId, int id)
+        public IActionResult PatchToAdmin(int userId, int id)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Admin == true);
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
             
-            if (currentUser == null) 
+            if (!currentUser.Admin) 
                 return BadRequest("У вас нет прав на данную операцию");
             
             var user = _context.User.FirstOrDefault(u => u.Id == id);
-
             if (user == null) 
                 return BadRequest($"Пользователь {id} не существует");
 
@@ -78,15 +76,15 @@ namespace MarketplaceApi.Controllers
         
         [HttpPost]
         public IActionResult Post(string phone, string email, string firstName, string secondName, 
-            string deliveryAdress)
+            string deliveryAddress)
         {
-            User user = new User()
+            var user = new User()
             {
                 Phone = phone,
                 Email = email,
                 FirstName = firstName,
                 SecondName = secondName,
-                DeliveryAdress = deliveryAdress,
+                DeliveryAddress = deliveryAddress,
                 RegistrationDate = DateTime.Now,
                 Admin = false,
                 Seller = false
@@ -101,9 +99,14 @@ namespace MarketplaceApi.Controllers
         public IActionResult Delete(int id)
         {
             var user = _context.User.FirstOrDefault(o => o.Id == id);
-
             if (user == null) 
                 return BadRequest($"Пользователь {id} не найден");
+
+            var ifAdmin = _context.User.Any(u => u.Admin);
+            var ifYourself = _context.User.Any(u => u.Id == id);
+
+            if (!ifAdmin || !ifYourself)
+                return BadRequest("У вас нет прав на эту операцию");
                 
             _context.Remove(user); 
             _context.SaveChanges(); 

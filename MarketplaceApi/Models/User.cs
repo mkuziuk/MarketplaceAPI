@@ -15,7 +15,7 @@ namespace MarketplaceApi.Models
         public string FirstName { get; set; }
         public string SecondName { get; set; }
         public DateTime RegistrationDate { get; set; }
-        public string DeliveryAdress { get; set; }
+        public string DeliveryAddress { get; set; }
         public bool Seller { get; set; }
         public bool Admin { get; set; }
         
