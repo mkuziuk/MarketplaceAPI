@@ -110,7 +110,7 @@ namespace MarketplaceApi.Controllers
             }
             else
             {
-                return BadRequest($"Пользователь {user.Id} не найден");
+                return BadRequest($"Пользователь {id} не найден");
             }
         }
     }

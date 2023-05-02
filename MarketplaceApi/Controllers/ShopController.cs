@@ -90,23 +90,19 @@ namespace MarketplaceApi.Controllers
             if (currentShop == null)
                 return BadRequest($"Магазин {shopId} не существует");
 
-            var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(s => s.Id == currentShop.Id);
+            var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(so => so.Id == currentShop.Id);
             if (shopOwningUser == null)
                 return BadRequest("У вас не прав на добавление модераторов");
             
             var newModerator = _context.User.FirstOrDefault(u => u.Id == newModeratorId);
             if (newModerator == null)
                 return BadRequest($"Пользователь {newModeratorId} не существует");
-            
-            var existingModerators = _context.User.Where(u => u
-                                                              == currentShop.ModeratorUsers);
-            for (var i = 0; i < existingModerators.Count(); i++)
-            {
-                var existingModeratorId = existingModerators.ElementAt(i).Id;
-                if (newModeratorId == existingModeratorId)
-                    return BadRequest($"Модератор {existingModeratorId} уже существует");
-            }
 
+            var existingModerators = currentShop.ModeratorUsers.Any(mu => mu.Id == newModeratorId);
+            Console.WriteLine(existingModerators);
+            if (existingModerators)
+                return BadRequest($"Модератор {newModeratorId} уже добавлен к магазину");
+                
             currentShop.ModeratorUsers = new List<User>() { newModerator };
 
             _context.Shop.Update(currentShop);
