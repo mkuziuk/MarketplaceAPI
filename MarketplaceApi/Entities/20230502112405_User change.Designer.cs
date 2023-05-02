@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230502112405_User change")]
+    partial class Userchange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,21 +157,6 @@ namespace MarketplaceApi.Entities
                     b.ToTable("Shop");
                 });
 
-            modelBuilder.Entity("MarketplaceApi.Models.ShopModerator", b =>
-                {
-                    b.Property<int>("ModeratorId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ModeratorId", "ShopId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ShopModerator");
-                });
-
             modelBuilder.Entity("MarketplaceApi.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -204,6 +191,21 @@ namespace MarketplaceApi.Entities
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("ShopUser", b =>
+                {
+                    b.Property<int>("ModeratorUsersId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopsWhereModeratorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ModeratorUsersId", "ShopsWhereModeratorId");
+
+                    b.HasIndex("ShopsWhereModeratorId");
+
+                    b.ToTable("ShopUser");
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.Bill", b =>
@@ -277,23 +279,19 @@ namespace MarketplaceApi.Entities
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("MarketplaceApi.Models.ShopModerator", b =>
+            modelBuilder.Entity("ShopUser", b =>
                 {
-                    b.HasOne("MarketplaceApi.Models.User", "Moderator")
-                        .WithMany("ShopModerators")
-                        .HasForeignKey("ModeratorId")
+                    b.HasOne("MarketplaceApi.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("ModeratorUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MarketplaceApi.Models.Shop", "Shop")
-                        .WithMany("ShopModerators")
-                        .HasForeignKey("ShopId")
+                    b.HasOne("MarketplaceApi.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopsWhereModeratorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Moderator");
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.Order", b =>
@@ -309,8 +307,6 @@ namespace MarketplaceApi.Entities
             modelBuilder.Entity("MarketplaceApi.Models.Shop", b =>
                 {
                     b.Navigation("Products");
-
-                    b.Navigation("ShopModerators");
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.User", b =>
@@ -320,8 +316,6 @@ namespace MarketplaceApi.Entities
                     b.Navigation("Orders");
 
                     b.Navigation("Product");
-
-                    b.Navigation("ShopModerators");
 
                     b.Navigation("ShopsOwned");
                 });

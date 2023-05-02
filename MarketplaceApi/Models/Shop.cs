@@ -16,7 +16,8 @@ namespace MarketplaceApi.Models
         public int OwnerId { get; set; }
         public User Owner { get; set; } = null!;
         
-        public ICollection<User> ModeratorUsers { get; set; } = new List<User>();
         public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<User> Moderators { get; set; } = new List<User>();
+        public ICollection<ShopModerator> ShopModerators { get; } = new List<ShopModerator>();
     }
 }

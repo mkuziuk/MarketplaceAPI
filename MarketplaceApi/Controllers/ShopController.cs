@@ -42,7 +42,7 @@ namespace MarketplaceApi.Controllers
         {
             var shop = _context.Shop.AsNoTracking().FirstOrDefault(s => s.Id == id);
             var admittedUser = _context.User.AsNoTracking().FirstOrDefault(u => u.Admin
-                || u == shop.ModeratorUsers);
+                || u == shop.Moderators);
             
             if (admittedUser == null)
                 return BadRequest("У вас нет прав на данную операцию");
@@ -50,7 +50,7 @@ namespace MarketplaceApi.Controllers
             if (shop == null) 
                 return BadRequest($"Магазин {id} не существует");
 
-            return Ok(shop.ModeratorUsers);
+            return Ok(shop.Moderators);
         }
 
         [HttpPost("createshop")]
@@ -65,7 +65,7 @@ namespace MarketplaceApi.Controllers
             {
                 Name = shopname,
                 CreationDate = DateTime.Now,
-                ModeratorUsers = new List<User>() {currentUser},
+                Moderators = new List<User>() {currentUser},
                 OwnerId = userId
             };
             
@@ -92,7 +92,7 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Магазин {shopId} не существует");
 
             var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(so => so.Id == currentShop.Id);
-            if (shopOwningUser == null)
+            if (!currentUser.Admin && shopOwningUser == null)
                 return BadRequest("У вас нет прав на добавление модераторов");
             
             var newModerator = _context.User.FirstOrDefault(u => u.Id == newModeratorId);
@@ -101,12 +101,12 @@ namespace MarketplaceApi.Controllers
 
             //var existingModerators = currentShop.ModeratorUsers.Any(mu => mu.Id == newModeratorId);
             var existingModerators = _context.Shop.Any(s=> 
-                s.ModeratorUsers.Any(mu=> mu.Id == newModeratorId));
+                s.Moderators.Any(mu=> mu.Id == newModeratorId));
             Console.WriteLine(existingModerators);
             if (existingModerators)
                 return BadRequest($"Модератор {newModeratorId} уже добавлен к магазину");
                 
-            currentShop.ModeratorUsers = new List<User>() { newModerator };
+            currentShop.Moderators = new List<User>() { newModerator };
 
             _context.Shop.Update(currentShop);
             _context.SaveChanges();
@@ -126,24 +126,27 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Магазин {shopId} не существует");
             
             var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(so => so.Id == currentShop.Id);
-            if (shopOwningUser == null)
+            if (!currentUser.Admin && shopOwningUser == null)
                 return BadRequest("У вас нет прав на удаление модераторов");
             
-            var existingModerators = _context.Shop.Any(s=> 
-                s.ModeratorUsers.Any(mu=> mu.Id == moderatorId));
-            if (!existingModerators)
+            var existingModerator = _context.Shop.FirstOrDefault(s=> 
+                s.Moderators.Any(mu=> mu.Id == moderatorId));
+            if (existingModerator == null)
                 return BadRequest($"Модератор {moderatorId} не находится в магазине");
 
             var ifModeratorAdmin = _context.User.Any(u =>
                 u.ShopsOwned.Any(so => so.OwnerId == moderatorId));
             if (ifModeratorAdmin)
                 return BadRequest("Вы не можете удалить сами себя из модераторов");
-            
+            /*
             var moderator = _context.User.FirstOrDefault(u =>
                 u.ShopsWhereModerator.Any(sm => sm.Id == shopId 
                                                 && sm.ModeratorUsers.Any(mu=> mu.Id != userId)));
+            */
+            var toDeleteModerator = _context.ShopModerator.FirstOrDefault(sm =>
+                sm.ModeratorId == moderatorId && sm.ShopId == shopId);
             
-            _context.Remove(moderator);
+            _context.Remove(toDeleteModerator);
             _context.SaveChanges();
             
             return Ok();

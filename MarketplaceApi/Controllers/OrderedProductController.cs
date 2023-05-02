@@ -28,11 +28,18 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPatch("patchquantity")]
-        public IActionResult PatchQuantity(int orderId, int productId, int newQuantity)
+        public IActionResult PatchQuantity(int userId, int orderId, int productId, int newQuantity)
         {
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
+            
+            var currentOrder = currentUser.Orders.Any(o => o.Id == orderId);
+            if (!currentUser.Admin && !currentOrder)
+                return BadRequest("У вас нет прав на редактироване данного заказа");
+            
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
-            
             if (orderedProduct == null)
             {
                 return BadRequest($"Продукта {productId} из заказа {orderId} не существует");
@@ -55,22 +62,35 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post(int orderId, int productId, int quantity)
+        public IActionResult Post(int userId, int orderId, int productId, int quantity)
         {
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
+
+            var currentOrder = currentUser.Orders.Any(o => o.Id == orderId);
+            if (!currentUser.Admin && !currentOrder)
+                return BadRequest("У вас нет прав на редактироване данного заказа");
+            
+            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
+            if (product == null)
+                return BadRequest($"Товар {productId} не существует");
+            
+            var order = _context.Order.FirstOrDefault(o => o.Id == orderId);
+            if (order == null)
+                return BadRequest($"Заказ {orderId} не существует");
+            
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId 
                                                                              && o.ProductId == productId);
-            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
-            var order = _context.Order.FirstOrDefault(o => o.Id == orderId);
-            
-            if (orderedProduct == null && product != null && order != null)
+            if (orderedProduct == null)
             {
                 order.Products = new List<Product>() { product };
 
                 _context.Order.Update(order);
                 _context.SaveChanges();
                 
-                var newOrderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId 
-                    && o.ProductId == productId);
+                var newOrderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
+                    o.OrderId == orderId && o.ProductId == productId);
 
                 newOrderedProduct.Quantity = quantity;
                 _context.OrderedProduct.Update(newOrderedProduct);
@@ -91,12 +111,19 @@ namespace MarketplaceApi.Controllers
             
 
         
-        [HttpDelete]
-        public IActionResult Delete(int orderId, int productId)
+        [HttpDelete("productfromorder")]
+        public IActionResult Delete(int userId, int orderId, int productId)
         {
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
+
+            var currentOrder = currentUser.Orders.Any(o => o.Id == orderId);
+            if (!currentUser.Admin && !currentOrder)
+                return BadRequest("У вас нет прав на редактироване данного заказа");
+            
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
                 o.OrderId == orderId && o.ProductId == productId);
-            
             if (orderedProduct == null) 
                 return BadRequest($"Продукт {productId} в заказе {orderId} не найден");            
 

@@ -42,8 +42,10 @@ namespace MarketplaceApi.Controllers
             if (user == null) 
                 return BadRequest($"Пользователь {id} не существует");
 
-            user.Phone = phone;
-            user.Email = email;
+            if (phone != null)
+                user.Phone = phone;
+            if (email != null)
+                user.Email = email;
             user.Seller = seller;
 
             _context.User.Update(user);
