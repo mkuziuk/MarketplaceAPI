@@ -97,17 +97,12 @@ namespace MarketplaceApi.Controllers
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
                 o.OrderId == orderId && o.ProductId == productId);
             
-            if (orderedProduct != null) 
-            { 
-                _context.Remove(orderedProduct); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
+            if (orderedProduct == null) 
                 return BadRequest($"Продукт {productId} в заказе {orderId} не найден");            
-            }
+
+            _context.Remove(orderedProduct); 
+            _context.SaveChanges(); 
+            return Ok();
         }
-        
     }
 }

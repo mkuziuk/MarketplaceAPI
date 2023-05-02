@@ -102,16 +102,12 @@ namespace MarketplaceApi.Controllers
         {
             var user = _context.User.FirstOrDefault(o => o.Id == id);
 
-            if (user != null) 
-            { 
-                _context.Remove(user); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
+            if (user == null) 
                 return BadRequest($"Пользователь {id} не найден");
-            }
+                
+            _context.Remove(user); 
+            _context.SaveChanges(); 
+            return Ok();
         }
     }
 }
