@@ -41,7 +41,6 @@ namespace MarketplaceApi.Controllers
         public IActionResult Post(int userId)
         {
             var user = _context.User.FirstOrDefault(u => u.Id == userId);
-
             if (user == null)
                 return BadRequest($"Пользователь {userId} не существует");
 

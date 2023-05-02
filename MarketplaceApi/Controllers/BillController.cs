@@ -21,15 +21,10 @@ namespace MarketplaceApi.Controllers
         public IActionResult Get(int id)
         {
             var bill = _context.Bill.AsNoTracking().FirstOrDefault(o => o.Id == id);
-
-            if (bill != null)
-            {
-                return Ok(bill);
-            }
-            else
-            {
+            if (bill == null)
                 return BadRequest($"Чек {id} не существует");
-            }
+
+            return Ok(bill);
         }
 
         [HttpPost]
@@ -45,16 +40,12 @@ namespace MarketplaceApi.Controllers
         {
             var bill = _context.Bill.FirstOrDefault(o => o.Id == id);
             
-            if (bill != null) 
-            { 
-                _context.Remove(bill); 
-                _context.SaveChanges(); 
-                return Ok();
-            }
-            else
-            {
-                return BadRequest($"Чек {bill.Id} не найден");
-            }
+            if (bill == null) 
+                return BadRequest($"Чек {id} не найден");
+
+            _context.Remove(bill); 
+            _context.SaveChanges(); 
+            return Ok();
         }
     }
 }
