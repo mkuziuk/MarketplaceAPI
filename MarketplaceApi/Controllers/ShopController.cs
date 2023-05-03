@@ -102,7 +102,6 @@ namespace MarketplaceApi.Controllers
             //var existingModerators = currentShop.ModeratorUsers.Any(mu => mu.Id == newModeratorId);
             var existingModerators = _context.Shop.Any(s=> 
                 s.Moderators.Any(mu=> mu.Id == newModeratorId));
-            Console.WriteLine(existingModerators);
             if (existingModerators)
                 return BadRequest($"Модератор {newModeratorId} уже добавлен к магазину");
                 
@@ -129,20 +128,22 @@ namespace MarketplaceApi.Controllers
             if (!currentUser.Admin && shopOwningUser == null)
                 return BadRequest("У вас нет прав на удаление модераторов");
             
-            var existingModerator = _context.Shop.FirstOrDefault(s=> 
-                s.Moderators.Any(mu=> mu.Id == moderatorId));
+            //var areExistingModerator = _context.Shop.FirstOrDefault(s=> 
+                //s.Moderators.Any(mu=> mu.Id == moderatorId));
+            var existingModerator = currentShop.ShopModerators.FirstOrDefault(m => 
+                m.ModeratorId == moderatorId);
             if (existingModerator == null)
                 return BadRequest($"Модератор {moderatorId} не находится в магазине");
 
-            var ifModeratorAdmin = _context.User.Any(u =>
+            var isModeratorAdmin = _context.User.FirstOrDefault(u =>
                 u.ShopsOwned.Any(so => so.OwnerId == moderatorId));
-            if (ifModeratorAdmin)
+            if (isModeratorAdmin == null)
                 return BadRequest("Вы не можете удалить сами себя из модераторов");
             
-            var toDeleteModerator = _context.ShopModerator.FirstOrDefault(sm =>
-                sm.ModeratorId == moderatorId && sm.ShopId == shopId);
-            
-            _context.Remove(toDeleteModerator);
+            //var toDeleteModerator = _context.ShopModerator.FirstOrDefault(sm =>
+                //sm.ModeratorId == moderatorId && sm.ShopId == shopId);
+
+            _context.Remove(existingModerator);
             _context.SaveChanges();
             
             return Ok();

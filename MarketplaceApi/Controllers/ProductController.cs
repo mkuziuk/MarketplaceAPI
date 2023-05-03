@@ -18,18 +18,13 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get(int id)
+        public IActionResult Get(int productId)
         {
-            var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == id);
-
-            if (product != null)
-            {
-                return Ok(product);
-            }
-            else
-            {
-                return BadRequest($"Товар {id} не существует");
-            }
+            var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == productId);
+            if (product == null)
+                return BadRequest($"Товар {productId} не существует");
+            
+            return Ok(product);
         }
 
         [HttpGet("search")]
@@ -55,7 +50,7 @@ namespace MarketplaceApi.Controllers
         
         [HttpPost]
         public IActionResult Post(int userId, int shopId, string name, string material, int length, int width, 
-            int height, int price, int quantity)
+            int height, int price, int quantity, bool isPublic)
         {
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null)
@@ -65,9 +60,9 @@ namespace MarketplaceApi.Controllers
             if (shop == null)
                 return BadRequest($"Магазин {shopId} не существует");
 
-            var ifModerator = _context.Shop.FirstOrDefault(s => s.Moderators
+            var areModeratorsShop = _context.Shop.FirstOrDefault(s => s.Moderators
                 .FirstOrDefault(m => m.Id == userId) == currentUser);
-            if (!currentUser.Admin && ifModerator == null)
+            if (!currentUser.Admin && areModeratorsShop == null)
                 return BadRequest("У вас нет прав на добавление товаров в это магазин");
             
             var product = new Product()
@@ -80,22 +75,77 @@ namespace MarketplaceApi.Controllers
                 Height = height,
                 Price = price,
                 Quantity = quantity,
-                PublicationDate = DateTime.Now,
-                ShopId = shopId
+                CreationDate = DateTime.Now,
+                ShopId = shopId,
+                IsPublic = isPublic
             };
-            
+
+            if (isPublic) product.PublicationDate = DateTime.Now;
+
             _context.Add(product);
             _context.SaveChanges(); 
             return Ok();
+        }
+
+        [HttpPatch("changecharacteristics")]
+        public IActionResult PatchProduct(int userId, int productId, int? price, int? quantity, bool isPublic)
+        {
+            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
+            if (product == null) 
+                return BadRequest($"Продукт {productId} не найден");
             
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null) 
+                return BadRequest($"Пользователь {userId} не найден");
+            
+            var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
+            if (!currentUser.Admin && moderator == null)
+                return BadRequest("У вас нет прав на редактирование товара");
+
+            if (price != null) product.Price = price.Value;
+            if (quantity != null) product.Quantity = quantity.Value;
+            if (product.IsPublic != isPublic) product.IsPublic = isPublic;
+
+            _context.Update(product);
+            _context.SaveChanges();
+            
+            return Ok();
+        }
+
+        [HttpPatch("changepublic")]
+        public IActionResult PatchPublic(int userId, int productId, bool isPublic)
+        {
+            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
+            if (product == null) 
+                return BadRequest($"Продукт {productId} не найден");
+            
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null) 
+                return BadRequest($"Пользователь {userId} не найден");
+            
+            var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
+            if (!currentUser.Admin && moderator == null)
+                return BadRequest("У вас нет прав на редактирование товара");
+
+            if (product.IsPublic == isPublic)
+                return BadRequest("Товар уже находится в этом статусе");
+            
+            product.IsPublic = isPublic;
+            if (isPublic) product.PublicationDate = DateTime.Now;
+            else product.PublicationDate = null;
+
+            _context.Update(product);
+            _context.SaveChanges();
+            
+            return Ok();
         }
 
         [HttpDelete]
-        public IActionResult Delete(int userId, int id)
+        public IActionResult Delete(int userId, int productId)
         {
-            var product = _context.Product.FirstOrDefault(o => o.Id == id);
+            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
             if (product == null) 
-                return BadRequest($"Продукт {id} не найден");
+                return BadRequest($"Продукт {productId} не найден");
             
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null) 

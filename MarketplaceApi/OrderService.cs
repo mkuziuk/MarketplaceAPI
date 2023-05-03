@@ -6,18 +6,32 @@ namespace MarketplaceApi
     {
         public static readonly string DefaultOrderStatus = "Basket";
         
-        public static DateTime DefaultOrderDate()
+        public static DateTime? DefaultOrderDate()
         {
-            var defaultOrderDate = DateTime.Now;
+            //var defaultOrderDate = DateTime.Now;
 
-            return defaultOrderDate;
+            return null;
         }
         
-        public static DateTime DefaultReceiveDate()
+        public static DateTime? DefaultReceiveDate()
         {
-            var defaultReceiveDate = DefaultOrderDate().AddDays(3);
+            // var defaultReceiveDate = DefaultOrderDate().AddDays(3);
 
-            return defaultReceiveDate;
+            return null;
+        }
+
+        public static DateTime OrderedOrderDate()
+        {
+            var orderedOrderDate = DateTime.Now;
+
+            return orderedOrderDate;
+        }
+
+        public static DateTime OrderedReceiveDate()
+        {
+            var orderedReceiveDate = OrderedOrderDate().AddDays(3);
+
+            return orderedReceiveDate;
         }
     }
 }
