@@ -49,38 +49,37 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post(int userId, int shopId, string name, string material, int length, int width, 
-            int height, int price, int quantity, bool isPublic)
+        public IActionResult Post(ProductEntity productEntity)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == productEntity.UserId);
             if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
+                return BadRequest($"Пользователь {productEntity.UserId} не существует");
 
-            var shop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
+            var shop = _context.Shop.FirstOrDefault(s => s.Id == productEntity.ShopId);
             if (shop == null)
-                return BadRequest($"Магазин {shopId} не существует");
+                return BadRequest($"Магазин {productEntity.ShopId} не существует");
 
             var areModeratorsShop = _context.Shop.FirstOrDefault(s => s.Moderators
-                .FirstOrDefault(m => m.Id == userId) == currentUser);
+                .FirstOrDefault(m => m.Id == productEntity.UserId) == currentUser);
             if (!currentUser.Admin && areModeratorsShop == null)
                 return BadRequest("У вас нет прав на добавление товаров в это магазин");
             
             var product = new Product()
             {
-                UserId = userId,
-                Name = name,
-                Material = material,
-                Length = length,
-                Width = width,
-                Height = height,
-                Price = price,
-                Quantity = quantity,
+                UserId = productEntity.UserId,
+                Name = productEntity.Name,
+                Material = productEntity.Material,
+                Length = productEntity.Length,
+                Width = productEntity.Width,
+                Height = productEntity.Height,
+                Price = productEntity.Price,
+                Quantity = productEntity.Quantity,
                 CreationDate = DateTime.Now,
-                ShopId = shopId,
-                IsPublic = isPublic
+                ShopId = productEntity.ShopId,
+                IsPublic = productEntity.IsPublic
             };
 
-            if (isPublic) product.PublicationDate = DateTime.Now;
+            if (productEntity.IsPublic) product.PublicationDate = DateTime.Now;
 
             _context.Add(product);
             _context.SaveChanges(); 

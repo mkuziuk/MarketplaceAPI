@@ -27,7 +27,7 @@ namespace MarketplaceApi.Controllers
             return Ok(user);
         }
 
-        [HttpPatch]
+        [HttpPatch("adduser")]
         public IActionResult Patch(int userId, int id, string phone, string email, bool seller)
         {
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
