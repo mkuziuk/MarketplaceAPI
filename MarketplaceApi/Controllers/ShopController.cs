@@ -113,11 +113,8 @@ namespace MarketplaceApi.Controllers
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
 
-            //var moderator = new User() { Id = moderatorId };
-            //var shop = new Shop() { Id = shopId };
-
-            var currentShop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
-            if (currentShop == null)
+            var shop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
+            if (shop == null)
                 return BadRequest($"Магазин {shopId} не существует");
             
             var moderator = _context.User.FirstOrDefault(u => u.Id == moderatorId);
@@ -133,19 +130,19 @@ namespace MarketplaceApi.Controllers
             if (ifIsModeratorOwner)
                 return BadRequest("Вы не можете удалить сами себя из модераторов");
 
-            var ifIsModeratorInShop = _context.Shop
+            var shopModerator = _context.Shop
                 .Include(s => s.Moderators)
                 .ThenInclude(m => m.ShopsOwned)
                 .FirstOrDefault(s => s.Id == shopId && s.Moderators
                     .Any(m => m.Id == moderatorId));
-            if (ifIsModeratorInShop == null)
+            if (shopModerator == null)
                 return BadRequest($"В магазине {shopId} нет модератора {moderatorId}");
 
-            moderator.ShopsWhereModerator.Add(currentShop);
+            moderator.ShopsWhereModerator.Add(shop);
             _context.User.Attach(moderator);
 
-            moderator.ShopsWhereModerator.Remove(currentShop);
-            ifIsModeratorInShop.Moderators.Remove(moderator);
+            //moderator.ShopsWhereModerator.Remove(currentShop);
+            shopModerator.Moderators.Remove(moderator);
             _context.SaveChanges();
             
             return Ok();

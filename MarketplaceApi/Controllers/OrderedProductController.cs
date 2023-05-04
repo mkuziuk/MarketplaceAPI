@@ -120,21 +120,32 @@ namespace MarketplaceApi.Controllers
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
 
-            var order = new Order() { Id = orderId };
-            var product = new Product() { Id = productId };
-            
-            var ifOrderExists = _context.Order.Any(o => o.Id == orderId);
-            if (!ifOrderExists)
+            var order = _context.Order.FirstOrDefault(o => o.Id == orderId);
+            if (order == null)
                 return BadRequest($"Заказ {orderId} не существует");
+
+            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
+            if (product == null)
+                return BadRequest($"Продукт {productId} не существует");
 
             var ifIsOwner = _context.Order.Any(o => o.UserId == userId);
             if (!ifIsOwner && !currentUser.Admin)
                 return BadRequest($"У вас не прав на редактирование заказа {orderId}");
-            
-            order.Products.Add(product);
-            _context.Attach(order);
 
-            order.Products.Remove(product);
+            var orderProduct = _context.Order
+                .Include(o => o.Products)
+                .ThenInclude(p => p.Orders)
+                .FirstOrDefault(o => o.Id == orderId && o.Products
+                    .Any(p => p.Id == productId));
+            if (orderProduct == null)
+                return BadRequest($"Продукта {productId} нет в заказе {orderId}");
+            
+            //order.Products.Add(product);
+            //_context.Order.Attach(order);
+            product.Orders.Add(order);
+            _context.Product.Attach(product);
+
+            orderProduct.Products.Remove(product);
             _context.SaveChanges(); 
             return Ok();
         }
