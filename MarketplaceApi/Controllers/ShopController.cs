@@ -4,7 +4,6 @@ using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.TypeHandlers;
 
 namespace MarketplaceApi.Controllers
 {
@@ -113,34 +112,32 @@ namespace MarketplaceApi.Controllers
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
-            
-            var currentShop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
-            if (currentShop == null)
+
+            var moderator = new User() { Id = moderatorId };
+            var shop = new Shop() { Id = shopId };
+
+            var ifShopExists = _context.Shop.Any(s => s.Id == shopId);
+            if (!ifShopExists)
                 return BadRequest($"Магазин {shopId} не существует");
             
-            var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(so => so.Id == currentShop.Id);
-            if (!currentUser.Admin && shopOwningUser == null)
+            var ifIsOwner = _context.Shop.Any(s => s.OwnerId == userId);
+            if (!ifIsOwner && !moderator.Admin)
                 return BadRequest("У вас нет прав на удаление модераторов");
             
-            //var areExistingModerator = _context.Shop.FirstOrDefault(s=> 
-                //s.Moderators.Any(mu=> mu.Id == moderatorId));
-            //var existingModerator = currentShop.ShopModerators.FirstOrDefault(m => 
-                //m.ModeratorId == moderatorId);
-                
-            var existingModeratorInShop = currentShop.ShopModerators
-                .FirstOrDefault(sm => sm.ModeratorId == moderatorId);
-            if (existingModeratorInShop == null)
-                return BadRequest($"Модератор {moderatorId} не находится в магазине");
-
+            var ifModeratorExists = _context.User.Any(u => u.Id == moderatorId);
+            if (!ifModeratorExists)
+                return BadRequest($"Пользователь {moderatorId} не существует");
+            
             var isModeratorOwner = _context.User.Any(u =>
                 u.ShopsOwned.Any(so => so.OwnerId == moderatorId));
             if (isModeratorOwner)
                 return BadRequest("Вы не можете удалить сами себя из модераторов");
-            
-            //var toDeleteModerator = _context.ShopModerator.FirstOrDefault(sm =>
-                //sm.ModeratorId == moderatorId && sm.ShopId == shopId);
 
-            _context.Remove(existingModeratorInShop);
+            moderator.ShopsWhereModerator.Add(shop);
+            _context.User.Attach(moderator);
+
+            moderator.ShopsWhereModerator.Remove(shop);
+            
             _context.SaveChanges();
             
             return Ok();

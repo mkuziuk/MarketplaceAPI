@@ -49,7 +49,7 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPost]
-        public IActionResult Post(ProductEntity productEntity)
+        public IActionResult Post([FromBody] ProductEntity productEntity)
         {
             var currentUser = _context.User.FirstOrDefault(u => u.Id == productEntity.UserId);
             if (currentUser == null)
