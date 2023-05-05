@@ -140,8 +140,7 @@ namespace MarketplaceApi.Controllers
 
             moderator.ShopsWhereModerator.Add(shop);
             _context.User.Attach(moderator);
-
-            //moderator.ShopsWhereModerator.Remove(currentShop);
+            
             shopModerator.Moderators.Remove(moderator);
             _context.SaveChanges();
             

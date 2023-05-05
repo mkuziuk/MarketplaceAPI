@@ -73,7 +73,7 @@ namespace MarketplaceApi.Controllers
                 Width = productEntity.Width,
                 Height = productEntity.Height,
                 Price = productEntity.Price,
-                Quantity = productEntity.Quantity,
+                InStockQuantity = productEntity.Quantity,
                 CreationDate = DateTime.Now,
                 ShopId = productEntity.ShopId,
                 IsPublic = productEntity.IsPublic
@@ -102,7 +102,7 @@ namespace MarketplaceApi.Controllers
                 return BadRequest("У вас нет прав на редактирование товара");
 
             if (price != null) product.Price = price.Value;
-            if (quantity != null) product.Quantity = quantity.Value;
+            if (quantity != null) product.InStockQuantity = quantity.Value;
             if (product.IsPublic != isPublic) product.IsPublic = isPublic;
 
             _context.Update(product);

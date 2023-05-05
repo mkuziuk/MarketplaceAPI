@@ -18,7 +18,7 @@ namespace MarketplaceApi.Models
         public int Width { get; set; }
         public int Height { get; set; }
         public int Price { get; set; }
-        public int Quantity { get; set; }
+        public int InStockQuantity { get; set; }
         public DateTime CreationDate { get; set; }
         public bool IsPublic { get; set; }
         public DateTime? PublicationDate { get; set; }

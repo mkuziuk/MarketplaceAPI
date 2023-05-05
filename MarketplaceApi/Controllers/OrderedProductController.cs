@@ -19,11 +19,13 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet("{orderId}")]
-        public IActionResult Get([FromRoute] int orderId)
+        [HttpGet]
+        public IActionResult Get(int orderId)
         {
-            var orderedProduct = _context.OrderedProduct.AsNoTracking().Where(o => o.OrderId == orderId);
-
+            var orderedProduct = _context.Product
+                .Where(p => p.Orders
+                    .Any(o => o.Id == orderId));
+            
             return Ok(orderedProduct);
         }
         
@@ -33,16 +35,21 @@ namespace MarketplaceApi.Controllers
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
-            
-            var areUserOrders = currentUser.Orders.Any(o => o.UserId == userId);
+
+            var areUserOrders = _context.Order
+                .Any(o => o.UserId == userId);
             if (!currentUser.Admin && !areUserOrders)
                 return BadRequest("У вас нет прав на редактироване данного заказа");
+            
+            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
+            if (product == null)
+                return BadRequest($"Товар {productId} не существует");
             
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
             if (orderedProduct == null)
             {
-                return BadRequest($"Продукта {productId} из заказа {orderId} не существует");
+                return BadRequest($"Продукта {productId} в заказе {orderId} не существует");
             }
 
             if (newQuantity <= 0)
@@ -52,16 +59,21 @@ namespace MarketplaceApi.Controllers
                 
                 return Ok($"Продукт {productId} был удалён из заказа {orderId}");
             }
-            
-            orderedProduct.Quantity = newQuantity;
+
+            if (newQuantity <= product.InStockQuantity)
+            {
+                orderedProduct.Quantity = newQuantity;
                 
-            _context.OrderedProduct.Update(orderedProduct); 
-            _context.SaveChanges();
+                _context.OrderedProduct.Update(orderedProduct); 
+                _context.SaveChanges();
             
-            return Ok();
+                return Ok();
+            }
+            
+            return BadRequest($"В наличие {product.InStockQuantity} товаров"); 
         }
         
-        [HttpPost]
+        [HttpPost("addproducttoorder")]
         public IActionResult Post(int userId, int orderId, int productId, int quantity)
         {
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
@@ -79,11 +91,11 @@ namespace MarketplaceApi.Controllers
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
             if (product == null)
                 return BadRequest($"Товар {productId} не существует");
+            if (!product.IsPublic)
+                return BadRequest($"Товар {productId} не опубликован");
 
-            var orderedProduct = order.OrderedProducts.FirstOrDefault(op =>
-                op.ProductId == productId);
-            //var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
-                //o.OrderId == orderId && o.ProductId == productId);
+            var orderedProduct = _context.OrderedProduct
+                .FirstOrDefault(op => op.ProductId == productId && op.OrderId == orderId);
             if (orderedProduct == null)
             {
                 order.Products = new List<Product>() { product };
@@ -101,8 +113,8 @@ namespace MarketplaceApi.Controllers
                 return Ok();
             }
             
-            if (product.Quantity < orderedProduct.Quantity + quantity) 
-                return BadRequest($"В наличие {product.Quantity} товаров");
+            if (product.InStockQuantity < orderedProduct.Quantity + quantity) 
+                return BadRequest($"В наличие {product.InStockQuantity} товаров");
 
             orderedProduct.Quantity += quantity;
             _context.OrderedProduct.Update(orderedProduct);
@@ -110,7 +122,6 @@ namespace MarketplaceApi.Controllers
             
             return Ok();
         }
-            
 
         
         [HttpDelete("productfromorder")]
@@ -138,10 +149,8 @@ namespace MarketplaceApi.Controllers
                 .FirstOrDefault(o => o.Id == orderId && o.Products
                     .Any(p => p.Id == productId));
             if (orderProduct == null)
-                return BadRequest($"Продукта {productId} нет в заказе {orderId}");
+                return BadRequest($"Товара {productId} нет в заказе {orderId}");
             
-            //order.Products.Add(product);
-            //_context.Order.Attach(order);
             product.Orders.Add(order);
             _context.Product.Attach(product);
 
