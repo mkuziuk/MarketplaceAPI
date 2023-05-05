@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace MarketplaceApi.Controllers
             _context = context;
         }
         
-        [HttpGet]
+        [HttpGet("getproduct")]
         public IActionResult Get(int productId)
         {
             var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == productId);
@@ -27,13 +28,80 @@ namespace MarketplaceApi.Controllers
             return Ok(product);
         }
 
+        [HttpGet("getsimilarproducts")]
+        public IActionResult GetSimilar(int productId)
+        {
+            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
+            if (product == null)
+                return BadRequest($"Товар {productId} не существует");
+
+            double priceFluctuation = 0.1;
+            double sizeFluctuation = 0.1;
+            double volumeFluctuation = 0.1;
+            var similarProducts = _context.Product
+                .Where(p => 
+                            p.Id != product.Id &&
+                            (
+                                p.IsPublic && 
+                                (
+                                    p.Name == product.Name ||
+                                    p.Material == product.Material ||
+                                    p.Type == product.Type ||
+                                    p.UseCase == product.UseCase ||
+                                    p.WhereCanBeUsed == product.WhereCanBeUsed ||
+                                    p.ShopId == product.ShopId ||
+                                    p.Price >= product.Price * (1 - priceFluctuation) ||
+                                    p.Price <= product.Price * (1 + priceFluctuation) && 
+                                    (
+                                        p.Length >= product.Length * (1 - sizeFluctuation) ||
+                                        p.Length <= product.Length * (1 + sizeFluctuation) ||
+                                        p.Width >= product.Width * (1 - sizeFluctuation) ||
+                                        p.Width <= product.Width * (1 + sizeFluctuation) ||
+                                        p.Height >= product.Height * (1 - sizeFluctuation) ||
+                                        p.Height <= product.Height * (1 + sizeFluctuation)
+                                    ) && 
+                                    (
+                                        p.Length * p.Width * p.Height >= 
+                                        product.Length * product.Width * product.Height * (1 - volumeFluctuation) ||
+                                        p.Length * p.Width * p.Height >= 
+                                        product.Length * product.Width * product.Height * (1 + volumeFluctuation)
+                                    )
+                                )    
+                            )    
+                );
+            
+            return Ok(similarProducts);
+        }
+
+        [HttpGet("new")]
+        public IActionResult GetNew(int limit)
+        {
+            var newProducts = _context.Product
+                .Where(p => p.IsPublic)
+                .OrderByDescending(p => p.PublicationDate)
+                .Take(limit);
+
+            return Ok(newProducts);
+        }
+
+        [HttpGet("listofattributs")]
+        public IActionResult GetAttributs()
+        {
+            
+            return Ok();
+        }
+
         [HttpGet("search")]
-        public IActionResult GetByAttributes(string name, string material, int? minLength, int? maxLength, 
-            int? minWidth, int? maxWidth, int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
+        public IActionResult GetByAttributes(string name,int? type, int? useCase, int? whereCanBeUsed,
+            int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth, 
+            int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             var resultingProducts = _context.Product.AsNoTracking().Where(p => 
                 (name == null || p.Name.StartsWith(name))
-                && (material == null || p.Material.StartsWith(material))
+                && (type == null || p.Type == type)
+                && (useCase == null || p.UseCase == useCase)
+                && (whereCanBeUsed == null || p.WhereCanBeUsed == whereCanBeUsed)
+                && (material == null || p.Material == material)
                 
                 && (minLength == null || p.Length >= minLength)
                 && (maxLength == null || p.Length <= maxLength)
@@ -63,11 +131,31 @@ namespace MarketplaceApi.Controllers
                 .FirstOrDefault(m => m.Id == productEntity.UserId) == currentUser);
             if (!currentUser.Admin && areModeratorsShop == null)
                 return BadRequest("У вас нет прав на добавление товаров в это магазин");
+
+            var ifTypeExists = ProductEntity.ListOfTypes.Any(lt => lt.Equals(productEntity.Type));
+            if (!ifTypeExists)
+                return BadRequest($"Тип {productEntity.Type} не существует");
+
+            var ifUseCaseExists = ProductEntity.ListOfUseCases.Any(uc => uc.Equals(productEntity.UseCase));
+            if(!ifUseCaseExists)
+                    return BadRequest($"Способ применения {productEntity.UseCase} не существует");
             
+            var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereCanBeUsed
+                .Any(wc => wc.Equals(productEntity.WhereCanBeUsed));
+            if (!ifWhereCanBeUsedExists)
+                    return BadRequest($"Место применения {productEntity.WhereCanBeUsed} не существует");
+            
+            var ifMaterialExists = ProductEntity.ListOfMaterials.Any(lm => lm.Equals(productEntity.Material));
+            if (!ifMaterialExists)
+                    return BadRequest($"Материал {productEntity.Material} не существует");
+
             var product = new Product()
             {
                 UserId = productEntity.UserId,
                 Name = productEntity.Name,
+                Type = productEntity.Type,
+                UseCase = productEntity.UseCase,
+                WhereCanBeUsed = productEntity.WhereCanBeUsed,
                 Material = productEntity.Material,
                 Length = productEntity.Length,
                 Width = productEntity.Width,

@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230505083914_Product update")]
+    partial class Productupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,8 +110,8 @@ namespace MarketplaceApi.Entities
                     b.Property<int>("Length")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Material")
-                        .HasColumnType("integer");
+                    b.Property<string>("Material")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -123,17 +125,17 @@ namespace MarketplaceApi.Entities
                     b.Property<int>("ShopId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
 
-                    b.Property<int>("UseCase")
-                        .HasColumnType("integer");
+                    b.Property<string>("UseCase")
+                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("WhereCanBeUsed")
-                        .HasColumnType("integer");
+                    b.Property<string>("WhereCanBeUsed")
+                        .HasColumnType("text");
 
                     b.Property<int>("Width")
                         .HasColumnType("integer");

@@ -1,19 +1,10 @@
+using System.Collections.Generic;
+
 namespace MarketplaceApi
 {
     public class ProductEntity
     {
-        public int UserId { get; set; }
-        public int ShopId { get; set; }
-        public string Name { get; set; }
-        public string Material { get; set; }
-        public int Length { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public int Price { get; set; }
-        public int Quantity { get; set; }
-        public bool IsPublic { get; set; }
-    }
-    /*
+        /*
      Request body
      {
         "UserId" : 1,
@@ -28,4 +19,23 @@ namespace MarketplaceApi
         "IsPublic" : "false"
     }
      */
+        public int UserId { get; set; }
+        public int ShopId { get; set; }
+        public string Name { get; set; }
+        public int Type { get; set; } // statue, moving
+        public int UseCase { get; set; } // game, watch
+        public int WhereCanBeUsed { get; set; } // in door, out door 
+        public int Material { get; set; }
+        public int Length { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public int Price { get; set; }
+        public int Quantity { get; set; }
+        public bool IsPublic { get; set; }
+
+        public static List<int> ListOfTypes = new List<int>() { 1, 2, 3, 4, 5};
+        public static List<int> ListOfUseCases = new List<int>() { 1, 2, 3, 4, 5 };
+        public static List<int> ListOfWhereCanBeUsed = new List<int>() { 1, 2, 3, 4, 5 };
+        public static List<int> ListOfMaterials = new List<int>() { 1, 2, 3, 4, 5 };
+    }
 }

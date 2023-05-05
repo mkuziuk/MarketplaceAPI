@@ -13,7 +13,10 @@ namespace MarketplaceApi.Models
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         public string Name { get; set; }
-        public string Material { get; set; }
+        public int Type { get; set; } // statue, 
+        public int UseCase { get; set; } // game, watch
+        public int WhereCanBeUsed { get; set; } // in door, out door 
+        public int Material { get; set; }
         public int Length { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
