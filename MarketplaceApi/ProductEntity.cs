@@ -24,7 +24,7 @@ namespace MarketplaceApi
         public string Name { get; set; }
         public int Type { get; set; } // statue, moving
         public int UseCase { get; set; } // game, watch
-        public int WhereCanBeUsed { get; set; } // in door, out door 
+        public int WhereUsed { get; set; } // in door, out door 
         public int Material { get; set; }
         public int Length { get; set; }
         public int Width { get; set; }
@@ -35,7 +35,7 @@ namespace MarketplaceApi
 
         public static List<int> ListOfTypes = new List<int>() { 1, 2, 3, 4, 5};
         public static List<int> ListOfUseCases = new List<int>() { 1, 2, 3, 4, 5 };
-        public static List<int> ListOfWhereCanBeUsed = new List<int>() { 1, 2, 3, 4, 5 };
+        public static List<int> ListOfWhereUsed = new List<int>() { 1, 2, 3, 4, 5 };
         public static List<int> ListOfMaterials = new List<int>() { 1, 2, 3, 4, 5 };
     }
 }

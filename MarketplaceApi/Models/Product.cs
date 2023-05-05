@@ -15,7 +15,7 @@ namespace MarketplaceApi.Models
         public string Name { get; set; }
         public int Type { get; set; } // statue, 
         public int UseCase { get; set; } // game, watch
-        public int WhereCanBeUsed { get; set; } // in door, out door 
+        public int WhereUsed{ get; set; } // in door, out door 
         public int Material { get; set; }
         public int Length { get; set; }
         public int Width { get; set; }

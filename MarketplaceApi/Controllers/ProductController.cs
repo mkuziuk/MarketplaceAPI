@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,9 +36,9 @@ namespace MarketplaceApi.Controllers
             if (product == null)
                 return BadRequest($"Товар {productId} не существует");
 
-            double priceFluctuation = 0.1;
-            double sizeFluctuation = 0.1;
-            double volumeFluctuation = 0.1;
+            const double priceFluctuation = 0.1;
+            const double sizeFluctuation = 0.1;
+            const double volumeFluctuation = 0.1;
             var similarProducts = _context.Product
                 .Where(p => 
                             p.Id != product.Id &&
@@ -48,7 +49,7 @@ namespace MarketplaceApi.Controllers
                                     p.Material == product.Material ||
                                     p.Type == product.Type ||
                                     p.UseCase == product.UseCase ||
-                                    p.WhereCanBeUsed == product.WhereCanBeUsed ||
+                                    p.WhereUsed == product.WhereUsed ||
                                     p.ShopId == product.ShopId ||
                                     p.Price >= product.Price * (1 - priceFluctuation) ||
                                     p.Price <= product.Price * (1 + priceFluctuation) && 
@@ -87,12 +88,26 @@ namespace MarketplaceApi.Controllers
         [HttpGet("listofattributs")]
         public IActionResult GetAttributs()
         {
-            
-            return Ok();
+            var products = _context.Product;
+
+            var types = products.Select(p => p.Type).ToList();
+            var useCases = products.Select(p => p.UseCase).ToList();
+            var whereUsedX = products.Select(p => p.WhereUsed).ToList();
+            var materials = products.Select(p => p.Material).ToList();
+
+            var attributes = new List<List<int>>
+            {
+                types,
+                useCases,
+                whereUsedX,
+                materials
+            };
+
+            return Ok(attributes);
         }
 
         [HttpGet("search")]
-        public IActionResult GetByAttributes(string name,int? type, int? useCase, int? whereCanBeUsed,
+        public IActionResult GetByAttributes(string name,int? type, int? useCase, int? whereUsed,
             int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth, 
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
@@ -100,7 +115,7 @@ namespace MarketplaceApi.Controllers
                 (name == null || p.Name.StartsWith(name))
                 && (type == null || p.Type == type)
                 && (useCase == null || p.UseCase == useCase)
-                && (whereCanBeUsed == null || p.WhereCanBeUsed == whereCanBeUsed)
+                && (whereUsed == null || p.WhereUsed == whereUsed)
                 && (material == null || p.Material == material)
                 
                 && (minLength == null || p.Length >= minLength)
@@ -140,10 +155,10 @@ namespace MarketplaceApi.Controllers
             if(!ifUseCaseExists)
                     return BadRequest($"Способ применения {productEntity.UseCase} не существует");
             
-            var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereCanBeUsed
-                .Any(wc => wc.Equals(productEntity.WhereCanBeUsed));
+            var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereUsed
+                .Any(wu => wu.Equals(productEntity.WhereUsed));
             if (!ifWhereCanBeUsedExists)
-                    return BadRequest($"Место применения {productEntity.WhereCanBeUsed} не существует");
+                    return BadRequest($"Место применения {productEntity.WhereUsed} не существует");
             
             var ifMaterialExists = ProductEntity.ListOfMaterials.Any(lm => lm.Equals(productEntity.Material));
             if (!ifMaterialExists)
@@ -155,7 +170,7 @@ namespace MarketplaceApi.Controllers
                 Name = productEntity.Name,
                 Type = productEntity.Type,
                 UseCase = productEntity.UseCase,
-                WhereCanBeUsed = productEntity.WhereCanBeUsed,
+                WhereUsed = productEntity.WhereUsed,
                 Material = productEntity.Material,
                 Length = productEntity.Length,
                 Width = productEntity.Width,

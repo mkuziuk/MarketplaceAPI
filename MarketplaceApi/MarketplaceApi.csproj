@@ -36,4 +36,9 @@
     <ItemGroup>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Entities\20230505093922_Product attributes changed to int.cs" />
+      <Compile Remove="Entities\20230505093922_Product attributes changed to int.Designer.cs" />
+    </ItemGroup>
+
 </Project>
