@@ -49,7 +49,6 @@ namespace MarketplaceApi.Controllers
                                     p.Type == product.Type ||
                                     p.UseCase == product.UseCase ||
                                     p.WhereUsed == product.WhereUsed ||
-                                    p.ShopId == product.ShopId ||
                                     Convert.ToDouble(p.Price) >= Convert.ToDouble(product.Price) * (1 - priceFluctuation) ||
                                     Convert.ToDouble(p.Price) <= Convert.ToDouble(product.Price) * (1 + priceFluctuation) && 
                                     (
