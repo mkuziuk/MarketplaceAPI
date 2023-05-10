@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,15 +50,15 @@ namespace MarketplaceApi.Controllers
                                     p.UseCase == product.UseCase ||
                                     p.WhereUsed == product.WhereUsed ||
                                     p.ShopId == product.ShopId ||
-                                    p.Price >= Convert.ToDouble(product.Price) * (1 - priceFluctuation) ||
-                                    p.Price <= Convert.ToDouble(product.Price) * (1 + priceFluctuation) && 
+                                    Convert.ToDouble(p.Price) >= Convert.ToDouble(product.Price) * (1 - priceFluctuation) ||
+                                    Convert.ToDouble(p.Price) <= Convert.ToDouble(product.Price) * (1 + priceFluctuation) && 
                                     (
-                                        p.Length >= Convert.ToDouble(product.Length) * (1 - sizeFluctuation) ||
-                                        p.Length <= Convert.ToDouble(product.Length) * (1 + sizeFluctuation) ||
-                                        p.Width >= Convert.ToDouble(product.Width) * (1 - sizeFluctuation) ||
-                                        p.Width <= Convert.ToDouble(product.Width) * (1 + sizeFluctuation) ||
-                                        p.Height >= Convert.ToDouble(product.Height) * (1 - sizeFluctuation) ||
-                                        p.Height <= Convert.ToDouble(product.Height) * (1 + sizeFluctuation)
+                                        Convert.ToDouble(p.Length) >= Convert.ToDouble(product.Length) * (1 - sizeFluctuation) ||
+                                        Convert.ToDouble(p.Length) <= Convert.ToDouble(product.Length) * (1 + sizeFluctuation) ||
+                                        Convert.ToDouble(p.Width) >= Convert.ToDouble(product.Width) * (1 - sizeFluctuation) ||
+                                        Convert.ToDouble(p.Width) <= Convert.ToDouble(product.Width) * (1 + sizeFluctuation) ||
+                                        Convert.ToDouble(p.Height) >= Convert.ToDouble(product.Height) * (1 - sizeFluctuation) ||
+                                        Convert.ToDouble(p.Height) <= Convert.ToDouble(product.Height) * (1 + sizeFluctuation)
                                     ) && 
                                     (
                                         Convert.ToDouble(p.Length * p.Width * p.Height) >= 
@@ -86,15 +85,19 @@ namespace MarketplaceApi.Controllers
             return Ok(newProducts);
         }
 
-        [HttpGet("listofattributs")]
-        public IActionResult GetAttributs()
+        [HttpGet("listofattributes")]
+        public IActionResult GetAttributes()
         {
             var products = _context.Product;
 
-            var types = products.Where(p => p.IsPublic).Select(p => p.Type).Distinct().ToList();
-            var useCases = products.Where(p => p.IsPublic).Select(p => p.UseCase).Distinct().ToList();
-            var whereUsedX = products.Where(p => p.IsPublic).Select(p => p.WhereUsed).Distinct().ToList();
-            var materials = products.Where(p => p.IsPublic).Select(p => p.Material).Distinct().ToList();
+            var types = products.Where(p => p.IsPublic).Select(p => p.Type)
+                .Distinct().ToList();
+            var useCases = products.Where(p => p.IsPublic).Select(p => p.UseCase)
+                .Distinct().ToList();
+            var whereUsedX = products.Where(p => p.IsPublic).Select(p => p.WhereUsed)
+                .Distinct().ToList();
+            var materials = products.Where(p => p.IsPublic).Select(p => p.Material)
+                .Distinct().ToList();
 
             var attributes = new List<List<int>>
             {
@@ -113,7 +116,7 @@ namespace MarketplaceApi.Controllers
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             var resultingProducts = _context.Product.AsNoTracking().Where(p => 
-                (name == null || p.Name.StartsWith(name))
+                (name == null || string.Equals(p.Name, name, StringComparison.Ordinal))
                 && (type == null || p.Type == type)
                 && (useCase == null || p.UseCase == useCase)
                 && (whereUsed == null || p.WhereUsed == whereUsed)

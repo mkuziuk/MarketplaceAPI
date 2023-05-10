@@ -33,7 +33,7 @@ namespace MarketplaceApi
         public int Quantity { get; set; }
         public bool IsPublic { get; set; }
 
-        public static List<int> ListOfTypes = new List<int>() { 1, 2, 3, 4, 5};
+        public static List<int> ListOfTypes = new List<int>() { 1, 2, 3, 4, 5 };
         public static List<int> ListOfUseCases = new List<int>() { 1, 2, 3, 4, 5 };
         public static List<int> ListOfWhereUsed = new List<int>() { 1, 2, 3, 4, 5 };
         public static List<int> ListOfMaterials = new List<int>() { 1, 2, 3, 4, 5 };
