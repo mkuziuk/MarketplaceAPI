@@ -42,6 +42,9 @@ namespace MarketplaceApi.Controllers
             var order = _context.Order.FirstOrDefault(u => u.Id == orderId);
             if (order == null)
                 return BadRequest($"Заказ {orderId} не существует");
+            
+            if (order.OrderStatus != OrderService.DefaultOrderStatus)
+                return BadRequest("Данный заказ уже оформлен");
 
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null)
