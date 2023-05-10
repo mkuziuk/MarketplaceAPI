@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +66,7 @@ namespace MarketplaceApi.Controllers
             return Ok();
 
         }
-        
+
         [HttpPost("addproducttoorder")]
         public IActionResult Post(int userId, int orderId, int productId, int quantity)
         {
@@ -106,7 +103,7 @@ namespace MarketplaceApi.Controllers
                 var newOrderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
                     o.OrderId == orderId && o.ProductId == productId);
                 
-                newOrderedProduct.Quantity = quantity;
+                newOrderedProduct!.Quantity = quantity;
                 _context.OrderedProduct.Update(newOrderedProduct);
                 _context.SaveChanges();
 
@@ -155,7 +152,7 @@ namespace MarketplaceApi.Controllers
             _context.Product.Attach(product);
 
             orderProduct.Products.Remove(product);
-            _context.SaveChanges(); 
+            _context.SaveChanges();
             return Ok();
         }
     }

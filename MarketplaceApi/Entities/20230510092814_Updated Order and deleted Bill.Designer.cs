@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230510092814_Updated Order and deleted Bill")]
+    partial class UpdatedOrderanddeletedBill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +46,7 @@ namespace MarketplaceApi.Entities
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("WayOfPayment")
+                    b.Property<int>("WayOfPayement")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

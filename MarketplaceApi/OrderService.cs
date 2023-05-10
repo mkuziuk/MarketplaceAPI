@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 
 namespace MarketplaceApi
 {
     public static class OrderService
     {
         public static readonly string DefaultOrderStatus = "Basket";
+        public static readonly string OrderedStatus = "Ordered";
+        public static List<int> ListOfWaysOfPayment = new List<int>() { 1, 2, 3 };
         
         public static DateTime? DefaultOrderDate()
         {
@@ -26,10 +29,17 @@ namespace MarketplaceApi
 
             return orderedOrderDate;
         }
+        
+        public static DateTime OrderedSellDate()
+        {
+            var orderedOrderDate = DateTime.Now;
+
+            return orderedOrderDate;
+        }
 
         public static DateTime OrderedReceiveDate()
         {
-            var orderedReceiveDate = OrderedOrderDate().AddDays(3);
+            var orderedReceiveDate = OrderedSellDate().AddDays(3);
 
             return orderedReceiveDate;
         }

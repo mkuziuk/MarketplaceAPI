@@ -20,7 +20,7 @@ namespace MarketplaceApi.Models
         public bool Admin { get; set; }
         
         public ICollection<Order> Orders { get; } = new List<Order>();
-        public ICollection<Bill> Bills { get; } = new List<Bill>();
+        //public ICollection<Bill> Bills { get; } = new List<Bill>();
         public ICollection<Product> Product { get; } = new List<Product>();
 
         public ICollection<Shop> ShopsOwned { get; set; } = new List<Shop>();

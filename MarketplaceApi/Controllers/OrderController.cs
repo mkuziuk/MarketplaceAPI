@@ -22,10 +22,8 @@ namespace MarketplaceApi.Controllers
             var order = _context.Order.AsNoTracking().FirstOrDefault(o => o.Id == id);
 
             if (order == null)
-            {
                 return BadRequest($"Заказ {id} не существует");
-            }
-            
+
             return Ok(order);
         }
 
@@ -35,6 +33,38 @@ namespace MarketplaceApi.Controllers
             var order = _context.Order.AsNoTracking().Where(o => o.UserId == userId);
 
             return Ok(order);
+        }
+        
+        [HttpPatch("setuporder")]
+        public IActionResult PatchOrder(int userId, int orderId, int wayOfPayement, string deliveryAddress)
+        {
+            var order = _context.Order.FirstOrDefault(u => u.Id == orderId);
+            if (order == null)
+                return BadRequest($"Заказ {orderId} не существует");
+
+            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
+            if (currentUser == null)
+                return BadRequest($"Пользователь {userId} не существует");
+            
+            var user = _context.User.FirstOrDefault(u => u.Orders.Any(o => o.Id == orderId));
+            if (currentUser.Id != user!.Id && !currentUser.Admin)
+                return BadRequest("У вас нет прав на эту операцию");
+            
+            user!.DeliveryAddress = deliveryAddress;
+            _context.User.Update(user);
+
+            var ifWayOfPaymentExists = OrderService.ListOfWaysOfPayment.Any(l => l == wayOfPayement);
+            if (!ifWayOfPaymentExists)
+                return BadRequest("Данный способ оплаты не существует");
+            order.WayOfPayment = wayOfPayement;
+            order.OrderStatus = OrderService.OrderedStatus;
+            order.SellDate = OrderService.OrderedSellDate();
+            order.ReceiveDate = OrderService.DefaultReceiveDate();
+
+            _context.Order.Update(order);
+            _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpPost]
@@ -47,7 +77,6 @@ namespace MarketplaceApi.Controllers
             var order = new Order()
             {
                 OrderDate = OrderService.DefaultOrderDate(),
-                ReceiveDate = OrderService.DefaultReceiveDate(),
                 OrderStatus = OrderService.DefaultOrderStatus,
                 UserId = userId
             };

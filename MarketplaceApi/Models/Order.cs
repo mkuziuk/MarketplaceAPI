@@ -13,6 +13,10 @@ namespace MarketplaceApi.Models
         public DateTime? OrderDate { get; set; }
         public DateTime? ReceiveDate { get; set; }
         public string OrderStatus { get; set; }
+        public DateTime? SellDate { get; set; }
+        public int WayOfPayment { get; set; }
+        
+        public string DeliveryAddress { get; set; }
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 

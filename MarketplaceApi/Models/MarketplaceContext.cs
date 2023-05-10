@@ -14,10 +14,10 @@ namespace MarketplaceApi.Models
         public DbSet<User> User { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<Order> Order { get; set; }
-        public DbSet<Bill> Bill { get; set; }
+        //public DbSet<Bill> Bill { get; set; }
         public DbSet<OrderedProduct> OrderedProduct { get; set; }
         public DbSet<Shop> Shop { get; set; }
-        public DbSet<ShopModerator> ShopModerator { get; set; }
+        //public DbSet<ShopModerator> ShopModerator { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
