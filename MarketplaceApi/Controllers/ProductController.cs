@@ -91,10 +91,10 @@ namespace MarketplaceApi.Controllers
         {
             var products = _context.Product;
 
-            var types = products.Select(p => p.Type).ToList();
-            var useCases = products.Select(p => p.UseCase).ToList();
-            var whereUsedX = products.Select(p => p.WhereUsed).ToList();
-            var materials = products.Select(p => p.Material).ToList();
+            var types = products.Where(p => p.IsPublic).Select(p => p.Type).Distinct().ToList();
+            var useCases = products.Where(p => p.IsPublic).Select(p => p.UseCase).Distinct().ToList();
+            var whereUsedX = products.Where(p => p.IsPublic).Select(p => p.WhereUsed).Distinct().ToList();
+            var materials = products.Where(p => p.IsPublic).Select(p => p.Material).Distinct().ToList();
 
             var attributes = new List<List<int>>
             {
