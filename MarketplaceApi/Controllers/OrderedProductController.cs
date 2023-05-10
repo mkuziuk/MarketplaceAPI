@@ -48,9 +48,7 @@ namespace MarketplaceApi.Controllers
             var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
                                                                              && o.ProductId == productId);
             if (orderedProduct == null)
-            {
                 return BadRequest($"Продукта {productId} в заказе {orderId} не существует");
-            }
 
             if (newQuantity <= 0)
             {
@@ -60,17 +58,16 @@ namespace MarketplaceApi.Controllers
                 return Ok($"Продукт {productId} был удалён из заказа {orderId}");
             }
 
-            if (newQuantity <= product.InStockQuantity)
-            {
-                orderedProduct.Quantity = newQuantity;
+            if (newQuantity > product.InStockQuantity)
+                return BadRequest($"В наличие {product.InStockQuantity} товаров");
+            
+            orderedProduct.Quantity = newQuantity;
                 
-                _context.OrderedProduct.Update(orderedProduct); 
-                _context.SaveChanges();
+            _context.OrderedProduct.Update(orderedProduct); 
+            _context.SaveChanges();
             
-                return Ok();
-            }
-            
-            return BadRequest($"В наличие {product.InStockQuantity} товаров"); 
+            return Ok();
+
         }
         
         [HttpPost("addproducttoorder")]
@@ -98,14 +95,17 @@ namespace MarketplaceApi.Controllers
                 .FirstOrDefault(op => op.ProductId == productId && op.OrderId == orderId);
             if (orderedProduct == null)
             {
-                order.Products = new List<Product>() { product };
+                if (product.InStockQuantity < quantity) 
+                    return BadRequest($"В наличие {product.InStockQuantity} товаров");
+                
+                order.Products.Add(product);
 
                 _context.Order.Update(order);
                 _context.SaveChanges();
                 
                 var newOrderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
                     o.OrderId == orderId && o.ProductId == productId);
-
+                
                 newOrderedProduct.Quantity = quantity;
                 _context.OrderedProduct.Update(newOrderedProduct);
                 _context.SaveChanges();

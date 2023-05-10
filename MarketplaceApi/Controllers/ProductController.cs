@@ -30,7 +30,7 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpGet("getsimilarproducts")]
-        public IActionResult GetSimilar(int productId)
+        public IActionResult GetSimilar(int productId, int limit)
         {
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
             if (product == null)
@@ -51,25 +51,26 @@ namespace MarketplaceApi.Controllers
                                     p.UseCase == product.UseCase ||
                                     p.WhereUsed == product.WhereUsed ||
                                     p.ShopId == product.ShopId ||
-                                    p.Price >= product.Price * (1 - priceFluctuation) ||
-                                    p.Price <= product.Price * (1 + priceFluctuation) && 
+                                    p.Price >= Convert.ToDouble(product.Price) * (1 - priceFluctuation) ||
+                                    p.Price <= Convert.ToDouble(product.Price) * (1 + priceFluctuation) && 
                                     (
-                                        p.Length >= product.Length * (1 - sizeFluctuation) ||
-                                        p.Length <= product.Length * (1 + sizeFluctuation) ||
-                                        p.Width >= product.Width * (1 - sizeFluctuation) ||
-                                        p.Width <= product.Width * (1 + sizeFluctuation) ||
-                                        p.Height >= product.Height * (1 - sizeFluctuation) ||
-                                        p.Height <= product.Height * (1 + sizeFluctuation)
+                                        p.Length >= Convert.ToDouble(product.Length) * (1 - sizeFluctuation) ||
+                                        p.Length <= Convert.ToDouble(product.Length) * (1 + sizeFluctuation) ||
+                                        p.Width >= Convert.ToDouble(product.Width) * (1 - sizeFluctuation) ||
+                                        p.Width <= Convert.ToDouble(product.Width) * (1 + sizeFluctuation) ||
+                                        p.Height >= Convert.ToDouble(product.Height) * (1 - sizeFluctuation) ||
+                                        p.Height <= Convert.ToDouble(product.Height) * (1 + sizeFluctuation)
                                     ) && 
                                     (
-                                        p.Length * p.Width * p.Height >= 
-                                        product.Length * product.Width * product.Height * (1 - volumeFluctuation) ||
-                                        p.Length * p.Width * p.Height >= 
-                                        product.Length * product.Width * product.Height * (1 + volumeFluctuation)
+                                        Convert.ToDouble(p.Length * p.Width * p.Height) >= 
+                                        Convert.ToDouble(product.Length * product.Width * product.Height) * (1 - volumeFluctuation) ||
+                                        Convert.ToDouble(p.Length * p.Width * p.Height) >= 
+                                        Convert.ToDouble(product.Length * product.Width * product.Height) * (1 + volumeFluctuation)
                                     )
                                 )    
                             )    
-                );
+                )
+                .Take(limit);
             
             return Ok(similarProducts);
         }
