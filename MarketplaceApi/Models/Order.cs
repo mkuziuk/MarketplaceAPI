@@ -11,7 +11,7 @@ namespace MarketplaceApi.Models
         [Key, Column(Order = 0)]
         public int Id { get; set; }
         public DateTime? OrderDate { get; set; }
-        public DateTime? ReceiveDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string OrderStatus { get; set; }
         public DateTime? SellDate { get; set; }
         public int WayOfPayment { get; set; }

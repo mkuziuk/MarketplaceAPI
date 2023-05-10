@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace MarketplaceApi.Controllers
         }
         
         [HttpPatch("setuporder")]
-        public IActionResult PatchOrder(int userId, int orderId, int wayOfPayement, string deliveryAddress)
+        public IActionResult PatchOrder(int userId, int orderId, int wayOfPayment, string deliveryAddress)
         {
             var order = _context.Order.FirstOrDefault(u => u.Id == orderId);
             if (order == null)
@@ -47,19 +48,40 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Пользователь {userId} не существует");
             
             var user = _context.User.FirstOrDefault(u => u.Orders.Any(o => o.Id == orderId));
-            if (currentUser.Id != user!.Id && !currentUser.Admin)
+            if (user!.Id != userId && !currentUser.Admin)
                 return BadRequest("У вас нет прав на эту операцию");
             
-            user!.DeliveryAddress = deliveryAddress;
-            _context.User.Update(user);
+            var products = _context.Product
+                .Where(p => p.Orders
+                    .Any(o => o.Id == orderId));
+            var orderedProducts = _context.OrderedProduct
+                .Where(o => o.OrderId == orderId)
+                .ToList();
+            
+            var i = 0;
+            foreach (var product in products)
+            {
+                product.InStockQuantity -= orderedProducts[i].Quantity;
 
-            var ifWayOfPaymentExists = OrderService.ListOfWaysOfPayment.Any(l => l == wayOfPayement);
+                _context.Product.Update(product);
+                
+                i++;
+            }
+            
+            if (deliveryAddress != null)
+            {
+                user!.DeliveryAddress = deliveryAddress;
+                _context.User.Update(user);
+            }
+
+            var ifWayOfPaymentExists = OrderService.ListOfWaysOfPayment.Any(l => l == wayOfPayment);
             if (!ifWayOfPaymentExists)
                 return BadRequest("Данный способ оплаты не существует");
-            order.WayOfPayment = wayOfPayement;
+            order.WayOfPayment = wayOfPayment;
             order.OrderStatus = OrderService.OrderedStatus;
             order.SellDate = OrderService.OrderedSellDate();
-            order.ReceiveDate = OrderService.DefaultReceiveDate();
+            order.DeliveryDate = OrderService.OrderedReceiveDate();
+            order.DeliveryAddress = user.DeliveryAddress;
 
             _context.Order.Update(order);
             _context.SaveChanges();
@@ -76,7 +98,7 @@ namespace MarketplaceApi.Controllers
 
             var order = new Order()
             {
-                OrderDate = OrderService.DefaultOrderDate(),
+                OrderDate = OrderService.OrderedOrderDate(),
                 OrderStatus = OrderService.DefaultOrderStatus,
                 UserId = userId
             };
