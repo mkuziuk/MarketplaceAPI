@@ -35,9 +35,9 @@ namespace MarketplaceApi.Controllers
             if (product == null)
                 return BadRequest($"Товар {productId} не существует");
 
-            const double priceFluctuation = 0.1;
-            const double sizeFluctuation = 0.1;
-            const double volumeFluctuation = 0.1;
+            const decimal priceFluctuation = 0.1M;
+            const decimal sizeFluctuation = 0.1M;
+            const decimal volumeFluctuation = 0.1M;
             var similarProducts = _context.Product
                 .Where(p => 
                             p.Id != product.Id &&
@@ -49,21 +49,21 @@ namespace MarketplaceApi.Controllers
                                     p.Type == product.Type ||
                                     p.UseCase == product.UseCase ||
                                     p.WhereUsed == product.WhereUsed ||
-                                    Convert.ToDouble(p.Price) >= Convert.ToDouble(product.Price) * (1 - priceFluctuation) ||
-                                    Convert.ToDouble(p.Price) <= Convert.ToDouble(product.Price) * (1 + priceFluctuation) && 
+                                    Convert.ToDecimal(p.Price) >= Convert.ToDecimal(product.Price) * (1 - priceFluctuation) ||
+                                    Convert.ToDecimal(p.Price) <= Convert.ToDecimal(product.Price) * (1 + priceFluctuation) && 
                                     (
-                                        Convert.ToDouble(p.Length) >= Convert.ToDouble(product.Length) * (1 - sizeFluctuation) ||
-                                        Convert.ToDouble(p.Length) <= Convert.ToDouble(product.Length) * (1 + sizeFluctuation) ||
-                                        Convert.ToDouble(p.Width) >= Convert.ToDouble(product.Width) * (1 - sizeFluctuation) ||
-                                        Convert.ToDouble(p.Width) <= Convert.ToDouble(product.Width) * (1 + sizeFluctuation) ||
-                                        Convert.ToDouble(p.Height) >= Convert.ToDouble(product.Height) * (1 - sizeFluctuation) ||
-                                        Convert.ToDouble(p.Height) <= Convert.ToDouble(product.Height) * (1 + sizeFluctuation)
+                                        Convert.ToDecimal(p.Length) >= Convert.ToDecimal(product.Length) * (1 - sizeFluctuation) ||
+                                        Convert.ToDecimal(p.Length) <= Convert.ToDecimal(product.Length) * (1 + sizeFluctuation) ||
+                                        Convert.ToDecimal(p.Width) >= Convert.ToDecimal(product.Width) * (1 - sizeFluctuation) ||
+                                        Convert.ToDecimal(p.Width) <= Convert.ToDecimal(product.Width) * (1 + sizeFluctuation) ||
+                                        Convert.ToDecimal(p.Height) >= Convert.ToDecimal(product.Height) * (1 - sizeFluctuation) ||
+                                        Convert.ToDecimal(p.Height) <= Convert.ToDecimal(product.Height) * (1 + sizeFluctuation)
                                     ) && 
                                     (
-                                        Convert.ToDouble(p.Length * p.Width * p.Height) >= 
-                                        Convert.ToDouble(product.Length * product.Width * product.Height) * (1 - volumeFluctuation) ||
-                                        Convert.ToDouble(p.Length * p.Width * p.Height) >= 
-                                        Convert.ToDouble(product.Length * product.Width * product.Height) * (1 + volumeFluctuation)
+                                        Convert.ToDecimal(p.Length * p.Width * p.Height) >= 
+                                        Convert.ToDecimal(product.Length * product.Width * product.Height) * (1 - volumeFluctuation) ||
+                                        Convert.ToDecimal(p.Length * p.Width * p.Height) >= 
+                                        Convert.ToDecimal(product.Length * product.Width * product.Height) * (1 + volumeFluctuation)
                                     )
                                 )    
                             )    

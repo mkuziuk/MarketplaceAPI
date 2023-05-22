@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -145,14 +148,25 @@ namespace MarketplaceApi.Controllers
                 .ThenInclude(p => p.Orders)
                 .FirstOrDefault(o => o.Id == orderId && o.Products
                     .Any(p => p.Id == productId));
+            
+            var orderProducts = _context.Order
+                .Include(o => o.Products)
+                .ThenInclude(p => p.Orders)
+                .Where(o => o.Id == orderId && o.Products
+                    .Any(p => p.Id == productId));
+
+            Console.WriteLine(orderProducts.ToSql());
             if (orderProduct == null)
                 return BadRequest($"Товара {productId} нет в заказе {orderId}");
             
             product.Orders.Add(order);
             _context.Product.Attach(product);
-
+            
             orderProduct.Products.Remove(product);
             _context.SaveChanges();
+
+            string a = "adad";
+            a.Test();
             return Ok();
         }
     }

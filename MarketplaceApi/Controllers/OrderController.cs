@@ -1,5 +1,5 @@
-using System;
 using System.Linq;
+using System.Threading.Tasks;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -105,7 +105,7 @@ namespace MarketplaceApi.Controllers
                 OrderStatus = OrderService.DefaultOrderStatus,
                 UserId = userId
             };
-                
+            
             _context.Order.Add(order); 
             _context.SaveChanges(); 
             return Ok();
