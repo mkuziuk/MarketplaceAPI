@@ -36,10 +36,13 @@ namespace MarketplaceApi.Controllers
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
 
-            var areUserOrders = _context.Order
-                .Any(o => o.UserId == userId);
-            if (!currentUser.Admin && !areUserOrders)
+            var userOrder = _context.Order
+                .FirstOrDefault(o => o.UserId == userId);
+            if (!currentUser.Admin && userOrder == null)
                 return BadRequest("У вас нет прав на редактироване данного заказа");
+
+            if (userOrder!.OrderStatus != OrderService.DefaultOrderStatus)
+                return BadRequest("Данный заказа уже оформлен");
             
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
             if (product == null)
@@ -84,6 +87,9 @@ namespace MarketplaceApi.Controllers
             var userOrder = currentUser.Orders.FirstOrDefault(o=> o.Id == orderId);
             if (userOrder == null && !currentUser.Admin)
                 return BadRequest("У вас нет прав на редактироване данного заказа");
+            
+            if (userOrder!.OrderStatus != OrderService.DefaultOrderStatus)
+                return BadRequest("Данный заказа уже оформлен");
             
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
             if (product == null)
