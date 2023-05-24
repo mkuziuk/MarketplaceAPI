@@ -1,6 +1,8 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using MarketplaceApi.Models;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +13,12 @@ namespace MarketplaceApi.Controllers
     public class OrderController : Controller
     {
         private readonly MarketplaceContext _context;
+        private readonly OrderService _orderService;
         
         public OrderController(MarketplaceContext context)
         {
             _context = context;
+            _orderService = new OrderService(context);
         }
         
         [HttpGet]
@@ -39,11 +43,25 @@ namespace MarketplaceApi.Controllers
         [HttpPatch("setuporder")]
         public IActionResult PatchOrder(int userId, int orderId, int wayOfPayment, string deliveryAddress)
         {
+            var result = _orderService.SetupOrder(userId, orderId, wayOfPayment, deliveryAddress);
+
+            switch (result.Key)
+            {
+                case StatusCodeEnum.BadRequest:
+                    return BadRequest(result.Value);
+
+                case StatusCodeEnum.Ok:
+                    return Ok();
+
+                default:
+                    return BadRequest($"Этот ответ не существует в {nameof(StatusCodeEnum)}");
+            }
+            /*
             var order = _context.Order.FirstOrDefault(u => u.Id == orderId);
             if (order == null)
                 return BadRequest($"Заказ {orderId} не существует");
             
-            if (order.OrderStatus != OrderService.DefaultOrderStatus)
+            if (order!.OrderStatusId != (int)OrderSatus.Basket)
                 return BadRequest("Данный заказ уже оформлен");
 
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
@@ -56,9 +74,11 @@ namespace MarketplaceApi.Controllers
             
             var products = _context.Product
                 .Where(p => p.Orders
-                    .Any(o => o.Id == orderId));
+                    .Any(o => o.Id == orderId))
+                .OrderBy(p => p.Id);
             var orderedProducts = _context.OrderedProduct
                 .Where(o => o.OrderId == orderId)
+                .OrderBy(op => op.ProductId)
                 .ToList();
             
             var i = 0;
@@ -77,11 +97,12 @@ namespace MarketplaceApi.Controllers
                 _context.User.Update(user);
             }
 
-            var ifWayOfPaymentExists = OrderService.ListOfWaysOfPayment.Any(l => l == wayOfPayment);
+            var waysOfPayment = Enum.GetValues(typeof(WaysOfPayment)).Cast<WaysOfPayment>();
+            var ifWayOfPaymentExists = waysOfPayment.Any(l => (int)l == wayOfPayment);
             if (!ifWayOfPaymentExists)
                 return BadRequest("Данный способ оплаты не существует");
             order.WayOfPayment = wayOfPayment;
-            order.OrderStatus = OrderService.OrderedStatus;
+            order.OrderStatusId = (int)OrderSatus.Ordered;
             order.SellDate = OrderService.OrderedSellDate();
             order.DeliveryDate = OrderService.OrderedReceiveDate();
             order.DeliveryAddress = user.DeliveryAddress;
@@ -90,8 +111,9 @@ namespace MarketplaceApi.Controllers
             _context.SaveChanges();
 
             return Ok();
+            */
         }
-
+        
         [HttpPost]
         public IActionResult Post(int userId)
         {
@@ -102,12 +124,12 @@ namespace MarketplaceApi.Controllers
             var order = new Order()
             {
                 OrderDate = OrderService.OrderedOrderDate(),
-                OrderStatus = OrderService.DefaultOrderStatus,
+                OrderStatusId = (int)OrderSatus.Basket,
                 UserId = userId
             };
             
             _context.Order.Add(order); 
-            _context.SaveChanges(); 
+            _context.SaveChanges();
             return Ok();
         }
 

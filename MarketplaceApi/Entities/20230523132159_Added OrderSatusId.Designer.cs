@@ -3,15 +3,17 @@ using System;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketplaceApi.Entities
 {
     [DbContext(typeof(MarketplaceContext))]
-    partial class MarketplaceContextModelSnapshot : ModelSnapshot
+    [Migration("20230523132159_Added OrderSatusId")]
+    partial class AddedOrderSatusId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +36,9 @@ namespace MarketplaceApi.Entities
 
                     b.Property<DateTime?>("OrderDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("text");
 
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("integer");

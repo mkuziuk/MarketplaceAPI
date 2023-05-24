@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
+using MarketplaceApi.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +14,12 @@ namespace MarketplaceApi.Controllers
     {
         private readonly MarketplaceContext _context;
 
+        private readonly UserQueries _userQueries;
+
         public ProductController(MarketplaceContext context)
         {
             _context = context;
+            _userQueries = new UserQueries(context);
         }
         
         [HttpGet("getproduct")]
@@ -137,16 +141,19 @@ namespace MarketplaceApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] ProductEntity productEntity)
         {
+            /*
             var currentUser = _context.User.FirstOrDefault(u => u.Id == productEntity.UserId);
             if (currentUser == null)
                 return BadRequest($"Пользователь {productEntity.UserId} не существует");
-
+            */
+            var currentUser = _userQueries.ExistingUser(productEntity.UserId);
+            
             var shop = _context.Shop.FirstOrDefault(s => s.Id == productEntity.ShopId);
             if (shop == null)
                 return BadRequest($"Магазин {productEntity.ShopId} не существует");
 
             var areModeratorsShop = _context.Shop.FirstOrDefault(s => s.Moderators
-                .FirstOrDefault(m => m.Id == productEntity.UserId) == currentUser);
+                .FirstOrDefault(m => m.Id == productEntity.UserId) == _userQueries.ExistingUser(currentUser.Id));
             if (!currentUser.Admin && areModeratorsShop == null)
                 return BadRequest("У вас нет прав на добавление товаров в это магазин");
 

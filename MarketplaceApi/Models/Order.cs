@@ -12,7 +12,7 @@ namespace MarketplaceApi.Models
         public int Id { get; set; }
         public DateTime? OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public string OrderStatus { get; set; }
+        public int OrderStatusId { get; set; }
         public DateTime? SellDate { get; set; }
         public int WayOfPayment { get; set; }
         

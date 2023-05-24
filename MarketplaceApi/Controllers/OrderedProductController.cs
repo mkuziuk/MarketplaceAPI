@@ -41,7 +41,7 @@ namespace MarketplaceApi.Controllers
             if (!currentUser.Admin && userOrder == null)
                 return BadRequest("У вас нет прав на редактироване данного заказа");
 
-            if (userOrder!.OrderStatus != OrderService.DefaultOrderStatus)
+            if (userOrder!.OrderStatusId != (int)OrderSatus.Basket)
                 return BadRequest("Данный заказа уже оформлен");
             
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
@@ -88,7 +88,7 @@ namespace MarketplaceApi.Controllers
             if (userOrder == null && !currentUser.Admin)
                 return BadRequest("У вас нет прав на редактироване данного заказа");
             
-            if (userOrder!.OrderStatus != OrderService.DefaultOrderStatus)
+            if (userOrder!.OrderStatusId != (int)OrderSatus.Basket)
                 return BadRequest("Данный заказа уже оформлен");
             
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);
