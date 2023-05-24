@@ -24,10 +24,5 @@ namespace MarketplaceApi.Controllers
                 _ => BadRequest($"Этот ответ не существует в {nameof(StatusCodeEnum)}")
             };
         }
-        
-        protected IActionResult DoSwitch2<T>()
-        {
-            return BadRequest();
-        }
     }
 }
