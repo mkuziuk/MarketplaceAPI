@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
-using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Controllers
 {
     public abstract class ControllerBase : Controller
     {
-        public IActionResult DoSwitch(KeyValuePair<StatusCodeEnum, string> result)
+        protected IActionResult DoSwitch(KeyValuePair<StatusCodeEnum, string> result)
         {
             return result.Key switch
             {
@@ -16,15 +14,20 @@ namespace MarketplaceApi.Controllers
                 _ => BadRequest($"Этот ответ не существует в {nameof(StatusCodeEnum)}")
             };
         }
-
-        public IActionResult DoSwitch(KeyValuePair<StatusCodeEnum, IQueryable<Order>> result, string badRequestText = null)
+        
+        protected IActionResult DoSwitch<T>(KeyValuePair<StatusCodeEnum, QueryableAndString<T>> result)
         {
             return result.Key switch
             {
-                StatusCodeEnum.BadRequest => BadRequest(badRequestText),
-                StatusCodeEnum.Ok => Ok(result.Value),
+                StatusCodeEnum.BadRequest => BadRequest(result.Value.TextResult),
+                StatusCodeEnum.Ok => Ok(result.Value.QueryResult),
                 _ => BadRequest($"Этот ответ не существует в {nameof(StatusCodeEnum)}")
             };
+        }
+        
+        protected IActionResult DoSwitch2<T>()
+        {
+            return BadRequest();
         }
     }
 }

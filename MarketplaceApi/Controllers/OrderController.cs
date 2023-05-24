@@ -1,8 +1,6 @@
-using System.Linq;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -10,12 +8,10 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly MarketplaceContext _context;
         private readonly OrderService _orderService;
 
         public OrderController(MarketplaceContext context)
         {
-            _context = context;
             _orderService = new OrderService(context);
         }
         
@@ -24,42 +20,39 @@ namespace MarketplaceApi.Controllers
         {
             var result = _orderService.GetOrder(userId, orderId);
 
-            DoSwitch(result);
-
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpGet("ordersperuser")]
         public IActionResult GetOrdersPerUser(int userId)
         {
             var result = _orderService.GetUserOrders(userId);
-            DoSwitch(result, $"Пользователь {userId} не существует");
-
-            return Ok("Операция завершена");
+            
+            return DoSwitch(result);
         }
         
         [HttpPatch("setuporder")]
         public IActionResult PatchOrder(int userId, int orderId, int wayOfPayment, string deliveryAddress)
         {
             var result = _orderService.SetupOrder(userId, orderId, wayOfPayment, deliveryAddress);
-            DoSwitch(result);
-            return Ok("Операция завершена");
+            
+            return DoSwitch(result);
         }
         
         [HttpPost]
         public IActionResult Post(int userId)
         {
             var result = _orderService.CreateOrder(userId);
-            DoSwitch(result);
-            return Ok("Операция завершена");
+            
+            return DoSwitch(result);
         }
 
         [HttpDelete]
         public IActionResult Delete(int userId, int orderId)
         {
             var result = _orderService.DeleteOrder(userId, orderId);
-            DoSwitch(result);
-            return Ok("Операция завершена");
+            
+            return DoSwitch(result);
         }
     }
 }

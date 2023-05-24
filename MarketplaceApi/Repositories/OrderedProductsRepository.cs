@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace MarketplaceApi.Queries
 {
-    public class OrderedProductsQueries
+    public class OrderedProductsRepository
     {
         private readonly MarketplaceContext _context;
 
-        public OrderedProductsQueries(MarketplaceContext context)
+        public OrderedProductsRepository(MarketplaceContext context)
         {
             _context = context;
         }

@@ -3,11 +3,11 @@ using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Queries
 {
-    public class OrderQueries
+    public class OrderRepository
     {
         private readonly MarketplaceContext _context;
 
-        public OrderQueries(MarketplaceContext context)
+        public OrderRepository(MarketplaceContext context)
         {
             _context = context;
         }

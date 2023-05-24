@@ -14,12 +14,12 @@ namespace MarketplaceApi.Controllers
     {
         private readonly MarketplaceContext _context;
 
-        private readonly UserQueries _userQueries;
+        private readonly UserRepository _userRepository;
 
         public ProductController(MarketplaceContext context)
         {
             _context = context;
-            _userQueries = new UserQueries(context);
+            _userRepository = new UserRepository(context);
         }
         
         [HttpGet("getproduct")]
@@ -146,14 +146,14 @@ namespace MarketplaceApi.Controllers
             if (currentUser == null)
                 return BadRequest($"Пользователь {productEntity.UserId} не существует");
             */
-            var currentUser = _userQueries.ExistingUser(productEntity.UserId);
+            var currentUser = _userRepository.ExistingUser(productEntity.UserId);
             
             var shop = _context.Shop.FirstOrDefault(s => s.Id == productEntity.ShopId);
             if (shop == null)
                 return BadRequest($"Магазин {productEntity.ShopId} не существует");
 
             var areModeratorsShop = _context.Shop.FirstOrDefault(s => s.Moderators
-                .FirstOrDefault(m => m.Id == productEntity.UserId) == _userQueries.ExistingUser(currentUser.Id));
+                .FirstOrDefault(m => m.Id == productEntity.UserId) == _userRepository.ExistingUser(currentUser.Id));
             if (!currentUser.Admin && areModeratorsShop == null)
                 return BadRequest("У вас нет прав на добавление товаров в это магазин");
 
