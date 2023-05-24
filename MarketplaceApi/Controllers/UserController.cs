@@ -8,7 +8,7 @@ namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly MarketplaceContext _context;
         

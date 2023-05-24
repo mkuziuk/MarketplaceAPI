@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
-    public class ShopController : Controller
+    public class ShopController : ControllerBase
     {
         private readonly MarketplaceContext _context;
         

@@ -10,7 +10,7 @@ namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : Controller
+    public class ProductController : ControllerBase
     {
         private readonly MarketplaceContext _context;
 

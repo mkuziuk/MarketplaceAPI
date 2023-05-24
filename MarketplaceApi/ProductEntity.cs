@@ -4,21 +4,6 @@ namespace MarketplaceApi
 {
     public class ProductEntity
     {
-        /*
-     Request body
-     {
-        "UserId" : 1,
-        "ShopId" : 1,
-        "Name" : "ball",
-        "Material" : "wood",
-        "Length" : 5,
-        "Width" : 5,
-        "Height" : 5,
-        "Price" : 1500,
-        "Quantity" : 10,
-        "IsPublic" : "false"
-    }
-     */
         public int UserId { get; set; }
         public int ShopId { get; set; }
         public string Name { get; set; }

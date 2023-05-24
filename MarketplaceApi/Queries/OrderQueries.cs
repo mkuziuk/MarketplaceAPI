@@ -13,5 +13,6 @@ namespace MarketplaceApi.Queries
         }
 
         public Order ExistingOrder(int orderId) => _context.Order.FirstOrDefault(o => o.Id == orderId);
+        public IQueryable<Order> ExistingOrders(int userId) => _context.Order.Where(o => o.UserId == userId);
     }
 }

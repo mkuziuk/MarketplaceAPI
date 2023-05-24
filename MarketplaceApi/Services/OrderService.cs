@@ -28,6 +28,34 @@ namespace MarketplaceApi.Services
         public static DateTime OrderedOrderDate() => DateTime.Now;
         private static DateTime OrderedSellDate() => DateTime.Now;
         private static DateTime OrderedReceiveDate() => OrderedSellDate().AddDays(3);
+
+        public KeyValuePair<StatusCodeEnum, IQueryable<Order>> GetOrder(int userId, int orderId)
+        {
+            var user = _userQueries.ExistingUser(userId);
+            if (user == null)
+                return new KeyValuePair<StatusCodeEnum, IQueryable<Order>>(StatusCodeEnum.BadRequest, null);
+
+            var orderUser = _userQueries.UserByOrderId(orderId);
+            if (orderUser.Id != userId & !user.Admin)
+            {
+                return new KeyValuePair<StatusCodeEnum, IQueryable<Order>>(StatusCodeEnum.BadRequest, null);
+            }
+
+            var order = _orderQueries.ExistingOrders(orderId);
+
+            return new KeyValuePair<StatusCodeEnum, IQueryable<Order>>(StatusCodeEnum.Ok, order);
+        }
+
+        public KeyValuePair<StatusCodeEnum, IQueryable<Order>> GetUserOrders(int userId)
+        {
+            var user = _userQueries.ExistingUser(userId);
+            var orders = _orderQueries.ExistingOrders(userId);
+            
+            if (user == null)
+                return new KeyValuePair<StatusCodeEnum, IQueryable<Order>>(StatusCodeEnum.BadRequest, orders);
+            
+            return new KeyValuePair<StatusCodeEnum, IQueryable<Order>>(StatusCodeEnum.Ok, orders);
+        }
         
 //StatusCodeEnum
         public KeyValuePair<StatusCodeEnum, string> SetupOrder(int userId, int orderId, int wayOfPayment, string deliveryAddress)
@@ -44,7 +72,7 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest, ($"Пользователь {userId} не существует"));
 
             var user = _userQueries.UserByOrderId(orderId);
-            if (user!.Id != userId && !currentUser.Admin)
+            if (user.Id != userId & !currentUser.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest, ("У вас нет прав на эту операцию"));
               
             var products = _productQueries.ProductsByOrder(orderId)
@@ -54,7 +82,7 @@ namespace MarketplaceApi.Services
                 .OrderBy(op => op.ProductId)
                 .ToList();
 
-            for (int i = 0; i < products.Count(); i++)
+            for (var i = 0; i < products.Count(); i++)
             {
                 products[i].InStockQuantity -= orderedProducts[i].Quantity;
                 _context.Product.Update(products[i]);
@@ -62,7 +90,7 @@ namespace MarketplaceApi.Services
               
             if (deliveryAddress != null)
             {
-                user!.DeliveryAddress = deliveryAddress;
+                user.DeliveryAddress = deliveryAddress;
                 _context.User.Update(user);
             }
   
@@ -80,7 +108,47 @@ namespace MarketplaceApi.Services
             _context.Order.Update(order);
             _context.SaveChanges();
               
-            return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, ("Данный способ оплаты не существует"));
+            return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, ("Получилось"));
+        }
+
+        public KeyValuePair<StatusCodeEnum, string> CreateOrder(int userId)
+        {
+            var user = _userQueries.ExistingUser(userId);
+            if (user == null)
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest, 
+                    $"Пользователь {userId} не существует");
+
+            var order = new Order()
+            {
+                OrderDate = OrderedOrderDate(),
+                OrderStatusId = (int)OrderSatus.Basket,
+                UserId = userId
+            };
+            
+            _context.Order.Add(order); 
+            _context.SaveChanges();
+            return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось");
+        }
+
+        public KeyValuePair<StatusCodeEnum, string> DeleteOrder(int userId, int orderId)
+        {
+            var user = _userQueries.ExistingUser(userId);
+            if (user == null)
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                    $"Пользователь {userId} не существует");
+            if (!user.Admin)
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                    "У вас не прав на эту операцию");
+
+            var order = _orderQueries.ExistingOrder(orderId);
+            if (order == null)
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                    $"Заказ {orderId} не существует");
+            
+            _context.Remove(order); 
+            _context.SaveChanges();
+
+            return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Удалось");
         }
     }
 }
