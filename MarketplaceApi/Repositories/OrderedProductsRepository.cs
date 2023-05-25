@@ -1,18 +1,13 @@
-using MarketplaceApi.Models;
 using System.Linq;
+using MarketplaceApi.Models;
 
-namespace MarketplaceApi.Queries
+namespace MarketplaceApi.Repositories
 {
-    public class OrderedProductsRepository
+    public class OrderedProductsRepository : Repository
     {
-        private readonly MarketplaceContext _context;
-
-        public OrderedProductsRepository(MarketplaceContext context)
-        {
-            _context = context;
-        }
-
+        public OrderedProductsRepository(MarketplaceContext context) : base(context){}
+        
         public IQueryable<OrderedProduct> OrderedProductsByOrder(int orderId) => 
-            _context.OrderedProduct.Where(o => o.OrderId == orderId);
+            Context.OrderedProduct.Where(o => o.OrderId == orderId);
     }
 }

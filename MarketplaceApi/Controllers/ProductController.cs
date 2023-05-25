@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MarketplaceApi.Models;
-using MarketplaceApi.Queries;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -12,105 +8,43 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly MarketplaceContext _context;
-
-        private readonly UserRepository _userRepository;
+        private readonly ProductService _productService;
 
         public ProductController(MarketplaceContext context)
         {
-            _context = context;
-            _userRepository = new UserRepository(context);
+            _productService = new ProductService(context);
         }
         
         [HttpGet("getproduct")]
         public IActionResult Get(int productId)
         {
-            var product = _context.Product.AsNoTracking().FirstOrDefault(o => o.Id == productId);
-            if (product == null)
-                return BadRequest($"Товар {productId} не существует");
+            var result = _productService.GetProduct(productId);
             
-            return Ok(product);
+            return DoSwitch(result);
         }
 
         [HttpGet("getsimilarproducts")]
         public IActionResult GetSimilar(int productId, int limit)
         {
-            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
-            if (product == null)
-                return BadRequest($"Товар {productId} не существует");
+            var result = _productService.GetSimilar(productId, limit);
 
-            const decimal priceFluctuation = 0.1M;
-            const decimal sizeFluctuation = 0.1M;
-            const decimal volumeFluctuation = 0.1M;
-            var similarProducts = _context.Product
-                .Where(p => 
-                            p.Id != product.Id &&
-                            (
-                                p.IsPublic && 
-                                (
-                                    p.Name == product.Name ||
-                                    p.Material == product.Material ||
-                                    p.Type == product.Type ||
-                                    p.UseCase == product.UseCase ||
-                                    p.WhereUsed == product.WhereUsed ||
-                                    Convert.ToDecimal(p.Price) >= Convert.ToDecimal(product.Price) * (1 - priceFluctuation) ||
-                                    Convert.ToDecimal(p.Price) <= Convert.ToDecimal(product.Price) * (1 + priceFluctuation) && 
-                                    (
-                                        Convert.ToDecimal(p.Length) >= Convert.ToDecimal(product.Length) * (1 - sizeFluctuation) ||
-                                        Convert.ToDecimal(p.Length) <= Convert.ToDecimal(product.Length) * (1 + sizeFluctuation) ||
-                                        Convert.ToDecimal(p.Width) >= Convert.ToDecimal(product.Width) * (1 - sizeFluctuation) ||
-                                        Convert.ToDecimal(p.Width) <= Convert.ToDecimal(product.Width) * (1 + sizeFluctuation) ||
-                                        Convert.ToDecimal(p.Height) >= Convert.ToDecimal(product.Height) * (1 - sizeFluctuation) ||
-                                        Convert.ToDecimal(p.Height) <= Convert.ToDecimal(product.Height) * (1 + sizeFluctuation)
-                                    ) && 
-                                    (
-                                        Convert.ToDecimal(p.Length * p.Width * p.Height) >= 
-                                        Convert.ToDecimal(product.Length * product.Width * product.Height) * (1 - volumeFluctuation) ||
-                                        Convert.ToDecimal(p.Length * p.Width * p.Height) >= 
-                                        Convert.ToDecimal(product.Length * product.Width * product.Height) * (1 + volumeFluctuation)
-                                    )
-                                )    
-                            )    
-                )
-                .Take(limit);
-            
-            return Ok(similarProducts);
+            return DoSwitch(result);
         }
 
-        [HttpGet("new")]
+        [HttpGet("newOfTheWeek")]
         public IActionResult GetNew(int limit)
         {
-            var newProducts = _context.Product
-                .Where(p => p.IsPublic)
-                .OrderByDescending(p => p.PublicationDate)
-                .Take(limit);
+            var result = _productService.GetNewOfTheWeek(limit);
 
-            return Ok(newProducts);
+            return DoSwitch(result);
         }
 
         [HttpGet("listofattributes")]
         public IActionResult GetAttributes()
         {
-            var products = _context.Product;
+            var result = _productService.GetAttributes();
 
-            var types = products.Where(p => p.IsPublic).Select(p => p.Type)
-                .Distinct().ToList();
-            var useCases = products.Where(p => p.IsPublic).Select(p => p.UseCase)
-                .Distinct().ToList();
-            var whereUsedX = products.Where(p => p.IsPublic).Select(p => p.WhereUsed)
-                .Distinct().ToList();
-            var materials = products.Where(p => p.IsPublic).Select(p => p.Material)
-                .Distinct().ToList();
-
-            var attributes = new List<List<int>>
-            {
-                types,
-                useCases,
-                whereUsedX,
-                materials
-            };
-
-            return Ok(attributes);
+            return DoSwitch(result);
         }
 
         [HttpGet("search")]
@@ -118,158 +52,43 @@ namespace MarketplaceApi.Controllers
             int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth, 
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
-            var resultingProducts = _context.Product.AsNoTracking().Where(p => 
-                (name == null || string.Equals(p.Name, name, StringComparison.Ordinal))
-                && (type == null || p.Type == type)
-                && (useCase == null || p.UseCase == useCase)
-                && (whereUsed == null || p.WhereUsed == whereUsed)
-                && (material == null || p.Material == material)
-                
-                && (minLength == null || p.Length >= minLength)
-                && (maxLength == null || p.Length <= maxLength)
-                && (minWidth == null || p.Width >= minWidth)
-                && (maxWidth == null || p.Width <= maxWidth)
-                && (minHeight == null || p.Height >= minHeight)
-                && (maxHeight == null || p.Height <= maxHeight)
-                && (minPrice == null || p.Price >= minPrice)
-                && (maxPrice == null || p.Price <= maxPrice)
-            );
-            
-            return Ok(resultingProducts);
+            var result = _productService.Search(name, type, useCase, whereUsed,
+                material, minLength, maxLength, minWidth, maxWidth, minHeight, maxHeight, minPrice, maxPrice);
+
+            return DoSwitch(result);
         }
         
         [HttpPost]
         public IActionResult Post([FromBody] ProductEntity productEntity)
         {
-            /*
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == productEntity.UserId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {productEntity.UserId} не существует");
-            */
-            var currentUser = _userRepository.ExistingUser(productEntity.UserId);
-            
-            var shop = _context.Shop.FirstOrDefault(s => s.Id == productEntity.ShopId);
-            if (shop == null)
-                return BadRequest($"Магазин {productEntity.ShopId} не существует");
+            var result = _productService.AddProduct(productEntity);
 
-            var areModeratorsShop = _context.Shop.FirstOrDefault(s => s.Moderators
-                .FirstOrDefault(m => m.Id == productEntity.UserId) == _userRepository.ExistingUser(currentUser.Id));
-            if (!currentUser.Admin && areModeratorsShop == null)
-                return BadRequest("У вас нет прав на добавление товаров в это магазин");
-
-            var ifTypeExists = ProductEntity.ListOfTypes.Any(lt => lt.Equals(productEntity.Type));
-            if (!ifTypeExists)
-                return BadRequest($"Тип {productEntity.Type} не существует");
-
-            var ifUseCaseExists = ProductEntity.ListOfUseCases.Any(uc => uc.Equals(productEntity.UseCase));
-            if(!ifUseCaseExists)
-                    return BadRequest($"Способ применения {productEntity.UseCase} не существует");
-            
-            var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereUsed
-                .Any(wu => wu.Equals(productEntity.WhereUsed));
-            if (!ifWhereCanBeUsedExists)
-                    return BadRequest($"Место применения {productEntity.WhereUsed} не существует");
-            
-            var ifMaterialExists = ProductEntity.ListOfMaterials.Any(lm => lm.Equals(productEntity.Material));
-            if (!ifMaterialExists)
-                    return BadRequest($"Материал {productEntity.Material} не существует");
-
-            var product = new Product()
-            {
-                UserId = productEntity.UserId,
-                Name = productEntity.Name,
-                Type = productEntity.Type,
-                UseCase = productEntity.UseCase,
-                WhereUsed = productEntity.WhereUsed,
-                Material = productEntity.Material,
-                Length = productEntity.Length,
-                Width = productEntity.Width,
-                Height = productEntity.Height,
-                Price = productEntity.Price,
-                InStockQuantity = productEntity.Quantity,
-                CreationDate = DateTime.Now,
-                ShopId = productEntity.ShopId,
-                IsPublic = productEntity.IsPublic
-            };
-
-            if (productEntity.IsPublic) product.PublicationDate = DateTime.Now;
-
-            _context.Add(product);
-            _context.SaveChanges(); 
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpPatch("changecharacteristics")]
         public IActionResult PatchProduct(int userId, int productId, int? price, int? quantity, bool isPublic)
         {
-            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
-            if (product == null) 
-                return BadRequest($"Продукт {productId} не найден");
-            
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null) 
-                return BadRequest($"Пользователь {userId} не найден");
-            
-            var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
-            if (!currentUser.Admin && moderator == null)
-                return BadRequest("У вас нет прав на редактирование товара");
+            var result = _productService
+                .ChangeCharacteristics(userId, productId, price, quantity, isPublic);
 
-            if (price != null) product.Price = price.Value;
-            if (quantity != null) product.InStockQuantity = quantity.Value;
-            if (product.IsPublic != isPublic) product.IsPublic = isPublic;
-
-            _context.Update(product);
-            _context.SaveChanges();
-            
-            return Ok();
+            return DoSwitch(result);
         }
 
-        [HttpPatch("changepublic")]
-        public IActionResult PatchPublic(int userId, int productId, bool isPublic)
+        [HttpPatch("changepublicstate")]
+        public IActionResult PatchPublic(int userId, int productId)
         {
-            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
-            if (product == null) 
-                return BadRequest($"Продукт {productId} не найден");
-            
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null) 
-                return BadRequest($"Пользователь {userId} не найден");
-            
-            var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
-            if (!currentUser.Admin && moderator == null)
-                return BadRequest("У вас нет прав на редактирование товара");
+            var result = _productService.ChangePublicState(userId, productId);
 
-            if (product.IsPublic == isPublic)
-                return BadRequest("Товар уже находится в этом статусе");
-            
-            product.IsPublic = isPublic;
-            if (isPublic) product.PublicationDate = DateTime.Now;
-            else product.PublicationDate = null;
-
-            _context.Update(product);
-            _context.SaveChanges();
-            
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpDelete]
         public IActionResult Delete(int userId, int productId)
         {
-            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
-            if (product == null) 
-                return BadRequest($"Продукт {productId} не найден");
-            
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null) 
-                return BadRequest($"Пользователь {userId} не найден");
-            
-            var moderator = _context.Shop.FirstOrDefault(s => s.Moderators.Any(mu => mu.Id == userId));
-            if (!currentUser.Admin && moderator == null)
-                return BadRequest("У вас нет прав на удаление товара");
-            
-            _context.Remove(product); 
-            _context.SaveChanges(); 
-            return Ok();
+            var result = _productService.RemoveProduct(userId, productId);
+
+            return DoSwitch(result);
         }
     }
 }
