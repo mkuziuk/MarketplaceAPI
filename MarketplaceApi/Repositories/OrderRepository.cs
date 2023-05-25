@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Repositories
 {
@@ -8,8 +10,16 @@ namespace MarketplaceApi.Repositories
         public OrderRepository(MarketplaceContext context) : base(context) {}
 
         public Order ExistingOrder(int orderId) => Context.Order.FirstOrDefault(o => o.Id == orderId);
+        public IEnumerable<Order> ExistingOrders(int orderId) => Context.Order.Where(o => o.Id == orderId);
+                
+        public Order OrderPerUser(int userId) => Context.Order.FirstOrDefault(o => o.UserId == userId);
+        public IEnumerable<Order> OrdersPerUser(int userId) => Context.Order.Where(o => o.UserId == userId);
         
-        public IQueryable<Order> ExistingOrders(int userId) => Context.Order.Where(o => o.UserId == userId);
+        public Order IncludeProductInOrder(int orderId, int productId) => Context.Order
+            .Include(o => o.Products)
+            .ThenInclude(p => p.Orders)
+            .FirstOrDefault(o => o.Id == orderId && o.Products
+                .Any(p => p.Id == productId));
 
         public void Update(Order order) => Context.Order.Update(order);
 

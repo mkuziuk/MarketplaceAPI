@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,167 +13,49 @@ namespace MarketplaceApi.Controllers
     public class OrderedProductController : ControllerBase
     {
         private readonly MarketplaceContext _context;
+        private readonly OrderedProductService _orderedProductService;
         
         public OrderedProductController(MarketplaceContext context)
         {
             _context = context;
+            _orderedProductService = new OrderedProductService(context);
         }
         
         [HttpGet]
-        public IActionResult Get(int orderId)
+        public IActionResult Get(int userId, int orderId)
         {
-            var orderedProduct = _context.Product
-                .Where(p => p.Orders
-                    .Any(o => o.Id == orderId));
-            
-            return Ok(orderedProduct);
+            var result = _orderedProductService
+                .GetProductsInTheOrder<dynamic>(userId, orderId);
+
+            return DoSwitch(result);
         }
         
         [HttpPatch("patchquantity")]
         public IActionResult PatchQuantity(int userId, int orderId, int productId, int newQuantity)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
+            var result = _orderedProductService
+                .ChangeQuantity(userId, orderId, productId, newQuantity);
 
-            var userOrder = _context.Order
-                .FirstOrDefault(o => o.UserId == userId);
-            if (!currentUser.Admin && userOrder == null)
-                return BadRequest("У вас нет прав на редактироване данного заказа");
-
-            if (userOrder!.OrderStatusId != (int)OrderSatus.Basket)
-                return BadRequest("Данный заказа уже оформлен");
-            
-            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
-            if (product == null)
-                return BadRequest($"Товар {productId} не существует");
-            
-            var orderedProduct = _context.OrderedProduct.FirstOrDefault(o => o.OrderId == orderId
-                                                                             && o.ProductId == productId);
-            if (orderedProduct == null)
-                return BadRequest($"Продукта {productId} в заказе {orderId} не существует");
-
-            if (newQuantity <= 0)
-            {
-                _context.OrderedProduct.Remove(orderedProduct);
-                _context.SaveChanges();
-                
-                return Ok($"Продукт {productId} был удалён из заказа {orderId}");
-            }
-
-            if (newQuantity > product.InStockQuantity)
-                return BadRequest($"В наличие {product.InStockQuantity} товаров");
-            
-            orderedProduct.Quantity = newQuantity;
-                
-            _context.OrderedProduct.Update(orderedProduct); 
-            _context.SaveChanges();
-            
-            return Ok();
-
+            return DoSwitch(result);
         }
 
         [HttpPost("addproducttoorder")]
         public IActionResult Post(int userId, int orderId, int productId, int quantity)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
+            var result = _orderedProductService
+                .AddProductToOrder(userId, orderId, productId, quantity);
 
-            var order = _context.Order.FirstOrDefault(o => o.Id == orderId);
-            if (order == null)
-                return BadRequest($"Заказ {orderId} не существует");
-            
-            var userOrder = currentUser.Orders.FirstOrDefault(o=> o.Id == orderId);
-            if (userOrder == null && !currentUser.Admin)
-                return BadRequest("У вас нет прав на редактироване данного заказа");
-            
-            if (userOrder!.OrderStatusId != (int)OrderSatus.Basket)
-                return BadRequest("Данный заказа уже оформлен");
-            
-            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
-            if (product == null)
-                return BadRequest($"Товар {productId} не существует");
-            if (!product.IsPublic)
-                return BadRequest($"Товар {productId} не опубликован");
-
-            var orderedProduct = _context.OrderedProduct
-                .FirstOrDefault(op => op.ProductId == productId && op.OrderId == orderId);
-            if (orderedProduct == null)
-            {
-                if (product.InStockQuantity < quantity) 
-                    return BadRequest($"В наличие {product.InStockQuantity} товаров");
-                
-                order.Products.Add(product);
-
-                _context.Order.Update(order);
-                _context.SaveChanges();
-                
-                var newOrderedProduct = _context.OrderedProduct.FirstOrDefault(o => 
-                    o.OrderId == orderId && o.ProductId == productId);
-                
-                newOrderedProduct!.Quantity = quantity;
-                _context.OrderedProduct.Update(newOrderedProduct);
-                _context.SaveChanges();
-
-                return Ok();
-            }
-            
-            if (product.InStockQuantity < orderedProduct.Quantity + quantity) 
-                return BadRequest($"В наличие {product.InStockQuantity} товаров");
-
-            orderedProduct.Quantity += quantity;
-            _context.OrderedProduct.Update(orderedProduct);
-            _context.SaveChanges();
-            
-            return Ok();
+            return DoSwitch(result);
         }
 
         
         [HttpDelete("productfromorder")]
         public IActionResult Delete(int userId, int orderId, int productId)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
+            var result = _orderedProductService
+                .DeleteProductFromOrder(userId, orderId, productId);
 
-            var order = _context.Order.FirstOrDefault(o => o.Id == orderId);
-            if (order == null)
-                return BadRequest($"Заказ {orderId} не существует");
-
-            var product = _context.Product.FirstOrDefault(o => o.Id == productId);
-            if (product == null)
-                return BadRequest($"Продукт {productId} не существует");
-
-            var ifIsOwner = _context.Order.Any(o => o.UserId == userId);
-            if (!ifIsOwner && !currentUser.Admin)
-                return BadRequest($"У вас не прав на редактирование заказа {orderId}");
-
-            var orderProduct = _context.Order
-                .Include(o => o.Products)
-                .ThenInclude(p => p.Orders)
-                .FirstOrDefault(o => o.Id == orderId && o.Products
-                    .Any(p => p.Id == productId));
-            
-            var orderProducts = _context.Order
-                .Include(o => o.Products)
-                .ThenInclude(p => p.Orders)
-                .Where(o => o.Id == orderId && o.Products
-                    .Any(p => p.Id == productId));
-
-            Console.WriteLine(orderProducts.ToSql());
-            if (orderProduct == null)
-                return BadRequest($"Товара {productId} нет в заказе {orderId}");
-            
-            product.Orders.Add(order);
-            _context.Product.Attach(product);
-            
-            orderProduct.Products.Remove(product);
-            _context.SaveChanges();
-
-            string a = "adad";
-            a.Test();
-            return Ok();
+            return DoSwitch(result);
         }
     }
 }

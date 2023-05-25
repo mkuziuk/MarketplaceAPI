@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MarketplaceApi.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Controllers

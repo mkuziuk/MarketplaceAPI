@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
 
@@ -11,14 +12,14 @@ namespace MarketplaceApi.Services
         private readonly UserRepository _userRepository;
         private readonly OrderRepository _orderRepository;
         private readonly ProductRepository _productRepository;
-        private readonly OrderedProductsRepository _orderedProductsRepository;
+        private readonly OrderedProductRepository _orderedProductRepository;
 
         public OrderService(MarketplaceContext context)
         {
             _userRepository = new UserRepository(context);
             _orderRepository = new OrderRepository(context);
             _productRepository = new ProductRepository(context);
-            _orderedProductsRepository = new OrderedProductsRepository(context);
+            _orderedProductRepository = new OrderedProductRepository(context);
         }
 
         //public static DateTime? DefaultOrderDate() => null;
@@ -52,7 +53,7 @@ namespace MarketplaceApi.Services
         public KeyValuePair<StatusCodeEnum, QueryableAndString<Order>> GetUserOrders(int userId)
         {
             var user = _userRepository.ExistingUser(userId);
-            var orders = _orderRepository.ExistingOrders(userId);
+            var orders = _orderRepository.OrdersPerUser(userId);
             
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<Order>>
@@ -87,7 +88,7 @@ namespace MarketplaceApi.Services
             var products = _productRepository.ProductsByOrder(orderId)
                 .OrderBy(p => p.Id)
                 .ToList();
-            var orderedProducts = _orderedProductsRepository.OrderedProductsByOrder(orderId)
+            var orderedProducts = _orderedProductRepository.OrderedProductsByOrder(orderId)
                 .OrderBy(op => op.ProductId)
                 .ToList();
 

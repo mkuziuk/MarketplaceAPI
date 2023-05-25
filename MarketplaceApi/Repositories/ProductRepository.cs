@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Repositories
 {
@@ -96,10 +97,31 @@ namespace MarketplaceApi.Repositories
             return resultingProducts;
         }
 
+        public IEnumerable<Product> GetProductsInOrder(int orderId) => Context.Product
+            .Where(p => p.Orders.Any(o => o.Id == orderId));
+        
+        public IEnumerable<T> GetProductsInOrderWithQuantity<T>(int orderId)
+        {
+            var products = Context.Product
+                .Where(p => p.Orders.Any(o => o.Id == orderId));
+
+            var orderedProducts = Context.OrderedProduct
+                .Where(op => op.OrderId == orderId);
+            
+            return (IEnumerable<T>)products
+                .Join(orderedProducts,
+                    p => p.Id, 
+                    op => op.ProductId,
+                    (p, op) => new {p, op.Quantity});
+        }
+
         public void Update(Product product) => Context.Product.Update(product);
 
         public void Add(Product product) => Context.Product.Add(product);
         
         public void Delete(Product product) => Context.Product.Remove(product);
+        
+        public void Attach(Product product) => Context.Product.Attach(product);
+
     }
 }

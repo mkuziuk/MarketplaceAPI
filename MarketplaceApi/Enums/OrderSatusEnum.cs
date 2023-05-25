@@ -1,4 +1,4 @@
-namespace MarketplaceApi
+namespace MarketplaceApi.Enums
 {
     public enum OrderSatus
     {
