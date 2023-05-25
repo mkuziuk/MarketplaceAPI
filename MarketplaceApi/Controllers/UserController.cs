@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -11,12 +8,10 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly MarketplaceContext _context;
         private readonly UserService _userService;
         
         public UserController(MarketplaceContext context)
         {
-            _context = context;
             _userService = new UserService(context);
         }
         

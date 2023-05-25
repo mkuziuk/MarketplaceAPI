@@ -9,18 +9,12 @@ namespace MarketplaceApi.Services
     public class UserService
     {
         private readonly UserRepository _userRepository;
-        private readonly OrderRepository _orderRepository;
-        private readonly ProductRepository _productRepository;
-        private readonly OrderedProductsRepository _orderedProductsRepository;
 
         private readonly DateTime _defaultRegistrationDate = DateTime.Now;
 
         public UserService(MarketplaceContext context)
         {
             _userRepository = new UserRepository(context);
-            _orderRepository = new OrderRepository(context);
-            _productRepository = new ProductRepository(context);
-            _orderedProductsRepository = new OrderedProductsRepository(context);
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<User>> GetUser(int userId)
