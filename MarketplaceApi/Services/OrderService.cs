@@ -39,7 +39,8 @@ namespace MarketplaceApi.Services
             if (orderUser.Id != userId & !user.Admin)
             {
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<Order>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<Order>(null, "У вас нет прав на эту операцию"));
+                    (StatusCodeEnum.BadRequest, new QueryableAndString<Order>
+                        (null, "У вас нет прав на эту операцию"));
             }
 
             var order = _orderRepository.ExistingOrders(orderId);

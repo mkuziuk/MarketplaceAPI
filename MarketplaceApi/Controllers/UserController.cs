@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using MarketplaceApi.Models;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,108 +12,54 @@ namespace MarketplaceApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly MarketplaceContext _context;
+        private readonly UserService _userService;
         
         public UserController(MarketplaceContext context)
         {
             _context = context;
+            _userService = new UserService(context);
         }
         
         [HttpGet]
-        public IActionResult Get(int id)
+        public IActionResult Get(int userId)
         {
-            var user = _context.User.AsNoTracking().FirstOrDefault(o => o.Id == id);
-            if (user == null)
-                return BadRequest($"Пользователь {id} не существует");
-            
-            return Ok(user);
+            var result = _userService.GetUser(userId);
+
+            return DoSwitch(result);
         }
 
-        [HttpPatch("adduser")]
+        [HttpPatch("changdata")]
         public IActionResult Patch(int userId, int id, string phone, string email, bool seller)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
-            
-            if (!currentUser.Admin || currentUser.Id == id) 
-                return BadRequest("У вас нет прав на данную операцию");
+            var result = _userService.ChangInfo(userId, id, phone, email, seller);
 
-            var user = _context.User.FirstOrDefault(u => u.Id == id);
-
-            if (user == null) 
-                return BadRequest($"Пользователь {id} не существует");
-
-            if (phone != null)
-                user.Phone = phone;
-            if (email != null)
-                user.Email = email;
-            user.Seller = seller;
-
-            _context.User.Update(user);
-            _context.SaveChanges();
-
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpPatch("toadmin")]
         public IActionResult PatchToAdmin(int userId, int id)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
-            
-            if (!currentUser.Admin) 
-                return BadRequest("У вас нет прав на данную операцию");
-            
-            var user = _context.User.FirstOrDefault(u => u.Id == id);
-            if (user == null) 
-                return BadRequest($"Пользователь {id} не существует");
+            var result = _userService.ToAdmin(userId, id);
 
-            user.Admin = true;
-
-            _context.User.Update(user);
-            _context.SaveChanges();
-
-            return Ok();
+            return DoSwitch(result);
         }
         
         [HttpPost]
         public IActionResult Post(string phone, string email, string firstName, string secondName, 
             string deliveryAddress)
         {
-            var user = new User()
-            {
-                Phone = phone,
-                Email = email,
-                FirstName = firstName,
-                SecondName = secondName,
-                DeliveryAddress = deliveryAddress,
-                RegistrationDate = DateTime.Now,
-                Admin = false,
-                Seller = false
-            };
-            
-            _context.Add(user);
-            _context.SaveChanges(); 
-            return Ok();
+            var result = _userService
+                .CreateUser(phone, email, firstName, secondName, deliveryAddress);
+
+            return DoSwitch(result);
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int userId, int id)
         {
-            var user = _context.User.FirstOrDefault(o => o.Id == id);
-            if (user == null) 
-                return BadRequest($"Пользователь {id} не найден");
+            var result = _userService.DeleteUser(userId, id);
 
-            var ifAdmin = _context.User.Any(u => u.Admin);
-            var ifYourself = _context.User.Any(u => u.Id == id);
-
-            if (!ifAdmin || !ifYourself)
-                return BadRequest("У вас нет прав на эту операцию");
-                
-            _context.Remove(user); 
-            _context.SaveChanges(); 
-            return Ok();
+            return DoSwitch(result);
         }
     }
 }
