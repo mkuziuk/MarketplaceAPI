@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MarketplaceApi.Enums;
 
 namespace MarketplaceApi.Services
 {

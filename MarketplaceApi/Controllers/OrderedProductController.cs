@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
-using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Controllers
 {
@@ -12,12 +8,10 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class OrderedProductController : ControllerBase
     {
-        private readonly MarketplaceContext _context;
         private readonly OrderedProductService _orderedProductService;
         
         public OrderedProductController(MarketplaceContext context)
         {
-            _context = context;
             _orderedProductService = new OrderedProductService(context);
         }
         
