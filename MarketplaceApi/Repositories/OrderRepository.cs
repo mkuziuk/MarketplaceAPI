@@ -29,9 +29,9 @@ namespace MarketplaceApi.Repositories
             .Where(o => o.Id == orderId);
                 
         public Order OrderPerUser(int userId) => Context.Order.FirstOrDefault(o => o.UserId == userId);
-        public OrderView OrderPerUserView(int userId) => SelectOrderView()
-            .FirstOrDefault(o => o.UserId == userId);
-        public IEnumerable<Order> OrdersPerUser(int userId) => Context.Order.Where(o => o.UserId == userId);
+        //public OrderView OrderPerUserView(int userId) => SelectOrderView()
+           //.FirstOrDefault(o => o.UserId == userId);
+        //public IEnumerable<Order> OrdersPerUser(int userId) => Context.Order.Where(o => o.UserId == userId);
         public IEnumerable<OrderView> OrdersPerUserView(int userId) => SelectOrderView()
             .Where(o => o.UserId == userId);
         

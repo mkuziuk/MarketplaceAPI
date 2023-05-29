@@ -39,7 +39,7 @@ namespace MarketplaceApi.Repositories
         public IQueryable<ProductView> ExistingProductsObj(int productId) => SelectProductView()
             .Where(p => p.Id == productId);
         
-        public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
+        //public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
         
         public IQueryable<Product> ProductsByOrder(int orderId) => Context.Product
             .Where(p => p.Orders.Any(o => o.Id == orderId));
@@ -129,8 +129,8 @@ namespace MarketplaceApi.Repositories
             return resultingProducts;
         }
 
-        public IEnumerable<Product> GetProductsInOrder(int orderId) => Context.Product
-            .Where(p => p.Orders.Any(o => o.Id == orderId));
+        //public IEnumerable<Product> GetProductsInOrder(int orderId) => Context.Product
+            //.Where(p => p.Orders.Any(o => o.Id == orderId));
         
         public IEnumerable<T> GetProductsInOrderWithQuantity<T>(int orderId)
         {
