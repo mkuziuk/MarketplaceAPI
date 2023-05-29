@@ -36,6 +36,10 @@ namespace MarketplaceApi.Services
                     (null, $"Магазин {shopId} не существует"));
 
             var products = _productRepository.ProductsInShop(shopId);
+            if (products == null)
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                    (null, $"Товаров в магазине {shopId} нет"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
             (StatusCodeEnum.Ok, new QueryableAndString<object>
@@ -64,7 +68,7 @@ namespace MarketplaceApi.Services
 
             var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
             var moderators = _userRepository.ExistingUsersView(shopModeratorIds);
-            
+
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
             (StatusCodeEnum.Ok, new QueryableAndString<object>
                 (moderators, "Получилось"));

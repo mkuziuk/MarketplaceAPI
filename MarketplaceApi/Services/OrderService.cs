@@ -39,13 +39,16 @@ namespace MarketplaceApi.Services
 
             var orderUser = _userRepository.UserByOrderId(orderId);
             if (orderUser.Id != userId & !user.Admin)
-            {
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                     (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, "У вас нет прав на эту операцию"));
-            }
+            
 
             var order = _orderRepository.ExistingOrdersView(orderId);
+            if (order == null)
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                    (null, $"Заказ {orderId} не существует"));
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(order, null));
@@ -54,11 +57,16 @@ namespace MarketplaceApi.Services
         public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetUserOrders(int userId)
         {
             var user = _userRepository.ExistingUser(userId);
-            var orders = _orderRepository.OrdersPerUserView(userId);
-            
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>(null, $"Пользователь {userId} не существует"));
+                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                        (null, $"Пользователь {userId} не существует"));
+            
+            var orders = _orderRepository.OrdersPerUserView(userId);
+            if (orders == null)
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                    (null, $"Пользователь {userId} не имеет заказов"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(orders, null));

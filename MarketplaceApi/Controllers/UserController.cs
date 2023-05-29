@@ -26,7 +26,7 @@ namespace MarketplaceApi.Controllers
         [HttpPatch("changdata")]
         public IActionResult Patch(int userId, int id, string phone, string email, bool seller)
         {
-            var result = _userService.ChangInfo(userId, id, phone, email, seller);
+            var result = _userService.ChangeInfo(userId, id, phone, email, seller);
 
             return DoSwitch(result);
         }

@@ -31,7 +31,7 @@ namespace MarketplaceApi.Services
                 (user, "Получилось")); 
         }
 
-        public KeyValuePair<StatusCodeEnum, string> ChangInfo
+        public KeyValuePair<StatusCodeEnum, string> ChangeInfo
             (int userId, int id, string phone, string email, bool seller)
         {
             var currentUser = _userRepository.ExistingUser(userId);

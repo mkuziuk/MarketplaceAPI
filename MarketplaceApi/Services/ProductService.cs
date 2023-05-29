@@ -47,6 +47,10 @@ namespace MarketplaceApi.Services
 
             var similarProducts = _productRepository
                 .SimilarProducts(product, limit, PriceFluctuation, SizeFluctuation, VolumeFluctuation);
+            if (similarProducts == null)
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                    (null, $"Товаров похожих на {productId} нет"));
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>(StatusCodeEnum.Ok,
                 new QueryableAndString<object>(similarProducts, "Получилось"));
