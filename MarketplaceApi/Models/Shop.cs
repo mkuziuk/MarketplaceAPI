@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace MarketplaceApi.Models
 {
@@ -14,10 +15,11 @@ namespace MarketplaceApi.Models
         public DateTime CreationDate { get; set; }
 
         public int OwnerId { get; set; }
-        public User Owner { get; set; } = null!;
+        public virtual User Owner { get; set; } = null!;
         
-        public ICollection<Product> Products { get; set; } = new List<Product>();
-        public ICollection<User> Moderators { get; set; } = new List<User>();
-        public ICollection<ShopModerator> ShopModerators { get; set; } = new List<ShopModerator>();
+        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+        
+        public virtual ICollection<User> Moderators { get; set; } = new List<User>();
+        public virtual ICollection<ShopModerator> ShopModerators { get; set; } = new List<ShopModerator>();
     }
 }

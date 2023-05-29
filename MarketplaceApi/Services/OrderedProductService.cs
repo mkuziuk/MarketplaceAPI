@@ -63,7 +63,7 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.BadRequest, "Заказ уже оформлен");
 
-            var product = _productRepository.ExistingProduct(productId);
+            var product = _productRepository.ExistingProductView(productId);
             if (product == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.BadRequest, $"Товар {productId} не существует");
@@ -94,8 +94,7 @@ namespace MarketplaceApi.Services
                 (StatusCodeEnum.Ok, "Получилось");
         }
         
-        public KeyValuePair<StatusCodeEnum, string> AddProductToOrder
-            (int userId, int orderId, int productId, int quantity)
+        public KeyValuePair<StatusCodeEnum, string> AddProductToOrder(int userId, int orderId, int productId, int quantity)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
@@ -136,7 +135,7 @@ namespace MarketplaceApi.Services
                 _orderedProductRepository.Save();
                 
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.Ok, $"Получилось добавить товар");
+                    (StatusCodeEnum.Ok, "Получилось добавить товар");
             }
             
             if (product.InStockQuantity < orderedProduct.Quantity + quantity)

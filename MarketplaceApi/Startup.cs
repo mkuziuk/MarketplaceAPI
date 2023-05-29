@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,12 +39,18 @@ namespace MarketplaceApi
 
 
             services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
+            
+            /*
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+                */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
+          
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

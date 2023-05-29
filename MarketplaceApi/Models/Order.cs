@@ -18,9 +18,9 @@ namespace MarketplaceApi.Models
         
         public string DeliveryAddress { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
 
-        public ICollection<Product> Products { get; set; } = new List<Product>();
-        public ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
+        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+        public virtual ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
     }
 }

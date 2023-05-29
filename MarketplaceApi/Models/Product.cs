@@ -11,7 +11,7 @@ namespace MarketplaceApi.Models
         [Key, Column(Order = 0)]
         public int Id { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
         public string Name { get; set; }
         public int Type { get; set; } // statue, 
         public int UseCase { get; set; } // game, watch
@@ -26,10 +26,10 @@ namespace MarketplaceApi.Models
         public bool IsPublic { get; set; }
         public DateTime? PublicationDate { get; set; }
 
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
-        public ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<OrderedProduct> OrderedProducts { get; } = new List<OrderedProduct>();
         
         public int ShopId { get; set; }
-        public Shop Shop { get; set; } = null!;
+        public virtual Shop Shop { get; set; } = null!;
     }
 }

@@ -17,8 +17,13 @@ namespace MarketplaceApi.Models
         //public DbSet<Bill> Bill { get; set; }
         public DbSet<OrderedProduct> OrderedProduct { get; set; }
         public DbSet<Shop> Shop { get; set; }
-        //public DbSet<ShopModerator> ShopModerator { get; set; }
+        public DbSet<ShopModerator> ShopModerator { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .UseLazyLoadingProxies();
+        }
         protected override void OnModelCreating(ModelBuilder mb)
         {
             mb

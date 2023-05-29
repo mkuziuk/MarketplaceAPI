@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,105 +11,54 @@ namespace MarketplaceApi.Controllers
     public class ShopController : ControllerBase
     {
         private readonly MarketplaceContext _context;
+        private readonly ShopService _shopService;
         
         public ShopController(MarketplaceContext context)
         {
             _context = context;
+            _shopService = new ShopService(context);
         }
 
-        [HttpGet("shopproducts")]
-        public IActionResult GetShopProducts(int id)
+        [HttpGet("productsinshop")]
+        public IActionResult GetShopProducts(int shopId)
         {
-            var shop = _context.Shop.AsNoTracking().FirstOrDefault(s => s.Id == id);
-            if (shop == null) return BadRequest($"Магазин {id} не существует");
+            var result = _shopService.ProductsInShop(shopId);
 
-            return Ok(shop);
+            return DoSwitch(result);
         }
         
         [HttpGet("shopmods")]
-        public IActionResult GetShopOwners(int userId, int shopId)
+        public IActionResult GetShopModerators(int userId, int shopId)
         {
-            var currentUser = _context.User.AsNoTracking().FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
-            
-            var shop = _context.Shop.AsNoTracking().FirstOrDefault(s => s.Id == shopId);
-            if (shop == null) 
-                return BadRequest($"Магазин {shopId} не существует");
-            
-            var admittedUser = _context.User.AsNoTracking().FirstOrDefault(u => 
-                u.Admin || u.ShopsWhereModerator.Any(sm=> sm.Moderators
-                    .Any(m=> m.Id == userId)));
-            if (admittedUser == null)
-                return BadRequest("У вас нет прав на данную операцию");
-            
-            return Ok(shop.Moderators);
+            var result = _shopService.ShopModerators(userId, shopId);
+
+            return DoSwitch(result);
         }
 
         [HttpPost("createshop")]
-        public IActionResult PostCreateShop(int userId, string shopname)
+        public IActionResult PostCreateShop(int userId, string shopName)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
-            
-            var newShop = new Shop()
-            {
-                Name = shopname,
-                CreationDate = DateTime.Now,
-                Moderators = new List<User>() {currentUser},
-                OwnerId = userId
-            };
-            
-            currentUser.Seller = true;
-            currentUser.ShopsWhereModerator = new List<Shop>() { newShop };
-            currentUser.ShopsOwned = new List<Shop>() { newShop };
-            _context.User.Update(currentUser);
+            var result = _shopService.CreateShop(userId, shopName);
 
-            _context.Shop.Add(newShop);
-            _context.SaveChanges();
-
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpPatch("addmoderator")]
         public IActionResult PatchAddModerator(int userId, int shopId, int newModeratorId)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
-            if (currentUser == null)
-                return BadRequest($"Пользователь {userId} не существует");
-            
-            var currentShop = _context.Shop.FirstOrDefault(s => s.Id == shopId);
-            if (currentShop == null)
-                return BadRequest($"Магазин {shopId} не существует");
+            var result = _shopService.AddModerator(userId, shopId, newModeratorId);
 
-            var shopOwningUser = currentUser.ShopsOwned.FirstOrDefault(so => so.Id == currentShop.Id);
-            if (!currentUser.Admin && shopOwningUser == null)
-                return BadRequest("У вас нет прав на добавление модераторов");
-            
-            var newModerator = _context.User.FirstOrDefault(u => u.Id == newModeratorId);
-            if (newModerator == null)
-                return BadRequest($"Пользователь {newModeratorId} не существует");
-
-            //var existingModerators = currentShop.ModeratorUsers.Any(mu => mu.Id == newModeratorId);
-            var existingModerators = _context.Shop.Any(s=> 
-                s.Moderators.Any(mu=> mu.Id == newModeratorId));
-            if (existingModerators)
-                return BadRequest($"Модератор {newModeratorId} уже добавлен к магазину");
-                
-            //currentShop.Moderators = new List<User>() { newModerator };
-
-            currentShop.Moderators.Add(newModerator);
-            
-            _context.Shop.Update(currentShop);
-            _context.SaveChanges();
-            
-            return Ok();
+            return DoSwitch(result);
         }
 
         [HttpDelete("deletemoderator")]
         public IActionResult DeleteModerator(int userId, int shopId, int moderatorId)
         {
+            var result = _shopService.DeleteModerator(userId, shopId, moderatorId);
+
+            return DoSwitch(result);
+
+            /*
             var currentUser = _context.User.FirstOrDefault(u => u.Id == userId);
             if (currentUser == null)
                 return BadRequest($"Пользователь {userId} не существует");
@@ -122,7 +72,7 @@ namespace MarketplaceApi.Controllers
                 return BadRequest($"Пользователь {moderatorId} не существует");
             
             var ifIsOwner = _context.Shop.Any(s => s.OwnerId == userId);
-            if (!ifIsOwner && !moderator.Admin)
+            if (!ifIsOwner & !moderator.Admin)
                 return BadRequest("У вас нет прав на удаление модераторов");
             
             var ifIsModeratorOwner = _context.User.Any(u =>
@@ -145,6 +95,7 @@ namespace MarketplaceApi.Controllers
             _context.SaveChanges();
             
             return Ok();
+            */
         }
     }
 }

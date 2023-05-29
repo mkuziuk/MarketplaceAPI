@@ -4,6 +4,7 @@ using System.Linq;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
+using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Services
 {
@@ -24,39 +25,39 @@ namespace MarketplaceApi.Services
             _shopRepository = new ShopRepository(context);
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<Product>> GetProduct(int productId)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetProduct(int productId)
         {
-            var product = _productRepository.ExistingProducts(productId);
+            var product = _productRepository.ExistingProductsObj(productId);
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<Product>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
+                    (StatusCodeEnum.BadRequest, new QueryableAndString<object>
                         (null, $"Товар {productId} не существует"));
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>
-                (StatusCodeEnum.Ok, new QueryableAndString<Product>(product, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
+                (StatusCodeEnum.Ok, new QueryableAndString<object>(product, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<Product>> GetSimilar(int productId, int limit)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetSimilar(int productId, int limit)
         {
-            var product = _productRepository.ExistingProducts(productId).FirstOrDefault();
+            var product = _productRepository.ExistingProductsObj(productId).FirstOrDefault();
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<Product>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
+                    (StatusCodeEnum.BadRequest, new QueryableAndString<object>
                         (null, $"Товар {productId} не существует"));
 
             var similarProducts = _productRepository
                 .SimilarProducts(product, limit, PriceFluctuation, SizeFluctuation, VolumeFluctuation);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>(StatusCodeEnum.Ok,
-                new QueryableAndString<Product>(similarProducts, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>(StatusCodeEnum.Ok,
+                new QueryableAndString<object>(similarProducts, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<Product>> GetNewOfTheWeek(int limit)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> GetNewOfTheWeek(int limit)
         {
             var newProducts = _productRepository.NewInTimeInterval(7).Take(limit);
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>(StatusCodeEnum.Ok,
-                new QueryableAndString<Product>(newProducts, null));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>(StatusCodeEnum.Ok,
+                new QueryableAndString<ProductView>(newProducts, null));
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<List<int>>> GetAttributes()
@@ -73,15 +74,15 @@ namespace MarketplaceApi.Services
                 new QueryableAndString<List<int>>(attributes, "Получилось")); 
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<Product>> Search(string name, int? type, int? useCase,
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> Search(string name, int? type, int? useCase,
             int? whereUsed, int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth,
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             var products = _productRepository.SearchByAttributes(name, type, useCase, whereUsed, 
                 material, minLength, maxLength, minWidth, maxWidth, minHeight, maxHeight, minPrice, maxPrice);
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<Product>>(StatusCodeEnum.Ok,
-                new QueryableAndString<Product>(products, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>(StatusCodeEnum.Ok,
+                new QueryableAndString<ProductView>(products, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> AddProduct(ProductEntity productEntity)

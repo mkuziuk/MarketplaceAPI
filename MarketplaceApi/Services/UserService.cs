@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
+using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Services
 {
@@ -17,16 +18,16 @@ namespace MarketplaceApi.Services
             _userRepository = new UserRepository(context);
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<User>> GetUser(int userId)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> GetUser(int userId)
         {
-            var user = _userRepository.ExistingUsers(userId);
+            var user = _userRepository.ExistingUsersView(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<User>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<User>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+                (StatusCodeEnum.BadRequest, new QueryableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<User>>
-            (StatusCodeEnum.Ok, new QueryableAndString<User>
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+            (StatusCodeEnum.Ok, new QueryableAndString<UserView>
                 (user, "Получилось")); 
         }
 
