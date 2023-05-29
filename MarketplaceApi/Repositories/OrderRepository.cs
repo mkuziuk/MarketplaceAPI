@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MarketplaceApi.Models;
 using MarketplaceApi.Views;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Repositories
 {

@@ -41,7 +41,8 @@ namespace MarketplaceApi.Repositories
         
         public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
         
-        public IQueryable<Product> ProductsByOrder(int orderId) => Context.Product.Where(p => p.Orders.Any(o => o.Id == orderId));
+        public IQueryable<Product> ProductsByOrder(int orderId) => Context.Product
+            .Where(p => p.Orders.Any(o => o.Id == orderId));
 
         public IEnumerable<ProductView> ProductsInShop(int shopId) => SelectProductView()
             .Where(p => p.ShopId == shopId);

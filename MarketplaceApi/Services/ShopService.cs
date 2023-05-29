@@ -63,7 +63,7 @@ namespace MarketplaceApi.Services
                     (null, "У вас нет прав на данную операцию"));
 
             var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
-            var moderators = _userRepository.ExistingUsers(shopModeratorIds);
+            var moderators = _userRepository.ExistingUsersView(shopModeratorIds);
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
             (StatusCodeEnum.Ok, new QueryableAndString<object>

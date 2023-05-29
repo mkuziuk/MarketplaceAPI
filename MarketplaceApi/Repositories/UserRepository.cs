@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using MarketplaceApi.Entities;
 using MarketplaceApi.Models;
 using MarketplaceApi.Views;
-using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Repositories
 {
@@ -30,26 +27,10 @@ namespace MarketplaceApi.Repositories
         public IEnumerable<UserView> ExistingUsersView(int userId) => SelectUserView()
             .Where(u => u.Id == userId);
         
-        public IQueryable<User> ExistingUsers(int userId) => Context.User.Where(u => u.Id == userId);
+        //public IQueryable<User> ExistingUsers(int userId) => Context.User.Where(u => u.Id == userId);
 
-        public IEnumerable<UserView> ExistingUsers(IEnumerable<int> userIds)
-        {
-            var users = Context.User;
-            return users
-                .Select(u => new UserView()
-                {
-                    Id = u.Id,
-                    Phone = u.Phone,
-                    Email = u.Email,
-                    FirstName = u.FirstName,
-                    SecondName = u.SecondName,
-                    RegistrationDate = u.RegistrationDate,
-                    DeliveryAddress = u.DeliveryAddress,
-                    Seller = u.Seller
-                })
+        public IEnumerable<UserView> ExistingUsersView(IEnumerable<int> userIds) => SelectUserView()
                 .Where(u => userIds.Contains(u.Id));
-        }
-
 
         public User UserByOrderId(int orderId) => Context.User
             .FirstOrDefault(u => u.Orders.Any(o => o.Id == orderId));
