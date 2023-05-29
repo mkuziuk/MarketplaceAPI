@@ -2,7 +2,7 @@ namespace MarketplaceApi.Enums
 {
     public enum StatusCodeEnum
     {
-        BadRequest = 400,
+        NotFound = 404,
         Ok = 200
     }
 }

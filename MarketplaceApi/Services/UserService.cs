@@ -23,7 +23,7 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUsersView(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<UserView>
+                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
@@ -37,18 +37,18 @@ namespace MarketplaceApi.Services
             var currentUser = _userRepository.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             if (userId != id & !currentUser.Admin)
             {
                 return new KeyValuePair<StatusCodeEnum, string>
-                (StatusCodeEnum.BadRequest, "У вас нет прав на эту операцию");
+                (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
             var user = _userRepository.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                (StatusCodeEnum.BadRequest, $"Пользователь {id} не существует");
+                (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
             
             if (phone != null)
                 user.Phone = phone;
@@ -67,22 +67,22 @@ namespace MarketplaceApi.Services
             var currentUser = _userRepository.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             if (!currentUser.Admin)
             {
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, "У вас нет прав на эту операцию");
+                    (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
             var user = _userRepository.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {id} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
             
             if (user.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {id} уже Администратор");
+                    (StatusCodeEnum.NotFound, $"Пользователь {id} уже Администратор");
 
             user.Admin = true;
             
@@ -118,18 +118,18 @@ namespace MarketplaceApi.Services
             var currentUser = _userRepository.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             if (userId != id & !currentUser.Admin)
             {
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, "У вас нет прав на эту операцию");
+                    (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
             var user = _userRepository.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {id} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
             
             _userRepository.Delete(user);
             _userRepository.Save();

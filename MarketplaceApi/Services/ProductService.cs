@@ -30,7 +30,7 @@ namespace MarketplaceApi.Services
             var product = _productRepository.ExistingProductsObj(productId);
             if (product == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                    (StatusCodeEnum.NotFound, new QueryableAndString<object>
                         (null, $"Товар {productId} не существует"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
@@ -42,7 +42,7 @@ namespace MarketplaceApi.Services
             var product = _productRepository.ExistingProductsObj(productId).FirstOrDefault();
             if (product == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                    (StatusCodeEnum.NotFound, new QueryableAndString<object>
                         (null, $"Товар {productId} не существует"));
 
             var similarProducts = _productRepository
@@ -89,38 +89,38 @@ namespace MarketplaceApi.Services
         {
             var user = _userRepository.ExistingUser(productEntity.UserId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {productEntity.UserId} не существует");
 
             var shop = _shopRepository.ExistingShop(productEntity.ShopId);
             if (shop == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Магазин {productEntity.ShopId} не существует");
 
             var isModeratorInShop = _userRepository.IsModeratorInShop(productEntity.UserId, productEntity.ShopId);
             if (!isModeratorInShop & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас нет прав на добавление товаров в этом магазин");
             
             var ifTypeExists = ProductEntity.ListOfTypes.Any(lt => lt.Equals(productEntity.Type));
             if (!ifTypeExists)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Тип {productEntity.Type} не существует");
 
             var ifUseCaseExists = ProductEntity.ListOfUseCases.Any(uc => uc.Equals(productEntity.UseCase));
             if(!ifUseCaseExists)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Способ применения {productEntity.UseCase} не существует");
             
             var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereUsed
                 .Any(wu => wu.Equals(productEntity.WhereUsed));
             if (!ifWhereCanBeUsedExists)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Место применения {productEntity.WhereUsed} не существует");
             
             var ifMaterialExists = ProductEntity.ListOfMaterials.Any(lm => lm.Equals(productEntity.Material));
             if (!ifMaterialExists)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Материал {productEntity.Material} не существует");
             
             var product = new Product()
@@ -154,17 +154,17 @@ namespace MarketplaceApi.Services
         {
             var product = _productRepository.ExistingProduct(productId);
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Продукт {productId} не найден");
 
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {userId} не найден");
                 
             var isModeratorInShop = _userRepository.IsModeratorInShop(userId, product.ShopId);
             if (!isModeratorInShop & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас нет прав на редактирование товаров в этом магазин");
             
             if (price != null) product.Price = price.Value;
@@ -181,17 +181,17 @@ namespace MarketplaceApi.Services
         {
             var product = _productRepository.ExistingProduct(productId);
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Продукт {productId} не найден");
 
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {userId} не найден");
                 
             var isModeratorInShop = _userRepository.IsModeratorInShop(userId, product.ShopId);
             if (!isModeratorInShop & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас нет прав на редактирование товаров в этом магазин");
 
             product.IsPublic = !product.IsPublic;
@@ -206,17 +206,17 @@ namespace MarketplaceApi.Services
         {
             var product = _productRepository.ExistingProduct(productId);
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Продукт {productId} не найден");
 
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {userId} не найден");
                 
             var isModeratorInShop = _userRepository.IsModeratorInShop(userId, product.ShopId);
             if (!isModeratorInShop & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас нет прав на удаление товаров в этом магазин");
             
             _productRepository.Delete(product);

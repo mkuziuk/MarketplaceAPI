@@ -34,14 +34,14 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<OrderView>
+                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
 
             var orderUser = _userRepository.UserByOrderId(orderId);
             if (orderUser.Id != userId & !user.Admin)
             {
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<OrderView>
+                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, "У вас нет прав на эту операцию"));
             }
 
@@ -58,7 +58,7 @@ namespace MarketplaceApi.Services
             
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.BadRequest, new QueryableAndString<OrderView>(null, $"Пользователь {userId} не существует"));
+                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>(null, $"Пользователь {userId} не существует"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(orders, null));
@@ -70,21 +70,21 @@ namespace MarketplaceApi.Services
             var order = _orderRepository.ExistingOrder(orderId);
             if (order == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, ($"Заказ {orderId} не существует"));
+                    (StatusCodeEnum.NotFound, ($"Заказ {orderId} не существует"));
              
             if (order!.OrderStatusId != (int)OrderSatus.Basket)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, ("Данный заказ уже оформлен"));
+                    (StatusCodeEnum.NotFound, ("Данный заказ уже оформлен"));
 
             var currentUser = _userRepository.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, ($"Пользователь {userId} не существует"));
+                    (StatusCodeEnum.NotFound, ($"Пользователь {userId} не существует"));
 
             var user = _userRepository.UserByOrderId(orderId);
             if (user.Id != userId & !currentUser.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, ("У вас нет прав на эту операцию"));
+                    (StatusCodeEnum.NotFound, ("У вас нет прав на эту операцию"));
               
             var products = _productRepository.ProductsByOrder(orderId)
                 .OrderBy(p => p.Id)
@@ -110,7 +110,7 @@ namespace MarketplaceApi.Services
             var ifWayOfPaymentExists = waysOfPayment.Any(l => (int)l == wayOfPayment);
             if (!ifWayOfPaymentExists)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, ("Данный способ оплаты не существует"));
+                    (StatusCodeEnum.NotFound, ("Данный способ оплаты не существует"));
 
             order.WayOfPayment = wayOfPayment;
             order.OrderStatusId = (int)OrderSatus.Ordered;
@@ -128,7 +128,7 @@ namespace MarketplaceApi.Services
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest, 
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound, 
                     $"Пользователь {userId} не существует");
 
             var order = new Order()
@@ -147,15 +147,15 @@ namespace MarketplaceApi.Services
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {userId} не существует");
             if (!user.Admin)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас не прав на эту операцию");
 
             var order = _orderRepository.ExistingOrder(orderId);
             if (order == null)
-                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.BadRequest,
+                return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Заказ {orderId} не существует");
             
             _orderRepository.Remove(order);

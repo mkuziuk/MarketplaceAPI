@@ -32,7 +32,7 @@ namespace MarketplaceApi.Services
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Магазин {shopId} не существует"));
 
             var products = _productRepository.ProductsInShop(shopId);
@@ -47,19 +47,19 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Пользователь {userId} не существует"));
 
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Магазин {shopId} не существует"));
 
             var isUserModerator = _userRepository.IsModeratorInShop(userId, shopId);
             if (!isUserModerator & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.BadRequest, new QueryableAndString<object>
+                (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, "У вас нет прав на данную операцию"));
 
             var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
@@ -75,7 +75,7 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             var newShop = new Shop()
             {
@@ -103,27 +103,27 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                (StatusCodeEnum.BadRequest, $"Магазин {shopId} не существует");
+                (StatusCodeEnum.NotFound, $"Магазин {shopId} не существует");
             
             var shopOwningUser = user.ShopsOwned.FirstOrDefault(so => so.Id == user.Id);
             if (shopOwningUser == null & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"У вас нет прав на добавление модераторов в магазин {shopId}");
+                    (StatusCodeEnum.NotFound, $"У вас нет прав на добавление модераторов в магазин {shopId}");
 
             var newModerator = _userRepository.ExistingUser(newModeratorId);
             if (newModerator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {newModeratorId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {newModeratorId} не существует");
 
             var isUserModerator = _shopRepository.IsUserModerator(newModeratorId, shopId);
             if (isUserModerator)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Модератор {newModeratorId} уже добавлен к магазину");
+                    (StatusCodeEnum.NotFound, $"Модератор {newModeratorId} уже добавлен к магазину");
             
             shop.Moderators.Add(newModerator);
             
@@ -139,31 +139,31 @@ namespace MarketplaceApi.Services
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {userId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Магазин {shopId} не существует");
+                    (StatusCodeEnum.NotFound, $"Магазин {shopId} не существует");
             
             var moderator = _userRepository.ExistingUser(moderatorId);
             if (moderator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"Пользователь {moderatorId} не существует");
+                    (StatusCodeEnum.NotFound, $"Пользователь {moderatorId} не существует");
 
             var isUserOwner = _shopRepository.IsUserOwner(userId, shopId);
             if (!isUserOwner & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, "У вас не прав на удаление модераторов");
+                    (StatusCodeEnum.NotFound, "У вас не прав на удаление модераторов");
             
             if (user.Id == moderatorId)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, "Вы не можете удалить сами себя из модераторов");
+                    (StatusCodeEnum.NotFound, "Вы не можете удалить сами себя из модераторов");
 
             var shopModerator = _shopRepository.IncludeModeratorInShop(shopId, userId);
             if (shopModerator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.BadRequest, $"В магазине {shopId} нет модератора {moderatorId}");
+                    (StatusCodeEnum.NotFound, $"В магазине {shopId} нет модератора {moderatorId}");
             
             moderator.ShopsWhereModerator.Add(shop);
             _userRepository.Attach(moderator);
