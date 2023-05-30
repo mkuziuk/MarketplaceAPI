@@ -329,3 +329,6 @@
 /home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/obj/Debug/netcoreapp3.1/MarketplaceApi.MvcApplicationPartsAssemblyInfo.cs
 /home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Castle.Core.dll
 /home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Microsoft.EntityFrameworkCore.Proxies.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/AutoMapper.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/System.Runtime.CompilerServices.Unsafe.dll

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
+using MarketplaceApi.Views;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace MarketplaceApi.Services
@@ -11,67 +13,67 @@ namespace MarketplaceApi.Services
     public class ShopService
     {
         private readonly UserRepository _userRepository;
-        private readonly OrderRepository _orderRepository;
         private readonly ProductRepository _productRepository;
-        private readonly OrderedProductRepository _orderedProductRepository;
         private readonly ShopRepository _shopRepository;
+        private readonly IMapper _mapper;
         
         private DateTime _defaultCreationDate = DateTime.Now;
 
-        public ShopService(MarketplaceContext context)
+        public ShopService(MarketplaceContext context, IMapper mapper)
         {
             _userRepository = new UserRepository(context);
-            _orderRepository = new OrderRepository(context);
             _productRepository = new ProductRepository(context);
-            _orderedProductRepository = new OrderedProductRepository(context);
             _shopRepository = new ShopRepository(context);
+            _mapper = mapper;
         }
         
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> ProductsInShop(int shopId)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> ProductsInShop(int shopId)
         {
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<ProductView>
                     (null, $"Магазин {shopId} не существует"));
 
             var products = _productRepository.ProductsInShop(shopId);
-            if (products == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+            var productsView = _mapper.ProjectTo<ProductView>(products);
+            if (productsView == null)
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<ProductView>
                     (null, $"Товаров в магазине {shopId} нет"));
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-            (StatusCodeEnum.Ok, new QueryableAndString<object>
-                (products, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
+            (StatusCodeEnum.Ok, new QueryableAndString<ProductView>
+                (productsView, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> ShopModerators(int userId, int shopId)
+        public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> ShopModerators(int userId, int shopId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
 
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
                     (null, $"Магазин {shopId} не существует"));
 
             var isUserModerator = _userRepository.IsModeratorInShop(userId, shopId);
             if (!isUserModerator & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
                     (null, "У вас нет прав на данную операцию"));
 
             var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
-            var moderators = _userRepository.ExistingUsersView(shopModeratorIds);
+            var moderators = _userRepository.ExistingUsers(shopModeratorIds);
+            var moderatorsView = _mapper.ProjectTo<UserView>(moderators);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-            (StatusCodeEnum.Ok, new QueryableAndString<object>
-                (moderators, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
+            (StatusCodeEnum.Ok, new QueryableAndString<UserView>
+                (moderatorsView, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> CreateShop(int userId, string shopName)

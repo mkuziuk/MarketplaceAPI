@@ -1,3 +1,4 @@
+using AutoMapper;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,9 @@ namespace MarketplaceApi.Controllers
     {
         private readonly OrderedProductService _orderedProductService;
         
-        public OrderedProductController(MarketplaceContext context)
+        public OrderedProductController(MarketplaceContext context, IMapper mapper)
         {
-            _orderedProductService = new OrderedProductService(context);
+            _orderedProductService = new OrderedProductService(context, mapper);
         }
         
         [HttpGet]

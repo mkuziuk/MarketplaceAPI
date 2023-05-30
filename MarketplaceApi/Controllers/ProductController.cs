@@ -1,3 +1,4 @@
+using AutoMapper;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,10 @@ namespace MarketplaceApi.Controllers
     {
         private readonly ProductService _productService;
 
-        public ProductController(MarketplaceContext context)
+        public ProductController(MarketplaceContext context, IMapper mapper)
         {
-            _productService = new ProductService(context);
+            _productService = new ProductService(context, mapper);
+            
         }
         
         [HttpGet("getproduct")]

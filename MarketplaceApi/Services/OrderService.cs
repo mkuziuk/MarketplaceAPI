@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
@@ -14,13 +15,15 @@ namespace MarketplaceApi.Services
         private readonly OrderRepository _orderRepository;
         private readonly ProductRepository _productRepository;
         private readonly OrderedProductRepository _orderedProductRepository;
+        private readonly IMapper _mapper;
 
-        public OrderService(MarketplaceContext context)
+        public OrderService(MarketplaceContext context, IMapper mapper)
         {
             _userRepository = new UserRepository(context);
             _orderRepository = new OrderRepository(context);
             _productRepository = new ProductRepository(context);
             _orderedProductRepository = new OrderedProductRepository(context);
+            _mapper = mapper;
         }
 
         //public static DateTime? DefaultOrderDate() => null;
@@ -44,14 +47,15 @@ namespace MarketplaceApi.Services
                         (null, "У вас нет прав на эту операцию"));
             
 
-            var order = _orderRepository.ExistingOrdersView(orderId);
-            if (order == null)
+            var orders = _orderRepository.ExistingOrders(orderId);
+            var ordersView = _mapper.ProjectTo<OrderView>(orders);
+            if (ordersView == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                     (null, $"Заказ {orderId} не существует"));
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(order, null));
+                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetUserOrders(int userId)
@@ -62,14 +66,15 @@ namespace MarketplaceApi.Services
                     (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
             
-            var orders = _orderRepository.OrdersPerUserView(userId);
-            if (orders == null)
+            var orders = _orderRepository.OrdersPerUser(userId);
+            var ordersView = _mapper.ProjectTo<OrderView>(orders);
+            if (ordersView == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                     (null, $"Пользователь {userId} не имеет заказов"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(orders, null));
+                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
         }
         
 //StatusCodeEnum

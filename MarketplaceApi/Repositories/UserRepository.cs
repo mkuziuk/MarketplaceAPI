@@ -9,27 +9,11 @@ namespace MarketplaceApi.Repositories
     {
         public UserRepository(MarketplaceContext context) : base(context) {}
 
-        private IEnumerable<UserView> SelectUserView() => Context.User
-            .Select(u => new UserView()
-            {
-                Id = u.Id,
-                Phone = u.Phone,
-                Email = u.Email,
-                FirstName = u.FirstName,
-                SecondName = u.SecondName,
-                RegistrationDate = u.RegistrationDate,
-                DeliveryAddress = u.DeliveryAddress,
-                Seller = u.Seller
-            });
-
         public User ExistingUser(int userId) => Context.User.FirstOrDefault(u => u.Id == userId);
-        
-        public IEnumerable<UserView> ExistingUsersView(int userId) => SelectUserView()
-            .Where(u => u.Id == userId);
-        
-        //public IQueryable<User> ExistingUsers(int userId) => Context.User.Where(u => u.Id == userId);
 
-        public IEnumerable<UserView> ExistingUsersView(IEnumerable<int> userIds) => SelectUserView()
+        public IQueryable<User> ExistingUsers(int userId) => Context.User.Where(u => u.Id == userId);
+
+        public IQueryable<User> ExistingUsers(IEnumerable<int> userIds) => Context.User
                 .Where(u => userIds.Contains(u.Id));
 
         public User UserByOrderId(int orderId) => Context.User

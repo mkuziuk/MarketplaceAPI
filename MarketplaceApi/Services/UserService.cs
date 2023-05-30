@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
@@ -10,25 +11,28 @@ namespace MarketplaceApi.Services
     public class UserService
     {
         private readonly UserRepository _userRepository;
+        private readonly IMapper _mapper;
 
         private readonly DateTime _defaultRegistrationDate = DateTime.Now;
 
-        public UserService(MarketplaceContext context)
+        public UserService(MarketplaceContext context, IMapper mapper)
         {
             _userRepository = new UserRepository(context);
+            _mapper = mapper;
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> GetUser(int userId)
         {
-            var user = _userRepository.ExistingUsersView(userId);
-            if (user == null)
+            var user = _userRepository.ExistingUsers(userId);
+            var userView = _mapper.ProjectTo<UserView>(user);
+            if (userView == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
             (StatusCodeEnum.Ok, new QueryableAndString<UserView>
-                (user, "Получилось")); 
+                (userView, "Получилось")); 
         }
 
         public KeyValuePair<StatusCodeEnum, string> ChangeInfo

@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using Castle.Components.DictionaryAdapter;
+using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Views
 {

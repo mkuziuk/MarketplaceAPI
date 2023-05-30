@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
+using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Services
 {
@@ -11,13 +13,15 @@ namespace MarketplaceApi.Services
         private readonly OrderRepository _orderRepository;
         private readonly ProductRepository _productRepository;
         private readonly OrderedProductRepository _orderedProductRepository;
+        private readonly IMapper _mapper;
 
-        public OrderedProductService(MarketplaceContext context)
+        public OrderedProductService(MarketplaceContext context, IMapper mapper)
         {
             _userRepository = new UserRepository(context);
             _orderRepository = new OrderRepository(context);
             _productRepository = new ProductRepository(context);
             _orderedProductRepository = new OrderedProductRepository(context);
+            _mapper = mapper;
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetProductsInTheOrder(int userId, int orderId)
@@ -63,8 +67,9 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "Заказ уже оформлен");
 
-            var product = _productRepository.ExistingProductView(productId);
-            if (product == null)
+            var product = _productRepository.ExistingProduct(productId);
+            var productView = _mapper.Map<ProductView>(product);
+            if (productView == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Товар {productId} не существует");
 
@@ -82,9 +87,9 @@ namespace MarketplaceApi.Services
                     (StatusCodeEnum.Ok, $"Продукт {productId} был удалён из заказа {orderId}");
             }
             
-            if (newQuantity > product.InStockQuantity)
+            if (newQuantity > productView.InStockQuantity)
                 return new KeyValuePair<StatusCodeEnum, string>
-                    (StatusCodeEnum.NotFound, $"В наличие {product.InStockQuantity} товаров");
+                    (StatusCodeEnum.NotFound, $"В наличие {productView.InStockQuantity} товаров");
             
             orderedProduct.Quantity = newQuantity;
             _orderedProductRepository.Update(orderedProduct);

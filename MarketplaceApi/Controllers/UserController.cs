@@ -1,3 +1,4 @@
+using AutoMapper;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,9 @@ namespace MarketplaceApi.Controllers
     {
         private readonly UserService _userService;
         
-        public UserController(MarketplaceContext context)
+        public UserController(MarketplaceContext context, IMapper mapper)
         {
-            _userService = new UserService(context);
+            _userService = new UserService(context, mapper);
         }
         
         [HttpGet]

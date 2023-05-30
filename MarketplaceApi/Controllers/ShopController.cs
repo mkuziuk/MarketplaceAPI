@@ -1,3 +1,4 @@
+using AutoMapper;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,10 +8,9 @@ namespace MarketplaceApi.Controllers
     public class ShopController : ControllerBase
     {
         private readonly ShopService _shopService;
-        
-        public ShopController(MarketplaceContext context)
+        public ShopController(MarketplaceContext context, IMapper mapper)
         {
-            _shopService = new ShopService(context);
+            _shopService = new ShopService(context, mapper);
         }
 
         [HttpGet("productsinshop")]

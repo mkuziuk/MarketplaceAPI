@@ -29,6 +29,8 @@ namespace MarketplaceApi
             services.Configure<MvcOptions>(c =>
                 c.Conventions.Add(new SwaggerApplicationConvention()));
 
+            services.AddAutoMapper(typeof(AppMappingProfile));
+
             // Register generator and it's dependencies
 
             services.AddSwaggerGen();

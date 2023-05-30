@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using MarketplaceApi.Models;
 using MarketplaceApi.Views;
 
@@ -10,47 +11,21 @@ namespace MarketplaceApi.Repositories
     {
         public ProductRepository(MarketplaceContext context) : base(context) {}
 
-        private IQueryable<ProductView> SelectProductView() => Context.Product
-            .Select(p => new ProductView()
-            {
-                Id = p.Id,
-                UserId = p.UserId,
-                Name = p.Name,
-                ShopId = p.ShopId,
-                Price = p.Price,
-                Material = p.Material,
-                Type = p.Type,
-                UseCase = p.UseCase,
-                WhereUsed = p.WhereUsed,
-                Length = p.Length,
-                Width = p.Width,
-                Height = p.Height,
-                InStockQuantity = p.InStockQuantity,
-                IsPublic = p.IsPublic,
-                PublicationDate = p.PublicationDate
-            });
-
         public Product ExistingProduct(int productId) => Context.Product
             .FirstOrDefault(p => p.Id == productId);
-        
-        public ProductView ExistingProductView(int productId) => SelectProductView()
-            .FirstOrDefault(p => p.Id == productId);
-        
-        public IQueryable<ProductView> ExistingProductsObj(int productId) => SelectProductView()
-            .Where(p => p.Id == productId);
-        
-        //public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
+
+        public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
         
         public IQueryable<Product> ProductsByOrder(int orderId) => Context.Product
             .Where(p => p.Orders.Any(o => o.Id == orderId));
 
-        public IEnumerable<ProductView> ProductsInShop(int shopId) => SelectProductView()
+        public IQueryable ProductsInShop(int shopId) => Context.Product
             .Where(p => p.ShopId == shopId);
 
-        public IEnumerable<ProductView> SimilarProducts(ProductView product, int limit, 
+        public IQueryable<Product> SimilarProducts(ProductView product, int limit, 
             decimal priceFluctuation, decimal sizeFluctuation, decimal volumeFluctuation)
         {
-            var similarProducts = SelectProductView()
+            var similarProducts = Context.Product
                 .Where(p => 
                             p.Id != product.Id &&
                             (
@@ -86,7 +61,7 @@ namespace MarketplaceApi.Repositories
             return similarProducts;
         }
 
-        public IQueryable<ProductView> NewInTimeInterval(int interval) => SelectProductView()
+        public IQueryable<Product> NewInTimeInterval(int interval) => Context.Product
             .Where(p => p.IsPublic && p.PublicationDate >= DateTime.Now.AddDays(-interval))
             .OrderByDescending(p => p.PublicationDate);
         
@@ -102,13 +77,12 @@ namespace MarketplaceApi.Repositories
         public List<int> GetAllMaterials() => Context.Product
             .Select(p => p.Material).Distinct().ToList();
 
-        public IEnumerable<ProductView> SearchByAttributes(string name, int? type, int? useCase, int? whereUsed,
+        public IQueryable<Product> SearchByAttributes(string name, int? type, int? useCase, int? whereUsed,
             int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth,
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             
-            var resultingProducts = SelectProductView()
-                .AsEnumerable()
+            var resultingProducts = Context.Product
                 .Where(p => 
                 (name == null || p.Name.ToLower().StartsWith(name.ToLower()))
                 && (type == null || p.Type == type)
@@ -136,29 +110,12 @@ namespace MarketplaceApi.Repositories
         {
             var products = Context.Product
                 .Where(p => p.Orders.Any(o => o.Id == orderId))
-                .Select(p => new ProductView()
-                {
-                    Id = p.Id, 
-                    UserId = p.UserId,
-                    Name = p.Name, 
-                    ShopId = p.ShopId, 
-                    Price = p.Price, 
-                    Material = p.Material, 
-                    Type = p.Type, 
-                    UseCase = p.UseCase,
-                    WhereUsed = p.WhereUsed,
-                    Length = p.Length,
-                    Width = p.Width,
-                    Height = p.Height,
-                    InStockQuantity = p.InStockQuantity,
-                    IsPublic = p.IsPublic,
-                    PublicationDate = p.PublicationDate
-                });
+                .SelectProductView();
 
             var orderedProducts = Context.OrderedProduct
                 .Where(op => op.OrderId == orderId);
             
-            return (IEnumerable<object>)products
+            return products
                 .Join(orderedProducts,
                     p => p.Id, 
                     op => op.ProductId,
