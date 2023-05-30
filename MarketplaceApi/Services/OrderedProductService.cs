@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
@@ -45,10 +46,18 @@ namespace MarketplaceApi.Services
                     (null, "У вас нет прав на эту операцию"));
             }
 
-            var products = _productRepository.GetProductsInOrderWithQuantity(orderId);
+            var products = _productRepository.GetProductsInOrderWithQuantity(orderId).Item1;
+            var productsView = _mapper.ProjectTo<ProductView>(products);
+            var orderedProducts = _productRepository.GetProductsInOrderWithQuantity(orderId).Item2;
+            
+            var productsWithQuantity = productsView
+                .Join(orderedProducts,
+                p => p.Id, 
+                op => op.ProductId,
+                (p, op) => new {p, op.Quantity});
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.Ok, new QueryableAndString<object>(products, "Получилось"));
+                (StatusCodeEnum.Ok, new QueryableAndString<object>(productsWithQuantity, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> ChangeQuantity(int userId, int orderId, int productId, int newQuantity)

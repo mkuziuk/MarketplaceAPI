@@ -106,20 +106,22 @@ namespace MarketplaceApi.Repositories
         //public IEnumerable<Product> GetProductsInOrder(int orderId) => Context.Product
             //.Where(p => p.Orders.Any(o => o.Id == orderId));
         
-        public IEnumerable<object> GetProductsInOrderWithQuantity(int orderId)
+        public (IQueryable<Product>, IQueryable<OrderedProduct>) GetProductsInOrderWithQuantity(int orderId)
         {
             var products = Context.Product
-                .Where(p => p.Orders.Any(o => o.Id == orderId))
-                .SelectProductView();
+                .Where(p => p.Orders.Any(o => o.Id == orderId));
 
             var orderedProducts = Context.OrderedProduct
                 .Where(op => op.OrderId == orderId);
             
+            return (products, orderedProducts);
+            /*
             return products
                 .Join(orderedProducts,
                     p => p.Id, 
                     op => op.ProductId,
                     (p, op) => new {p, op.Quantity});
+                    */
         }
 
         public void Update(Product product) => Context.Product.Update(product);

@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using MarketplaceApi.Mapping;
 using MarketplaceApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
