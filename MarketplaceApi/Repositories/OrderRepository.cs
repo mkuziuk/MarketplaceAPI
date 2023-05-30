@@ -5,7 +5,7 @@ using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Repositories
 {
-    public class OrderRepository : Repository
+    public class OrderRepository : RepositoryBase
     {
         public OrderRepository(MarketplaceContext context) : base(context) {}
 
@@ -23,7 +23,7 @@ namespace MarketplaceApi.Repositories
             });
         
         public Order ExistingOrder(int orderId) => Context.Order.FirstOrDefault(o => o.Id == orderId);
-        public IEnumerable<Order> ExistingOrders(int orderId) => Context.Order.Where(o => o.Id == orderId);
+        //public IEnumerable<Order> ExistingOrders(int orderId) => Context.Order.Where(o => o.Id == orderId);
         
         public IEnumerable<OrderView> ExistingOrdersView(int orderId) => SelectOrderView()
             .Where(o => o.Id == orderId);

@@ -6,7 +6,7 @@ using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Repositories
 {
-    public class ProductRepository : Repository
+    public class ProductRepository : RepositoryBase
     {
         public ProductRepository(MarketplaceContext context) : base(context) {}
 
@@ -33,7 +33,7 @@ namespace MarketplaceApi.Repositories
         public Product ExistingProduct(int productId) => Context.Product
             .FirstOrDefault(p => p.Id == productId);
         
-        public dynamic ExistingProductView(int productId) => SelectProductView()
+        public ProductView ExistingProductView(int productId) => SelectProductView()
             .FirstOrDefault(p => p.Id == productId);
         
         public IQueryable<ProductView> ExistingProductsObj(int productId) => SelectProductView()
@@ -132,7 +132,7 @@ namespace MarketplaceApi.Repositories
         //public IEnumerable<Product> GetProductsInOrder(int orderId) => Context.Product
             //.Where(p => p.Orders.Any(o => o.Id == orderId));
         
-        public IEnumerable<T> GetProductsInOrderWithQuantity<T>(int orderId)
+        public IEnumerable<object> GetProductsInOrderWithQuantity(int orderId)
         {
             var products = Context.Product
                 .Where(p => p.Orders.Any(o => o.Id == orderId))
@@ -158,7 +158,7 @@ namespace MarketplaceApi.Repositories
             var orderedProducts = Context.OrderedProduct
                 .Where(op => op.OrderId == orderId);
             
-            return (IEnumerable<T>)products
+            return (IEnumerable<object>)products
                 .Join(orderedProducts,
                     p => p.Id, 
                     op => op.ProductId,

@@ -19,7 +19,7 @@ namespace MarketplaceApi.Controllers
         public IActionResult Get(int userId, int orderId)
         {
             var result = _orderedProductService
-                .GetProductsInTheOrder<dynamic>(userId, orderId);
+                .GetProductsInTheOrder(userId, orderId);
 
             return DoSwitch(result);
         }

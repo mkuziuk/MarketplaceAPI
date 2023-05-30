@@ -2,11 +2,11 @@ using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Repositories
 {
-    public abstract class Repository
+    public abstract class RepositoryBase
     {
         protected readonly MarketplaceContext Context;
 
-        protected Repository(MarketplaceContext context)
+        protected RepositoryBase(MarketplaceContext context)
         {
             Context = context;
         }

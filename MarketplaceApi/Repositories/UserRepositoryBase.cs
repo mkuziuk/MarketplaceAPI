@@ -5,9 +5,9 @@ using MarketplaceApi.Views;
 
 namespace MarketplaceApi.Repositories
 {
-    public class UserRepository : RepositoryBase
+    public class UserRepositoryBase : RepositoryBase
     {
-        public UserRepository(MarketplaceContext context) : base(context) {}
+        public UserRepositoryBase(MarketplaceContext context) : base(context) {}
 
         private IEnumerable<UserView> SelectUserView() => Context.User
             .Select(u => new UserView()

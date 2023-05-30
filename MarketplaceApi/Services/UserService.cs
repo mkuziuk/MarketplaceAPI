@@ -9,18 +9,18 @@ namespace MarketplaceApi.Services
 {
     public class UserService
     {
-        private readonly UserRepository _userRepository;
+        private readonly UserRepositoryBase _userRepositoryBase;
 
         private readonly DateTime _defaultRegistrationDate = DateTime.Now;
 
         public UserService(MarketplaceContext context)
         {
-            _userRepository = new UserRepository(context);
+            _userRepositoryBase = new UserRepositoryBase(context);
         }
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> GetUser(int userId)
         {
-            var user = _userRepository.ExistingUsersView(userId);
+            var user = _userRepositoryBase.ExistingUsersView(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
@@ -34,7 +34,7 @@ namespace MarketplaceApi.Services
         public KeyValuePair<StatusCodeEnum, string> ChangeInfo
             (int userId, int id, string phone, string email, bool seller)
         {
-            var currentUser = _userRepository.ExistingUser(userId);
+            var currentUser = _userRepositoryBase.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
@@ -45,7 +45,7 @@ namespace MarketplaceApi.Services
                 (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
-            var user = _userRepository.ExistingUser(id);
+            var user = _userRepositoryBase.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
@@ -56,15 +56,15 @@ namespace MarketplaceApi.Services
                 user.Email = email;
             user.Seller = seller;
             
-            _userRepository.Update(user);
-            _userRepository.Save();
+            _userRepositoryBase.Update(user);
+            _userRepositoryBase.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось"); 
         }
 
         public KeyValuePair<StatusCodeEnum, string> ToAdmin(int userId, int id)
         {
-            var currentUser = _userRepository.ExistingUser(userId);
+            var currentUser = _userRepositoryBase.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
@@ -75,7 +75,7 @@ namespace MarketplaceApi.Services
                     (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
-            var user = _userRepository.ExistingUser(id);
+            var user = _userRepositoryBase.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
@@ -86,8 +86,8 @@ namespace MarketplaceApi.Services
 
             user.Admin = true;
             
-            _userRepository.Update(user);
-            _userRepository.Save();
+            _userRepositoryBase.Update(user);
+            _userRepositoryBase.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось"); 
         }
@@ -107,15 +107,15 @@ namespace MarketplaceApi.Services
                 Seller = false
             };
             
-            _userRepository.Add(user);
-            _userRepository.Save();
+            _userRepositoryBase.Add(user);
+            _userRepositoryBase.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось");
         }
 
         public KeyValuePair<StatusCodeEnum, string> DeleteUser(int userId, int id)
         {
-            var currentUser = _userRepository.ExistingUser(userId);
+            var currentUser = _userRepositoryBase.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
@@ -126,13 +126,13 @@ namespace MarketplaceApi.Services
                     (StatusCodeEnum.NotFound, "У вас нет прав на эту операцию");
             }
             
-            var user = _userRepository.ExistingUser(id);
+            var user = _userRepositoryBase.ExistingUser(id);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {id} не существует");
             
-            _userRepository.Delete(user);
-            _userRepository.Save();
+            _userRepositoryBase.Delete(user);
+            _userRepositoryBase.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось"); 
         }

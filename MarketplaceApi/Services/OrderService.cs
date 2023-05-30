@@ -10,17 +10,17 @@ namespace MarketplaceApi.Services
 {
     public class OrderService
     {
-        private readonly UserRepository _userRepository;
-        private readonly OrderRepository _orderRepository;
-        private readonly ProductRepository _productRepository;
-        private readonly OrderedProductRepository _orderedProductRepository;
+        private readonly UserRepositoryBase _userRepositoryBase;
+        private readonly OrderRepositoryBase _orderRepositoryBase;
+        private readonly ProductRepositoryBase _productRepositoryBase;
+        private readonly OrderedProductRepositoryBase _orderedProductRepositoryBase;
 
         public OrderService(MarketplaceContext context)
         {
-            _userRepository = new UserRepository(context);
-            _orderRepository = new OrderRepository(context);
-            _productRepository = new ProductRepository(context);
-            _orderedProductRepository = new OrderedProductRepository(context);
+            _userRepositoryBase = new UserRepositoryBase(context);
+            _orderRepositoryBase = new OrderRepositoryBase(context);
+            _productRepositoryBase = new ProductRepositoryBase(context);
+            _orderedProductRepositoryBase = new OrderedProductRepositoryBase(context);
         }
 
         //public static DateTime? DefaultOrderDate() => null;
@@ -31,20 +31,20 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetOrder(int userId, int orderId)
         {
-            var user = _userRepository.ExistingUser(userId);
+            var user = _userRepositoryBase.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                     (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
 
-            var orderUser = _userRepository.UserByOrderId(orderId);
+            var orderUser = _userRepositoryBase.UserByOrderId(orderId);
             if (orderUser.Id != userId & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                     (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, "У вас нет прав на эту операцию"));
             
 
-            var order = _orderRepository.ExistingOrdersView(orderId);
+            var order = _orderRepositoryBase.ExistingOrdersView(orderId);
             if (order == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
@@ -56,13 +56,13 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetUserOrders(int userId)
         {
-            var user = _userRepository.ExistingUser(userId);
+            var user = _userRepositoryBase.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                     (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
             
-            var orders = _orderRepository.OrdersPerUserView(userId);
+            var orders = _orderRepositoryBase.OrdersPerUserView(userId);
             if (orders == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
@@ -75,7 +75,7 @@ namespace MarketplaceApi.Services
 //StatusCodeEnum
         public KeyValuePair<StatusCodeEnum, string> SetupOrder(int userId, int orderId, int wayOfPayment, string deliveryAddress)
         {
-            var order = _orderRepository.ExistingOrder(orderId);
+            var order = _orderRepositoryBase.ExistingOrder(orderId);
             if (order == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ($"Заказ {orderId} не существует"));
@@ -84,33 +84,33 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ("Данный заказ уже оформлен"));
 
-            var currentUser = _userRepository.ExistingUser(userId);
+            var currentUser = _userRepositoryBase.ExistingUser(userId);
             if (currentUser == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ($"Пользователь {userId} не существует"));
 
-            var user = _userRepository.UserByOrderId(orderId);
+            var user = _userRepositoryBase.UserByOrderId(orderId);
             if (user.Id != userId & !currentUser.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ("У вас нет прав на эту операцию"));
               
-            var products = _productRepository.ProductsByOrder(orderId)
+            var products = _productRepositoryBase.ProductsByOrder(orderId)
                 .OrderBy(p => p.Id)
                 .ToList();
-            var orderedProducts = _orderedProductRepository.OrderedProductsByOrder(orderId)
+            var orderedProducts = _orderedProductRepositoryBase.OrderedProductsByOrder(orderId)
                 .OrderBy(op => op.ProductId)
                 .ToList();
 
             for (var i = 0; i < products.Count(); i++)
             {
                 products[i].InStockQuantity -= orderedProducts[i].Quantity;
-                _productRepository.Update(products[i]);
+                _productRepositoryBase.Update(products[i]);
             }
             
             if (deliveryAddress != null)
             {
                 user.DeliveryAddress = deliveryAddress;
-                _userRepository.Update(user);
+                _userRepositoryBase.Update(user);
             }
   
             var waysOfPayment = Enum.GetValues(typeof(WaysOfPaymentEnum))
@@ -126,15 +126,15 @@ namespace MarketplaceApi.Services
             order.DeliveryDate = OrderedReceiveDate();
             order.DeliveryAddress = user.DeliveryAddress;
   
-            _orderRepository.Update(order);
-            _orderRepository.Save();
+            _orderRepositoryBase.Update(order);
+            _orderRepositoryBase.Save();
               
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, ("Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> CreateOrder(int userId)
         {
-            var user = _userRepository.ExistingUser(userId);
+            var user = _userRepositoryBase.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound, 
                     $"Пользователь {userId} не существует");
@@ -146,14 +146,14 @@ namespace MarketplaceApi.Services
                 UserId = userId
             };
             
-            _orderRepository.Add(order);
-            _orderRepository.Save();
+            _orderRepositoryBase.Add(order);
+            _orderRepositoryBase.Save();
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось");
         }
 
         public KeyValuePair<StatusCodeEnum, string> DeleteOrder(int userId, int orderId)
         {
-            var user = _userRepository.ExistingUser(userId);
+            var user = _userRepositoryBase.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Пользователь {userId} не существует");
@@ -161,13 +161,13 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     "У вас не прав на эту операцию");
 
-            var order = _orderRepository.ExistingOrder(orderId);
+            var order = _orderRepositoryBase.ExistingOrder(orderId);
             if (order == null)
                 return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.NotFound,
                     $"Заказ {orderId} не существует");
             
-            _orderRepository.Remove(order);
-            _orderRepository.Save();
+            _orderRepositoryBase.Remove(order);
+            _orderRepositoryBase.Save();
 
             return new KeyValuePair<StatusCodeEnum, string>(StatusCodeEnum.Ok, "Получилось");
         }

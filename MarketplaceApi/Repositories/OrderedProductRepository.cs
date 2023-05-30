@@ -3,7 +3,7 @@ using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Repositories
 {
-    public class OrderedProductRepository : Repository
+    public class OrderedProductRepository : RepositoryBase
     {
         public OrderedProductRepository(MarketplaceContext context) : base(context){}
         
