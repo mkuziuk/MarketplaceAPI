@@ -10,32 +10,32 @@ namespace MarketplaceApi.Services
 {
     public class ShopService
     {
-        private readonly UserRepositoryBase _userRepositoryBase;
-        private readonly OrderRepositoryBase _orderRepositoryBase;
-        private readonly ProductRepositoryBase _productRepositoryBase;
-        private readonly OrderedProductRepositoryBase _orderedProductRepositoryBase;
-        private readonly ShopRepositoryBase _shopRepositoryBase;
+        private readonly UserRepository _userRepository;
+        private readonly OrderRepository _orderRepository;
+        private readonly ProductRepository _productRepository;
+        private readonly OrderedProductRepository _orderedProductRepository;
+        private readonly ShopRepository _shopRepository;
         
         private DateTime _defaultCreationDate = DateTime.Now;
 
         public ShopService(MarketplaceContext context)
         {
-            _userRepositoryBase = new UserRepositoryBase(context);
-            _orderRepositoryBase = new OrderRepositoryBase(context);
-            _productRepositoryBase = new ProductRepositoryBase(context);
-            _orderedProductRepositoryBase = new OrderedProductRepositoryBase(context);
-            _shopRepositoryBase = new ShopRepositoryBase(context);
+            _userRepository = new UserRepository(context);
+            _orderRepository = new OrderRepository(context);
+            _productRepository = new ProductRepository(context);
+            _orderedProductRepository = new OrderedProductRepository(context);
+            _shopRepository = new ShopRepository(context);
         }
         
         public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> ProductsInShop(int shopId)
         {
-            var shop = _shopRepositoryBase.ExistingShop(shopId);
+            var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Магазин {shopId} не существует"));
 
-            var products = _productRepositoryBase.ProductsInShop(shopId);
+            var products = _productRepository.ProductsInShop(shopId);
             if (products == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
@@ -48,26 +48,26 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> ShopModerators(int userId, int shopId)
         {
-            var user = _userRepositoryBase.ExistingUser(userId);
+            var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Пользователь {userId} не существует"));
 
-            var shop = _shopRepositoryBase.ExistingShop(shopId);
+            var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Магазин {shopId} не существует"));
 
-            var isUserModerator = _userRepositoryBase.IsModeratorInShop(userId, shopId);
+            var isUserModerator = _userRepository.IsModeratorInShop(userId, shopId);
             if (!isUserModerator & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, "У вас нет прав на данную операцию"));
 
-            var shopModeratorIds = _shopRepositoryBase.ModeratorsInShop(shopId);
-            var moderators = _userRepositoryBase.ExistingUsersView(shopModeratorIds);
+            var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
+            var moderators = _userRepository.ExistingUsersView(shopModeratorIds);
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
             (StatusCodeEnum.Ok, new QueryableAndString<object>
@@ -76,7 +76,7 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, string> CreateShop(int userId, string shopName)
         {
-            var user = _userRepositoryBase.ExistingUser(userId);
+            var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
@@ -93,10 +93,10 @@ namespace MarketplaceApi.Services
             user.ShopsWhereModerator = new List<Shop>() { newShop };
             user.ShopsOwned = new List<Shop>() { newShop };
             
-            _userRepositoryBase.Update(user);
+            _userRepository.Update(user);
             
-            _shopRepositoryBase.Add(newShop);
-            _shopRepositoryBase.Save();
+            _shopRepository.Add(newShop);
+            _shopRepository.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.Ok, "Получилсь");
@@ -104,12 +104,12 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, string> AddModerator(int userId, int shopId, int newModeratorId)
         {
-            var user = _userRepositoryBase.ExistingUser(userId);
+            var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
-            var shop = _shopRepositoryBase.ExistingShop(shopId);
+            var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.NotFound, $"Магазин {shopId} не существует");
@@ -119,20 +119,20 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"У вас нет прав на добавление модераторов в магазин {shopId}");
 
-            var newModerator = _userRepositoryBase.ExistingUser(newModeratorId);
+            var newModerator = _userRepository.ExistingUser(newModeratorId);
             if (newModerator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {newModeratorId} не существует");
 
-            var isUserModerator = _shopRepositoryBase.IsUserModerator(newModeratorId, shopId);
+            var isUserModerator = _shopRepository.IsUserModerator(newModeratorId, shopId);
             if (isUserModerator)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Модератор {newModeratorId} уже добавлен к магазину");
             
             shop.Moderators.Add(newModerator);
             
-            _shopRepositoryBase.Update(shop);
-            _shopRepositoryBase.Save();
+            _shopRepository.Update(shop);
+            _shopRepository.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.Ok, "Получилось");
@@ -140,22 +140,22 @@ namespace MarketplaceApi.Services
 
         public KeyValuePair<StatusCodeEnum, string> DeleteModerator(int userId, int shopId, int moderatorId)
         {
-            var user = _userRepositoryBase.ExistingUser(userId);
+            var user = _userRepository.ExistingUser(userId);
             if (user == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {userId} не существует");
             
-            var shop = _shopRepositoryBase.ExistingShop(shopId);
+            var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Магазин {shopId} не существует");
             
-            var moderator = _userRepositoryBase.ExistingUser(moderatorId);
+            var moderator = _userRepository.ExistingUser(moderatorId);
             if (moderator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"Пользователь {moderatorId} не существует");
 
-            var isUserOwner = _shopRepositoryBase.IsUserOwner(userId, shopId);
+            var isUserOwner = _shopRepository.IsUserOwner(userId, shopId);
             if (!isUserOwner & !user.Admin)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "У вас не прав на удаление модераторов");
@@ -164,16 +164,16 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "Вы не можете удалить сами себя из модераторов");
 
-            var shopModerator = _shopRepositoryBase.IncludeModeratorInShop(shopId, userId);
+            var shopModerator = _shopRepository.IncludeModeratorInShop(shopId, userId);
             if (shopModerator == null)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, $"В магазине {shopId} нет модератора {moderatorId}");
             
             moderator.ShopsWhereModerator.Add(shop);
-            _userRepositoryBase.Attach(moderator);
+            _userRepository.Attach(moderator);
 
             shopModerator.Moderators.Remove(moderator);
-            _shopRepositoryBase.Save();
+            _shopRepository.Save();
             
             return new KeyValuePair<StatusCodeEnum, string>
                 (StatusCodeEnum.Ok, "Получилось");

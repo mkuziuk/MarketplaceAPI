@@ -4,9 +4,9 @@ using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Repositories
 {
-    public class ShopRepositoryBase : RepositoryBase
+    public class ShopRepository : RepositoryBase
     {
-        public ShopRepositoryBase(MarketplaceContext context) : base(context) {}
+        public ShopRepository(MarketplaceContext context) : base(context) {}
 
         public Shop ExistingShop(int shopId) => Context.Shop.FirstOrDefault(s => s.Id == shopId);
         //public IQueryable<Shop> ExistingShops(int shopId) => Context.Shop.Where(s => s.Id == shopId);
