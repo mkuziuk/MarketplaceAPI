@@ -5,7 +5,6 @@ namespace MarketplaceApi.Enums
         Basket,
         Ordered,
         Delivered,
-        NotDelivered,
-        ForTest = 99
+        NotDelivered, 
     }
 }

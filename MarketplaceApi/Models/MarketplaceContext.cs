@@ -163,7 +163,7 @@ namespace MarketplaceApi.Models
                 {
                     Id = 1,
                     OrderDate = DateTime.Now,
-                    OrderStatusId = (int)OrderStatusEnum.ForTest,
+                    OrderStatusId = (int)OrderStatusEnum.Basket,
                     UserId = 3,
                 });
         }
