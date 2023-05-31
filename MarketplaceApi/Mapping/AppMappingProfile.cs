@@ -8,12 +8,9 @@ namespace MarketplaceApi.Mapping
     {
         public AppMappingProfile()
         {
-            CreateMap<Product, ProductView>()
-                .BeforeMap<ProductBeforeMapping>();
-            CreateMap<User, UserView>()
-                .BeforeMap<UserBeforeMapping>();
-            CreateMap<Order, OrderView>()
-                .BeforeMap<OrderBeforeMapping>();
+            CreateMap<Product, ProductView>();
+            CreateMap<User, UserView>();
+            CreateMap<Order, OrderView>();
         }
     }
 }
