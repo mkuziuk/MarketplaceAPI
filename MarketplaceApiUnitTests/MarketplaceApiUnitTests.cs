@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using MarketplaceApi.Controllers;
+using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -32,7 +33,7 @@ namespace MarketplaceApiUnitTests
         public void AddProductToOrderTest()
         {
             const int userId = 3;
-            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId)!.Id;
+            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId && o.OrderStatusId == (int)OrderStatusEnum.ForTest)!.Id;
             const int productId = 1;
             const int quantity = 2;
             
@@ -51,7 +52,7 @@ namespace MarketplaceApiUnitTests
         public void ChangeProductQuantityTest()
         {
             const int userId = 3;
-            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId)!.Id;
+            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId && o.OrderStatusId == (int)OrderStatusEnum.ForTest)!.Id;
             const int productId = 1;
             const int newQuantity = 5;
             
@@ -70,7 +71,7 @@ namespace MarketplaceApiUnitTests
         public void DeleteProductFromOrderTest()
         {
             const int userId = 3;
-            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId)!.Id;
+            var orderId = _context.Order.FirstOrDefault(o => o.UserId == userId && o.OrderStatusId == (int)OrderStatusEnum.ForTest)!.Id;
             const int productId = 1;
             
             _orderedProductController.Delete(userId, orderId, productId);

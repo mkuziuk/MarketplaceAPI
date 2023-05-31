@@ -72,7 +72,7 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "У вас нет прав на редактироване данного заказа");
             
-            if (order.OrderStatusId != (int)OrderSatus.Basket)
+            if (order.OrderStatusId != (int)OrderStatusEnum.Basket)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "Заказ уже оформлен");
 
@@ -120,7 +120,7 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "У вас нет прав на редактироване данного заказа");
             
-            if (order.OrderStatusId != (int)OrderSatus.Basket)
+            if (order.OrderStatusId != (int)OrderStatusEnum.Basket)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, "Заказ уже оформлен");
 

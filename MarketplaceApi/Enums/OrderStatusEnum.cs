@@ -1,10 +1,11 @@
 namespace MarketplaceApi.Enums
 {
-    public enum OrderSatus
+    public enum OrderStatusEnum
     {
         Basket,
         Ordered,
         Delivered,
-        NotDelivered
+        NotDelivered,
+        ForTest = 99
     }
 }

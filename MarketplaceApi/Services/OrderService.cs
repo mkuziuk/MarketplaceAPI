@@ -87,7 +87,7 @@ namespace MarketplaceApi.Services
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ($"Заказ {orderId} не существует"));
              
-            if (order!.OrderStatusId != (int)OrderSatus.Basket)
+            if (order!.OrderStatusId != (int)OrderStatusEnum.Basket)
                 return new KeyValuePair<StatusCodeEnum, string>
                     (StatusCodeEnum.NotFound, ("Данный заказ уже оформлен"));
 
@@ -128,7 +128,7 @@ namespace MarketplaceApi.Services
                     (StatusCodeEnum.NotFound, ("Данный способ оплаты не существует"));
 
             order.WayOfPayment = wayOfPayment;
-            order.OrderStatusId = (int)OrderSatus.Ordered;
+            order.OrderStatusId = (int)OrderStatusEnum.Ordered;
             order.SellDate = OrderedSellDate();
             order.DeliveryDate = OrderedReceiveDate();
             order.DeliveryAddress = user.DeliveryAddress;
@@ -149,7 +149,7 @@ namespace MarketplaceApi.Services
             var order = new Order()
             {
                 OrderDate = OrderedOrderDate(),
-                OrderStatusId = (int)OrderSatus.Basket,
+                OrderStatusId = (int)OrderStatusEnum.Basket,
                 UserId = userId
             };
             

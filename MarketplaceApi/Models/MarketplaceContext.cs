@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MarketplaceApi.Enums;
 
 
 namespace MarketplaceApi.Models
@@ -164,7 +163,7 @@ namespace MarketplaceApi.Models
                 {
                     Id = 1,
                     OrderDate = DateTime.Now,
-                    OrderStatusId = 0,
+                    OrderStatusId = (int)OrderStatusEnum.ForTest,
                     UserId = 3,
                 });
         }
