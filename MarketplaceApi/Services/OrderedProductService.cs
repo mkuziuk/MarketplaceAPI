@@ -25,24 +25,24 @@ namespace MarketplaceApi.Services
             _mapper = mapper;
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetProductsInTheOrder(int userId, int orderId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<object>> GetProductsInTheOrder(int userId, int orderId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                     (null, $"Пользователь {userId} не существует"));
             
             var order = _orderRepository.ExistingOrder(orderId);
             if (order == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                     (null, $"Заказ {orderId} не существует"));
             
             if (order.UserId != userId & !user.Admin)
             {
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                     (null, "У вас нет прав на эту операцию"));
             }
 
@@ -56,8 +56,8 @@ namespace MarketplaceApi.Services
                 op => op.ProductId,
                 (p, op) => new {p, op.Quantity});
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.Ok, new QueryableAndString<object>(productsWithQuantity, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.Ok, new EnumerableAndString<object>(productsWithQuantity, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> ChangeQuantity(int userId, int orderId, int productId, int newQuantity)

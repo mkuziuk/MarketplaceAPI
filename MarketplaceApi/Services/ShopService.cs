@@ -27,52 +27,52 @@ namespace MarketplaceApi.Services
             _mapper = mapper;
         }
         
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> ProductsInShop(int shopId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>> ProductsInShop(int shopId)
         {
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<ProductView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<ProductView>
                     (null, $"Магазин {shopId} не существует"));
 
             var products = _productRepository.ProductsInShop(shopId);
             var productsView = _mapper.ProjectTo<ProductView>(products);
             if (productsView.FirstOrDefault() == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<ProductView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<ProductView>
                     (null, $"Товаров в магазине {shopId} нет"));
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
-            (StatusCodeEnum.Ok, new QueryableAndString<ProductView>
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>>
+            (StatusCodeEnum.Ok, new EnumerableAndString<ProductView>
                 (productsView, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> ShopModerators(int userId, int shopId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>> ShopModerators(int userId, int shopId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
 
             var shop = _shopRepository.ExistingShop(shopId);
             if (shop == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<UserView>
                     (null, $"Магазин {shopId} не существует"));
 
             var isUserModerator = _userRepository.IsModeratorInShop(userId, shopId);
             if (!isUserModerator & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<UserView>
                     (null, "У вас нет прав на данную операцию"));
 
             var shopModeratorIds = _shopRepository.ModeratorsInShop(shopId);
             var moderators = _userRepository.ExistingUsers(shopModeratorIds);
             var moderatorsView = _mapper.ProjectTo<UserView>(moderators);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-            (StatusCodeEnum.Ok, new QueryableAndString<UserView>
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+            (StatusCodeEnum.Ok, new EnumerableAndString<UserView>
                 (moderatorsView, "Получилось"));
         }
 

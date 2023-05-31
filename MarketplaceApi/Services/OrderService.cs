@@ -32,51 +32,51 @@ namespace MarketplaceApi.Services
         private static DateTime OrderedSellDate() => DateTime.Now;
         private static DateTime OrderedReceiveDate() => OrderedSellDate().AddDays(3);
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetOrder(int userId, int orderId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>> GetOrder(int userId, int orderId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                    (StatusCodeEnum.NotFound, new EnumerableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
 
             var orderUser = _userRepository.UserByOrderId(orderId);
             if (orderUser.Id != userId & !user.Admin)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                    (StatusCodeEnum.NotFound, new EnumerableAndString<OrderView>
                         (null, "У вас нет прав на эту операцию"));
             
 
             var orders = _orderRepository.ExistingOrders(orderId);
             if (orders.FirstOrDefault() == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<OrderView>
                     (null, $"Заказ {orderId} не существует"));
             
             var ordersView = _mapper.ProjectTo<OrderView>(orders);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                (StatusCodeEnum.Ok, new EnumerableAndString<OrderView>(ordersView, null));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>> GetUserOrders(int userId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>> GetUserOrders(int userId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                    (StatusCodeEnum.NotFound, new EnumerableAndString<OrderView>
                         (null, $"Пользователь {userId} не существует"));
             
             var orders = _orderRepository.OrdersPerUser(userId);
             if (orders.FirstOrDefault() == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<OrderView>
                     (null, $"Пользователь {userId} не имеет заказов"));
             
             var ordersView = _mapper.ProjectTo<OrderView>(orders);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
-                (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<OrderView>>
+                (StatusCodeEnum.Ok, new EnumerableAndString<OrderView>(ordersView, null));
         }
         
 //StatusCodeEnum

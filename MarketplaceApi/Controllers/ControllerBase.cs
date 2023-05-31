@@ -16,7 +16,7 @@ namespace MarketplaceApi.Controllers
             };
         }
         
-        protected IActionResult DoSwitch<T>(KeyValuePair<StatusCodeEnum, QueryableAndString<T>> result)
+        protected IActionResult DoSwitch<T>(KeyValuePair<StatusCodeEnum, EnumerableAndString<T>> result)
         {
             return result.Key switch
             {

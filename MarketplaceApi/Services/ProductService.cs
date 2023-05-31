@@ -29,53 +29,53 @@ namespace MarketplaceApi.Services
             _mapper = mapper;
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetProduct(int productId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<object>> GetProduct(int productId)
         {
             var product = _productRepository.ExistingProducts(productId);
             if (product.FirstOrDefault() == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                    (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                         (null, $"Товар {productId} не существует"));
             
             var productView = _mapper.ProjectTo<ProductView>(product);
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.Ok, new QueryableAndString<object>(productView, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.Ok, new EnumerableAndString<object>(productView, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetSimilar(int productId, int limit)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<object>> GetSimilar(int productId, int limit)
         {
             var product = _productRepository.ExistingProduct(productId);
             var productView = _mapper.Map<ProductView>(product);
             if (product == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                    (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                    (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                         (null, $"Товар {productId} не существует"));
 
             var similarProducts = _productRepository
                 .SimilarProducts(productView, limit, PriceFluctuation, SizeFluctuation, VolumeFluctuation);
             
             if (similarProducts.FirstOrDefault() == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<object>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<object>
                     (null, $"Товаров похожих на {productId} нет"));
             
             var similarProductsView = _mapper.ProjectTo<ProductView>(similarProducts);
 
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>(StatusCodeEnum.Ok,
-                new QueryableAndString<object>(similarProductsView, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<object>>(StatusCodeEnum.Ok,
+                new EnumerableAndString<object>(similarProductsView, "Получилось"));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> GetNewOfTheWeek(int limit)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>> GetNewOfTheWeek(int limit)
         {
             var newProducts = _productRepository.NewInTimeInterval(7).Take(limit);
             var newProductsView = _mapper.ProjectTo<ProductView>(newProducts);
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>(StatusCodeEnum.Ok,
-                new QueryableAndString<ProductView>(newProductsView, null));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>>(StatusCodeEnum.Ok,
+                new EnumerableAndString<ProductView>(newProductsView, null));
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<List<int>>> GetAttributes()
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<List<int>>> GetAttributes()
         {
             IEnumerable<List<int>> attributes = new[]
             {
@@ -85,11 +85,11 @@ namespace MarketplaceApi.Services
                 _productRepository.GetAllMaterials()
             };
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<List<int>>>(StatusCodeEnum.Ok,
-                new QueryableAndString<List<int>>(attributes, "Получилось")); 
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<List<int>>>(StatusCodeEnum.Ok,
+                new EnumerableAndString<List<int>>(attributes, "Получилось")); 
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>> Search(string name, int? type, int? useCase,
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>> Search(string name, int? type, int? useCase,
             int? whereUsed, int? material, int? minLength, int? maxLength, int? minWidth, int? maxWidth,
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
@@ -97,8 +97,8 @@ namespace MarketplaceApi.Services
                 material, minLength, maxLength, minWidth, maxWidth, minHeight, maxHeight, minPrice, maxPrice);
             var productsView = _mapper.ProjectTo<ProductView>(products);
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>(StatusCodeEnum.Ok,
-                new QueryableAndString<ProductView>(productsView, "Получилось"));
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<ProductView>>(StatusCodeEnum.Ok,
+                new EnumerableAndString<ProductView>(productsView, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> AddProduct(ProductEntity productEntity)

@@ -21,18 +21,18 @@ namespace MarketplaceApi.Services
             _mapper = mapper;
         }
 
-        public KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>> GetUser(int userId)
+        public KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>> GetUser(int userId)
         {
             var user = _userRepository.ExistingUser(userId);
             if (user == null)
-                return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-                (StatusCodeEnum.NotFound, new QueryableAndString<UserView>
+                return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+                (StatusCodeEnum.NotFound, new EnumerableAndString<UserView>
                     (null, $"Пользователь {userId} не существует"));
             
             var userView = new List<UserView>() {_mapper.Map<UserView>(user)};
             
-            return new KeyValuePair<StatusCodeEnum, QueryableAndString<UserView>>
-            (StatusCodeEnum.Ok, new QueryableAndString<UserView>
+            return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
+            (StatusCodeEnum.Ok, new EnumerableAndString<UserView>
                 (userView, "Получилось")); 
         }
 
