@@ -32,11 +32,12 @@ namespace MarketplaceApi.Services
         public KeyValuePair<StatusCodeEnum, QueryableAndString<object>> GetProduct(int productId)
         {
             var product = _productRepository.ExistingProducts(productId);
-            var productView = _mapper.ProjectTo<ProductView>(product);
-            if (productView == null)
+            if (product.FirstOrDefault() == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                     (StatusCodeEnum.NotFound, new QueryableAndString<object>
                         (null, $"Товар {productId} не существует"));
+            
+            var productView = _mapper.ProjectTo<ProductView>(product);
             
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.Ok, new QueryableAndString<object>(productView, "Получилось"));
@@ -53,11 +54,13 @@ namespace MarketplaceApi.Services
 
             var similarProducts = _productRepository
                 .SimilarProducts(productView, limit, PriceFluctuation, SizeFluctuation, VolumeFluctuation);
-            var similarProductsView = _mapper.ProjectTo<ProductView>(similarProducts);
-            if (similarProductsView == null)
+            
+            if (similarProducts.FirstOrDefault() == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<object>
                     (null, $"Товаров похожих на {productId} нет"));
+            
+            var similarProductsView = _mapper.ProjectTo<ProductView>(similarProducts);
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<object>>(StatusCodeEnum.Ok,
                 new QueryableAndString<object>(similarProductsView, "Получилось"));

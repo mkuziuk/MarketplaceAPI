@@ -37,7 +37,7 @@ namespace MarketplaceApi.Services
 
             var products = _productRepository.ProductsInShop(shopId);
             var productsView = _mapper.ProjectTo<ProductView>(products);
-            if (productsView == null)
+            if (productsView.FirstOrDefault() == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<ProductView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<ProductView>
                     (null, $"Товаров в магазине {shopId} нет"));

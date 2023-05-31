@@ -48,11 +48,12 @@ namespace MarketplaceApi.Services
             
 
             var orders = _orderRepository.ExistingOrders(orderId);
-            var ordersView = _mapper.ProjectTo<OrderView>(orders);
-            if (ordersView == null)
+            if (orders.FirstOrDefault() == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                     (null, $"Заказ {orderId} не существует"));
+            
+            var ordersView = _mapper.ProjectTo<OrderView>(orders);
 
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
@@ -67,12 +68,13 @@ namespace MarketplaceApi.Services
                         (null, $"Пользователь {userId} не существует"));
             
             var orders = _orderRepository.OrdersPerUser(userId);
-            var ordersView = _mapper.ProjectTo<OrderView>(orders);
-            if (ordersView == null)
+            if (orders.FirstOrDefault() == null)
                 return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.NotFound, new QueryableAndString<OrderView>
                     (null, $"Пользователь {userId} не имеет заказов"));
             
+            var ordersView = _mapper.ProjectTo<OrderView>(orders);
+
             return new KeyValuePair<StatusCodeEnum, QueryableAndString<OrderView>>
                 (StatusCodeEnum.Ok, new QueryableAndString<OrderView>(ordersView, null));
         }

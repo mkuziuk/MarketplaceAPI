@@ -16,7 +16,7 @@ namespace MarketplaceApi.Repositories
         public Order OrderPerUser(int userId) => Context.Order.FirstOrDefault(o => o.UserId == userId);
         //public OrderView OrderPerUserView(int userId) => SelectOrderView()
            //.FirstOrDefault(o => o.UserId == userId);
-        public IQueryable OrdersPerUser(int userId) => Context.Order.Where(o => o.UserId == userId);
+        public IQueryable<Order> OrdersPerUser(int userId) => Context.Order.Where(o => o.UserId == userId);
 
         public Order IncludeProductInOrder(int orderId, int productId) => Context.Order
             .FirstOrDefault(o => o.Id == orderId && o.Products

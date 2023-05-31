@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using AutoMapper;
 using MarketplaceApi.Controllers;
 using MarketplaceApi.Models;
-using MarketplaceApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using MarketplaceApi.Mapping;
@@ -13,8 +11,6 @@ namespace MarketplaceApiUnitTests
     public class MarketplaceApiUnitTests
     {
         private readonly MarketplaceContext _context;
-        private readonly IMapper _mapper;
-
         private readonly OrderedProductController _orderedProductController;
 
         public MarketplaceApiUnitTests()
@@ -25,12 +21,11 @@ namespace MarketplaceApiUnitTests
             dbOption.UseNpgsql(connectionString);
 
             _context = new MarketplaceContext(dbOption.Options);
-            
+
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(typeof(AppMappingProfile)));
+            IMapper mapper = new Mapper(mapperConfig);
 
-            _mapper = new Mapper(mapperConfig);
-
-            _orderedProductController = new OrderedProductController(_context, _mapper);
+            _orderedProductController = new OrderedProductController(_context, mapper);
         }
         
         [Fact]
