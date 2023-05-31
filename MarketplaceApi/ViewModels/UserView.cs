@@ -1,6 +1,6 @@
 using System;
 
-namespace MarketplaceApi.Views
+namespace MarketplaceApi.ViewModels
 {
     public class UserView
     {

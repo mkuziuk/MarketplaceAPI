@@ -5,7 +5,7 @@ using AutoMapper;
 using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using MarketplaceApi.Repositories;
-using MarketplaceApi.Views;
+using MarketplaceApi.ViewModels;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace MarketplaceApi.Services

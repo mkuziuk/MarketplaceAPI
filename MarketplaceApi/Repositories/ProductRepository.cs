@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using MarketplaceApi.Models;
-using MarketplaceApi.Views;
+using MarketplaceApi.ViewModels;
 
 namespace MarketplaceApi.Repositories
 {

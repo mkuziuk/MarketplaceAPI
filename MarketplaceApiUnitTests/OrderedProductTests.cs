@@ -1,7 +1,6 @@
 using System.Linq;
 using AutoMapper;
 using MarketplaceApi.Controllers;
-using MarketplaceApi.Enums;
 using MarketplaceApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -9,12 +8,12 @@ using MarketplaceApi.Mapping;
 
 namespace MarketplaceApiUnitTests
 {
-    public class MarketplaceApiUnitTests
+    public class OrderedProductTests
     {
         private readonly MarketplaceContext _context;
         private readonly OrderedProductController _orderedProductController;
 
-        public MarketplaceApiUnitTests()
+        public OrderedProductTests()
         {
             const string connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword";
 
@@ -38,7 +37,7 @@ namespace MarketplaceApiUnitTests
             const int quantity = 2;
             
             _orderedProductController.Post(userId, orderId, productId, quantity);
-            
+             
             var addedOrderedProduct =
                 _context.OrderedProduct.FirstOrDefault(op => op.OrderId == orderId && op.ProductId == productId);
             

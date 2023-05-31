@@ -1,6 +1,6 @@
 using AutoMapper;
 using MarketplaceApi.Models;
-using MarketplaceApi.Views;
+using MarketplaceApi.ViewModels;
 
 namespace MarketplaceApi.Mapping
 {
