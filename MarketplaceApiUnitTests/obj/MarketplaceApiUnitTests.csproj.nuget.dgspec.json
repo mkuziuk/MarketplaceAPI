@@ -4,14 +4,14 @@
     "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj": {}
   },
   "projects": {
-    "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj": {
+    "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj",
-        "projectName": "MarketplaceApiUnitTests",
-        "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj",
+        "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
+        "projectName": "MarketplaceApi",
+        "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj",
         "packagesPath": "/home/mikuzyuk/.nuget/packages/",
-        "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/obj/",
+        "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/mikuzyuk/.nuget/NuGet/NuGet.Config"
@@ -36,21 +36,73 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
-            "Microsoft.NET.Test.Sdk": {
+            "AutoMapper": {
               "target": "Package",
-              "version": "[16.5.0, )"
+              "version": "[12.0.1, )"
             },
-            "coverlet.collector": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
-              "version": "[1.2.0, )"
+              "version": "[12.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[3.1.32, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.0.17, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[5.0.16, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[5.0.10, )"
+            },
+            "Swashbuckle.AspNetCore.Swagger": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerGen": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerUI": {
+              "target": "Package",
+              "version": "[6.5.0, )"
             },
             "xunit": {
               "target": "Package",
-              "version": "[2.4.0, )"
-            },
-            "xunit.runner.visualstudio": {
-              "target": "Package",
-              "version": "[2.4.0, )"
+              "version": "[2.4.2, )"
             }
           },
           "imports": [
@@ -64,6 +116,88 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/current/sdk/3.1.426/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj",
+        "projectName": "MarketplaceApiUnitTests",
+        "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/MarketplaceApiUnitTests.csproj",
+        "packagesPath": "/home/mikuzyuk/.nuget/packages/",
+        "outputPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApiUnitTests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/mikuzyuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj": {
+                "projectPath": "/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/MarketplaceApi.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.18.4, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

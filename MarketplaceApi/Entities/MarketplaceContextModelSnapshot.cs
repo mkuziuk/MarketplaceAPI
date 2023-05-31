@@ -52,6 +52,16 @@ namespace MarketplaceApi.Entities
                     b.HasIndex("UserId");
 
                     b.ToTable("Order");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OrderDate = new DateTime(2023, 5, 31, 12, 30, 44, 640, DateTimeKind.Local).AddTicks(5355),
+                            OrderStatusId = 0,
+                            UserId = 3,
+                            WayOfPayment = 0
+                        });
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.OrderedProduct", b =>
@@ -131,6 +141,46 @@ namespace MarketplaceApi.Entities
                     b.HasIndex("UserId");
 
                     b.ToTable("Product");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationDate = new DateTime(2023, 5, 31, 12, 30, 44, 640, DateTimeKind.Local).AddTicks(1895),
+                            Height = 6,
+                            InStockQuantity = 20,
+                            IsPublic = true,
+                            Length = 6,
+                            Material = 1,
+                            Name = "ball",
+                            Price = 1500,
+                            PublicationDate = new DateTime(2023, 5, 31, 12, 30, 44, 640, DateTimeKind.Local).AddTicks(2432),
+                            ShopId = 1,
+                            Type = 1,
+                            UseCase = 1,
+                            UserId = 2,
+                            WhereUsed = 1,
+                            Width = 6
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreationDate = new DateTime(2023, 5, 31, 12, 30, 44, 640, DateTimeKind.Local).AddTicks(3612),
+                            Height = 16,
+                            InStockQuantity = 25,
+                            IsPublic = true,
+                            Length = 5,
+                            Material = 2,
+                            Name = "tower",
+                            Price = 2500,
+                            PublicationDate = new DateTime(2023, 5, 31, 12, 30, 44, 640, DateTimeKind.Local).AddTicks(3638),
+                            ShopId = 1,
+                            Type = 2,
+                            UseCase = 2,
+                            UserId = 2,
+                            WhereUsed = 2,
+                            Width = 5
+                        });
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.Shop", b =>
@@ -154,6 +204,15 @@ namespace MarketplaceApi.Entities
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Shop");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationDate = new DateTime(2023, 5, 31, 12, 30, 44, 639, DateTimeKind.Local).AddTicks(4893),
+                            Name = "shop1",
+                            OwnerId = 2
+                        });
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.ShopModerator", b =>
@@ -169,6 +228,13 @@ namespace MarketplaceApi.Entities
                     b.HasIndex("ShopId");
 
                     b.ToTable("ShopModerator");
+
+                    b.HasData(
+                        new
+                        {
+                            ModeratorId = 2,
+                            ShopId = 1
+                        });
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.User", b =>
@@ -205,6 +271,44 @@ namespace MarketplaceApi.Entities
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Admin = true,
+                            DeliveryAddress = "Moscow",
+                            Email = "1111mail.com",
+                            FirstName = "User1",
+                            Phone = "+71111111111",
+                            RegistrationDate = new DateTime(2023, 5, 31, 12, 30, 44, 632, DateTimeKind.Local).AddTicks(848),
+                            SecondName = "User1",
+                            Seller = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Admin = false,
+                            DeliveryAddress = "Belgorod",
+                            Email = "2222mail.com",
+                            FirstName = "User2",
+                            Phone = "+72222222222",
+                            RegistrationDate = new DateTime(2023, 5, 31, 12, 30, 44, 637, DateTimeKind.Local).AddTicks(7426),
+                            SecondName = "User2",
+                            Seller = true
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Admin = false,
+                            DeliveryAddress = "Ufa",
+                            Email = "3333mail.com",
+                            FirstName = "User3",
+                            Phone = "+73333333333",
+                            RegistrationDate = new DateTime(2023, 5, 31, 12, 30, 44, 637, DateTimeKind.Local).AddTicks(7749),
+                            SecondName = "User3",
+                            Seller = false
+                        });
                 });
 
             modelBuilder.Entity("MarketplaceApi.Models.Order", b =>

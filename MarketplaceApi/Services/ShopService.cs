@@ -17,7 +17,7 @@ namespace MarketplaceApi.Services
         private readonly ShopRepository _shopRepository;
         private readonly IMapper _mapper;
         
-        private DateTime _defaultCreationDate = DateTime.Now;
+        private readonly DateTime _defaultCreationDate = DateTime.Now;
 
         public ShopService(MarketplaceContext context, IMapper mapper)
         {

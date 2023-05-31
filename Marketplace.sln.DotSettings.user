@@ -2,4 +2,9 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/home/mikuzyuk/.nuget/packages/microsoft.visualstudio.web.codegeneration.design/3.1.5/lib/netcoreapp3.1/dotnet-aspnet-codegenerator-design.dll" /&gt;
   &lt;Assembly Path="/snap/dotnet-sdk/current/packs/Microsoft.AspNetCore.App.Ref/3.1.10/ref/netcoreapp3.1/Microsoft.AspNetCore.Mvc.Abstractions.dll" /&gt;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=96d97d8c_002D0f00_002D4772_002Da629_002D96e63055a319/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="OrderedProductsTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::37AE827D-F205-445C-A040-7BA150D69E0F::.NETCoreApp,Version=v3.1::MarketplaceApiUnitTests.MarketplaceApiUnitTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
