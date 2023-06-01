@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MarketplaceApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketplaceApi.Repositories
 {
@@ -9,11 +11,21 @@ namespace MarketplaceApi.Repositories
         public UserRepository(MarketplaceContext context) : base(context) {}
 
         public User ExistingUser(int userId) => Context.User.FirstOrDefault(u => u.Id == userId);
+        public async Task<User> ExistingUserAsync(int userId) => 
+            await Context.User.FirstOrDefaultAsync(u => u.Id == userId);
 
         public IQueryable<User> ExistingUsers(int userId) => Context.User.Where(u => u.Id == userId);
 
         public IQueryable<User> ExistingUsers(IEnumerable<int> userIds) => Context.User
                 .Where(u => userIds.Contains(u.Id));
+
+        public async Task<User[]> ExistingUsersAsync(IEnumerable<int> userIds)
+        {
+            var getUserTasks = userIds
+                .Select(userId => Context.User.FirstOrDefaultAsync(u => u.Id == userId)).ToList();
+
+            return await Task.WhenAll(getUserTasks);
+        }
 
         public User UserByOrderId(int orderId) => Context.User
             .FirstOrDefault(u => u.Orders.Any(o => o.Id == orderId));
