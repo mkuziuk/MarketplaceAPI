@@ -5,13 +5,13 @@ namespace MarketplaceApi.Repositories
 {
     public abstract class RepositoryBase
     {
-        protected readonly MarketplaceContext Context;
+        protected readonly MarketplaceContext _context;
         
         protected RepositoryBase(MarketplaceContext context)
         {
-            Context = context;
+            _context = context;
         }
         
-        public void Save() => Context.SaveChanges();
+        public void Save() => _context.SaveChanges();
     }
 }

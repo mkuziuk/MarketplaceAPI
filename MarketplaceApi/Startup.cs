@@ -1,7 +1,11 @@
 using System;
 using System.Text.Json.Serialization;
+using MarketplaceApi.IRepositories;
+using MarketplaceApi.IServices;
 using MarketplaceApi.Mapping;
 using MarketplaceApi.Models;
+using MarketplaceApi.Repositories;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +35,13 @@ namespace MarketplaceApi
                 c.Conventions.Add(new SwaggerApplicationConvention()));
 
             services.AddAutoMapper(typeof(AppMappingProfile));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IShopRepository, ShopRepository>();
+            
+            services.AddScoped<IUserServiceAsync, UserServiceAsync>();
+            services.AddScoped<IProductServiceAsync, ProductServiceAsync>();
 
             // Register generator and it's dependencies
 

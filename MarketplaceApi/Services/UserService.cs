@@ -33,7 +33,7 @@ namespace MarketplaceApi.Services
             
             return new KeyValuePair<StatusCodeEnum, EnumerableAndString<UserView>>
             (StatusCodeEnum.Ok, new EnumerableAndString<UserView>
-                (userView, "Получилось")); 
+                (userView, "Получилось"));
         }
 
         public KeyValuePair<StatusCodeEnum, string> ChangeInfo

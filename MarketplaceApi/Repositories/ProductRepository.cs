@@ -2,30 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using MarketplaceApi.IRepositories;
 using MarketplaceApi.Models;
 using MarketplaceApi.ViewModels;
 
 namespace MarketplaceApi.Repositories
 {
-    public class ProductRepository : RepositoryBase
+    public class ProductRepository : IProductRepository
     {
-        public ProductRepository(MarketplaceContext context) : base(context) {}
+        private readonly MarketplaceContext _context;
+        public ProductRepository(MarketplaceContext context)
+        {
+            _context = context;
+        }
 
-        public Product ExistingProduct(int productId) => Context.Product
+        public Product ExistingProduct(int productId) => _context.Product
             .FirstOrDefault(p => p.Id == productId);
 
-        public IQueryable<Product> ExistingProducts(int productId) => Context.Product.Where(p => p.Id == productId);
+        public IQueryable<Product> ExistingProducts(int productId) => _context.Product.Where(p => p.Id == productId);
         
-        public IQueryable<Product> ProductsByOrder(int orderId) => Context.Product
+        public IQueryable<Product> ProductsByOrder(int orderId) => _context.Product
             .Where(p => p.Orders.Any(o => o.Id == orderId));
 
-        public IQueryable ProductsInShop(int shopId) => Context.Product
+        public IQueryable ProductsInShop(int shopId) => _context.Product
             .Where(p => p.ShopId == shopId);
 
         public IQueryable<Product> SimilarProducts(ProductView product, int limit, 
             decimal priceFluctuation, decimal sizeFluctuation, decimal volumeFluctuation)
         {
-            var similarProducts = Context.Product
+            var similarProducts = _context.Product
                 .Where(p => 
                             p.Id != product.Id &&
                             (
@@ -61,20 +66,20 @@ namespace MarketplaceApi.Repositories
             return similarProducts;
         }
 
-        public IQueryable<Product> NewInTimeInterval(int interval) => Context.Product
+        public IQueryable<Product> NewInTimeInterval(int interval) => _context.Product
             .Where(p => p.IsPublic && p.PublicationDate >= DateTime.Now.AddDays(-interval))
             .OrderByDescending(p => p.PublicationDate);
         
-        public List<int> GetAllTypes() => Context.Product
+        public List<int> GetAllTypes() => _context.Product
             .Select(p => p.Type).Distinct().ToList();
         
-        public List<int> GetAllUseCases() => Context.Product
+        public List<int> GetAllUseCases() => _context.Product
             .Select(p => p.UseCase).Distinct().ToList();
         
-        public List<int> GetAllWhereUsed() => Context.Product
+        public List<int> GetAllWhereUsed() => _context.Product
             .Select(p => p.WhereUsed).Distinct().ToList();
         
-        public List<int> GetAllMaterials() => Context.Product
+        public List<int> GetAllMaterials() => _context.Product
             .Select(p => p.Material).Distinct().ToList();
 
         public IQueryable<Product> SearchByAttributes(string name, int? type, int? useCase, int? whereUsed,
@@ -82,7 +87,7 @@ namespace MarketplaceApi.Repositories
             int? minHeight, int? maxHeight, int? minPrice, int? maxPrice)
         {
             
-            var resultingProducts = Context.Product
+            var resultingProducts = _context.Product
                 .Where(p => 
                 (name == null || p.Name.ToLower().StartsWith(name.ToLower()))
                 && (type == null || p.Type == type)
@@ -108,10 +113,10 @@ namespace MarketplaceApi.Repositories
         
         public (IQueryable<Product>, IQueryable<OrderedProduct>) GetProductsInOrderWithQuantity(int orderId)
         {
-            var products = Context.Product
+            var products = _context.Product
                 .Where(p => p.Orders.Any(o => o.Id == orderId));
 
-            var orderedProducts = Context.OrderedProduct
+            var orderedProducts = _context.OrderedProduct
                 .Where(op => op.OrderId == orderId);
             
             return (products, orderedProducts);
@@ -124,13 +129,14 @@ namespace MarketplaceApi.Repositories
                     */
         }
 
-        public void Update(Product product) => Context.Product.Update(product);
+        public void Update(Product product) => _context.Product.Update(product);
 
-        public void Add(Product product) => Context.Product.Add(product);
+        public void Add(Product product) => _context.Product.Add(product);
         
-        public void Delete(Product product) => Context.Product.Remove(product);
+        public void Delete(Product product) => _context.Product.Remove(product);
         
-        public void Attach(Product product) => Context.Product.Attach(product);
+        public void Attach(Product product) => _context.Product.Attach(product);
 
+        public void Save() => _context.SaveChanges();
     }
 }

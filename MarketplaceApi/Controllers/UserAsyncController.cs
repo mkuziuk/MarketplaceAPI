@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using MarketplaceApi.IServices;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,13 @@ namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserControllerAsync : Controller
+    public class UserAsyncController : Controller
     {
-        private readonly UserServiceAsync _userServiceAsync;
+        private readonly IUserServiceAsync _userServiceAsync;
         
-        public UserControllerAsync(MarketplaceContext context, IMapper mapper)
+        public UserAsyncController(IUserServiceAsync userServiceAsync)
         {
-            _userServiceAsync = new UserServiceAsync(context, mapper);
+            _userServiceAsync = userServiceAsync;
         }
 
         [HttpGet]
