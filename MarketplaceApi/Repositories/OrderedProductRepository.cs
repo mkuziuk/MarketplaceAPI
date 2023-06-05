@@ -1,11 +1,17 @@
 using System.Linq;
+using MarketplaceApi.IRepositories;
 using MarketplaceApi.Models;
 
 namespace MarketplaceApi.Repositories
 {
-    public class OrderedProductRepository : RepositoryBase
+    public class OrderedProductRepository : IOrderedProductRepository
     {
-        public OrderedProductRepository(MarketplaceContext context) : base(context){}
+        private readonly MarketplaceContext _context;
+
+        public OrderedProductRepository(MarketplaceContext context)
+        {
+            _context = context;
+        }
         
         public IQueryable<OrderedProduct> OrderedProductsByOrder(int orderId) => 
             _context.OrderedProduct.Where(o => o.OrderId == orderId);
@@ -15,5 +21,6 @@ namespace MarketplaceApi.Repositories
 
         public void Delete(OrderedProduct orderedProduct) => _context.OrderedProduct.Remove(orderedProduct);
         public void Update(OrderedProduct orderedProduct) => _context.OrderedProduct.Update(orderedProduct);
+        public void Save() => _context.SaveChanges();
     }
 }

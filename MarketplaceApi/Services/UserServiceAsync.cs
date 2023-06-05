@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Services
 {
-    public class UserServiceAsync : IUserServiceAsync
+    public class UserServiceAsync : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;

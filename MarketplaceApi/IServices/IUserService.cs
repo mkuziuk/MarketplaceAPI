@@ -3,7 +3,7 @@ using MarketplaceApi.ViewModels;
 
 namespace MarketplaceApi.IServices
 {
-    public interface IUserServiceAsync
+    public interface IUserService
     {
         public Task<UserView> GetUserAsync(int userId);
     }

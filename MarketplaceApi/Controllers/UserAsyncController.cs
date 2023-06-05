@@ -12,11 +12,11 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class UserAsyncController : Controller
     {
-        private readonly IUserServiceAsync _userServiceAsync;
+        private readonly IUserService _userService;
         
-        public UserAsyncController(IUserServiceAsync userServiceAsync)
+        public UserAsyncController(IUserService userService)
         {
-            _userServiceAsync = userServiceAsync;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -24,7 +24,7 @@ namespace MarketplaceApi.Controllers
         {
             try
             {
-                var user = await _userServiceAsync.GetUserAsync(userId);
+                var user = await _userService.GetUserAsync(userId);
                 return Ok(user);
             }
             catch (ArgumentNullException e)

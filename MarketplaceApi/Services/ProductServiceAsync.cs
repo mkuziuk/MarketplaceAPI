@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using MarketplaceApi.Exceptions;
 using MarketplaceApi.IRepositories;
 using MarketplaceApi.IServices;
 using MarketplaceApi.Models;
@@ -13,7 +14,7 @@ using UnauthorizedAccessException = System.UnauthorizedAccessException;
 
 namespace MarketplaceApi.Services
 {
-    public class ProductServiceAsync : IProductServiceAsync
+    public class ProductServiceAsync : IProductService
     {
         private const decimal PriceFluctuation = 0.1M;
         private const decimal SizeFluctuation = 0.1M;
@@ -39,13 +40,13 @@ namespace MarketplaceApi.Services
             var shopTask = _shopRepository.ExistingShopAsync(productEntity.ShopId);
 
             if (await userTask== null)
-                throw new ArgumentNullException($"Пользователь {productEntity.UserId} не существует");
+                throw new EntityNullException($"Пользователь {productEntity.UserId} не существует");
             if (await shopTask == null)
-                throw new ArgumentNullException($"Магазин {productEntity.ShopId} не существует");
+                throw new EntityNullException($"Магазин {productEntity.ShopId} не существует");
             
-            var isModeratorInShopTask = await _userRepository.IsModeratorInShopAsync(productEntity.UserId, productEntity.ShopId);
-            if (!isModeratorInShopTask & !userTask.Result.Admin)
-                throw new UnauthorizedAccessException("У вас нет прав на добавление товаров в этом магазин");
+            var isModeratorInShop = await _userRepository.IsModeratorInShopAsync(productEntity.UserId, productEntity.ShopId);
+            if (!isModeratorInShop & !userTask.Result.Admin)
+                throw new AccessException("У вас нет прав на добавление товаров в этом магазин");
 
             var ifTypeExists = ProductEntity.ListOfTypes.Any(lt => lt.Equals(productEntity.Type));
             if (!ifTypeExists)
@@ -53,7 +54,7 @@ namespace MarketplaceApi.Services
             
             var ifUseCaseExists = ProductEntity.ListOfUseCases.Any(uc => uc.Equals(productEntity.UseCase));
             if (!ifUseCaseExists)
-                throw new InvalidDataException($"Тип {productEntity.UseCase} не существует");
+                throw new InvalidDataException($"Способ применения {productEntity.UseCase} не существует");
             
             var ifWhereCanBeUsedExists = ProductEntity.ListOfWhereUsed
                 .Any(wu => wu.Equals(productEntity.WhereUsed));

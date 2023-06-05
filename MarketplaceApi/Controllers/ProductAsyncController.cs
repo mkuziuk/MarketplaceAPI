@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
+using MarketplaceApi.Exceptions;
 using MarketplaceApi.IServices;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
@@ -13,11 +14,11 @@ namespace MarketplaceApi.Controllers
     [ApiController]
     public class ProductAsyncController : Controller
     {
-        private readonly IProductServiceAsync _productServiceAsync;
+        private readonly IProductService _productService;
 
-        public ProductAsyncController(IProductServiceAsync productServiceAsync)
+        public ProductAsyncController(IProductService productService)
         {
-            _productServiceAsync = productServiceAsync;
+            _productService = productService;
         }
 
         [HttpPost("addproduct")]
@@ -25,14 +26,14 @@ namespace MarketplaceApi.Controllers
         {
             try
             {
-                await _productServiceAsync.AddProductAsync(productEntity);
+                await _productService.AddProductAsync(productEntity);
                 return Ok("товар успешно добавлен");
             }
-            catch (ArgumentNullException e)
+            catch (EntityNullException e)
             {
                 return NotFound(e.Message);
             }
-            catch (UnauthorizedAccessException e)
+            catch (AccessException e)
             {
                 return BadRequest(e.Message);
             }
@@ -42,7 +43,7 @@ namespace MarketplaceApi.Controllers
             }
             catch (Exception e)
             {
-                return NotFound($"{e.GetType()} says {e.Message}");
+                return BadRequest($"{e.GetType()} says {e.Message}");
             }
         }
     }

@@ -43,6 +43,7 @@
       <Compile Remove="Data.cs" />
       <Compile Remove="Models\Bill.cs" />
       <Compile Remove="Controllers\BillController.cs" />
+      <Compile Remove="Repositories\RepositoryBase.cs" />
     </ItemGroup>
 
 </Project>

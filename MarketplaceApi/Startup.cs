@@ -40,8 +40,8 @@ namespace MarketplaceApi
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
             
-            services.AddScoped<IUserServiceAsync, UserServiceAsync>();
-            services.AddScoped<IProductServiceAsync, ProductServiceAsync>();
+            services.AddScoped<IUserService, UserServiceAsync>();
+            services.AddScoped<IProductService, ProductServiceAsync>();
 
             // Register generator and it's dependencies
 
@@ -49,11 +49,11 @@ namespace MarketplaceApi
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
-            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword;Maximum Pool Size=4";
+            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword;";
 
 
-           //services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
-           services.AddDbContextPool<MarketplaceContext>(options => options.UseNpgsql(connectionString));
+           services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient);
+           //services.AddDbContextPool<MarketplaceContext>(options => options.UseNpgsql(connectionString));
 
            /*
            services.AddControllers().AddJsonOptions(x =>
