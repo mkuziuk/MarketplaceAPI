@@ -49,15 +49,16 @@ namespace MarketplaceApi
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
-            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword";
+            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword;Maximum Pool Size=4";
 
 
-            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
-            
-            /*
-            services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
-                */
+           //services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
+           services.AddDbContextPool<MarketplaceContext>(options => options.UseNpgsql(connectionString));
+
+           /*
+           services.AddControllers().AddJsonOptions(x =>
+               x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+               */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
