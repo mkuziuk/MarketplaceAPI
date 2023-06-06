@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using MarketplaceApi.Enums;
+using MarketplaceApi.Exceptions;
 using MarketplaceApi.IRepositories;
 using MarketplaceApi.IServices;
 using MarketplaceApi.Models;
@@ -31,7 +32,7 @@ namespace MarketplaceApi.Services
             var userTask = await _userRepository.ExistingUserAsync(userId);
             var userView = _mapper.Map<UserView>(userTask);
             if (userView == null)
-                throw new ArgumentNullException($"Пользователь {userId} не существует");
+                throw new NotFoundException($"Пользователь {userId} не существует");
                 
             return userView;
         }

@@ -51,8 +51,7 @@ namespace MarketplaceApi
             
             var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword;";
 
-
-           services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient);
+            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient);
            //services.AddDbContextPool<MarketplaceContext>(options => options.UseNpgsql(connectionString));
 
            /*

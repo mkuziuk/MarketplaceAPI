@@ -40,9 +40,9 @@ namespace MarketplaceApi.Services
             var shopTask = _shopRepository.ExistingShopAsync(productEntity.ShopId);
 
             if (await userTask== null)
-                throw new EntityNullException($"Пользователь {productEntity.UserId} не существует");
+                throw new NotFoundException($"Пользователь {productEntity.UserId} не существует");
             if (await shopTask == null)
-                throw new EntityNullException($"Магазин {productEntity.ShopId} не существует");
+                throw new NotFoundException($"Магазин {productEntity.ShopId} не существует");
             
             var isModeratorInShop = await _userRepository.IsModeratorInShopAsync(productEntity.UserId, productEntity.ShopId);
             if (!isModeratorInShop & !userTask.Result.Admin)

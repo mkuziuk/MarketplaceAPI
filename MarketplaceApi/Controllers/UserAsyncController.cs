@@ -4,13 +4,14 @@ using AutoMapper;
 using MarketplaceApi.IServices;
 using MarketplaceApi.Models;
 using MarketplaceApi.Services;
+using MarketplaceApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAsyncController : Controller
+    public class UserAsyncController : ControllerBase
     {
         private readonly IUserService _userService;
         
@@ -20,21 +21,11 @@ namespace MarketplaceApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUser(int userId)
+        public async Task<IActionResult> GetUserExp(int userId)
         {
-            try
-            {
-                var user = await _userService.GetUserAsync(userId);
-                return Ok(user);
-            }
-            catch (ArgumentNullException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                return NotFound($"{e.GetType()} says {e.Message}");
-            }
+            var task = _userService.GetUserAsync(userId);
+
+            return await DoTryCatch(task);
         }
     }
 }

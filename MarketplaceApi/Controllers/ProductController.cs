@@ -14,7 +14,6 @@ namespace MarketplaceApi.Controllers
         public ProductController(MarketplaceContext context, IMapper mapper)
         {
             _productService = new ProductService(context, mapper);
-            
         }
         
         [HttpGet("getproduct")]

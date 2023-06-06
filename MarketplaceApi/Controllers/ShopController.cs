@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceApi.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ShopController : ControllerBase
     {
         private readonly ShopService _shopService;
