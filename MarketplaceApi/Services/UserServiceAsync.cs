@@ -17,23 +17,22 @@ namespace MarketplaceApi.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IHelperService _helperService;
 
         private readonly DateTime _defaultRegistrationDate = DateTime.Now;
 
-        public UserServiceAsync(IMapper mapper, IUserRepository userRepository)
+        public UserServiceAsync(IMapper mapper, IUserRepository userRepository, IHelperService helperService)
         {
-            //_userRepository = new UserRepository(context);
             _mapper = mapper;
             _userRepository = userRepository;
+            _helperService = helperService;
         }
 
         public async Task<UserView> GetUserAsync(int userId)
         {
-            var userTask = await _userRepository.ExistingUserAsync(userId);
-            var userView = _mapper.Map<UserView>(userTask);
-            if (userView == null)
-                throw new NotFoundException($"Пользователь {userId} не существует");
-                
+            var user = await _helperService.CheckUser(userId);
+            var userView = _mapper.Map<UserView>(user);
+
             return userView;
         }
     }

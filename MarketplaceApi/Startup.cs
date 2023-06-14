@@ -39,7 +39,8 @@ namespace MarketplaceApi
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IShopRepository, ShopRepository>();
-            
+
+            services.AddScoped<IHelperService, HelperService>();
             services.AddScoped<IUserService, UserServiceAsync>();
             services.AddScoped<IProductService, ProductServiceAsync>();
 
