@@ -322,3 +322,17 @@
 /home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/obj/Debug/netcoreapp3.1/MarketplaceApi.genruntimeconfig.cache
 /home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/bin/Debug/netcoreapp3.1/App.config
 /home/mikuzyuk/RiderProjects/MarketplaceApi/MarketplaceApi/bin/Debug/netcoreapp3.1/MarketplaceApi.dll.config
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Microsoft.OpenApi.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Swashbuckle.AspNetCore.Swagger.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Swashbuckle.AspNetCore.SwaggerGen.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/obj/Debug/netcoreapp3.1/MarketplaceApi.MvcApplicationPartsAssemblyInfo.cs
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Castle.Core.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/Microsoft.EntityFrameworkCore.Proxies.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/AutoMapper.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/System.Runtime.CompilerServices.Unsafe.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/xunit.abstractions.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/xunit.assert.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/xunit.core.dll
+/home/mikuzyuk/RiderProjects/MarketplaceAPI/MarketplaceApi/bin/Debug/netcoreapp3.1/xunit.execution.dotnet.dll

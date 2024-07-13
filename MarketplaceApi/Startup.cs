@@ -1,8 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
+using MarketplaceApi.IRepositories;
+using MarketplaceApi.IServices;
+using MarketplaceApi.Mapping;
 using MarketplaceApi.Models;
+using MarketplaceApi.Repositories;
+using MarketplaceApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,8 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Npgsql;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MarketplaceApi
@@ -33,22 +34,38 @@ namespace MarketplaceApi
             services.Configure<MvcOptions>(c =>
                 c.Conventions.Add(new SwaggerApplicationConvention()));
 
+            services.AddAutoMapper(typeof(AppMappingProfile));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IShopRepository, ShopRepository>();
+
+            services.AddScoped<IHelperService, HelperService>();
+            services.AddScoped<IUserService, UserServiceAsync>();
+            services.AddScoped<IProductService, ProductServiceAsync>();
+
             // Register generator and it's dependencies
 
             services.AddSwaggerGen();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             
-            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=pass";
+            var connectionString = "Host=localhost;Port=5432;Database=Marketplace;Username=postgres;Password=mypassword;";
 
+            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Transient);
+           //services.AddDbContextPool<MarketplaceContext>(options => options.UseNpgsql(connectionString));
 
-            services.AddDbContext<MarketplaceContext>(options => options.UseNpgsql(connectionString));
+           /*
+           services.AddControllers().AddJsonOptions(x =>
+               x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+               */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
+          
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

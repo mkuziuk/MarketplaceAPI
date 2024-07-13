@@ -5,12 +5,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="12.0.1" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.17">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.32" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.17" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.17" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.17">
@@ -23,6 +26,7 @@
       <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+      <PackageReference Include="xunit" Version="2.4.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,6 +38,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Entities\20230505093922_Product attributes changed to int.cs" />
+      <Compile Remove="Entities\20230505093922_Product attributes changed to int.Designer.cs" />
+      <Compile Remove="Data.cs" />
+      <Compile Remove="Models\Bill.cs" />
+      <Compile Remove="Controllers\BillController.cs" />
+      <Compile Remove="Repositories\RepositoryBase.cs" />
     </ItemGroup>
 
 </Project>

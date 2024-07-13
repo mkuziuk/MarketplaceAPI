@@ -1,37 +1,46 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using MarketplaceApi.Models;
+using MarketplaceApi.Repositories;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace MarketplaceApi
 {
     public class Program
     {
+        //private MarketplaceContext _context;
+        //private static UserRepository _userRepository;
+        //private static ShopRepository _shopRepository;
+        
         public static void Main(string[] args)
         {
-            Data data = new Data();
-            
             var host = CreateHostBuilder(args).Build();
             
             CreateHostBuilder(args).Build().Run();
-/*
-            using (var db = new MarketplaceContext())
-            {
-                int[] userId = data.Id;
-                
-                for (int i = 0; i < userId.Length; i++)
-                {
-                    //db.User.Add(new User(userId));
-                }
-                db.SaveChanges();
-            }*/
+
+            //AddModeratorToShop(1, 2);
         }
+/*
+        private Program(MarketplaceContext context)
+        {
+            _context = context;
+            _userRepository = new UserRepository(context);
+            _shopRepository = new ShopRepository(context);
+        }
+
+        private static void AddModeratorToShop(int shopId, int newModeratorId)
+        {
+            var shop = _shopRepository.ExistingShop(shopId);
+            
+            var newModerator = _userRepository.ExistingUser(newModeratorId);
+            
+            shop.Moderators.Add(newModerator);
+            
+            _shopRepository.Update(shop);
+            _shopRepository.Save();
+        }
+        */
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
